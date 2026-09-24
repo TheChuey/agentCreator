@@ -1,0 +1,28 @@
+{
+  "models": [
+    {
+      "id": "llama3.1:8b",
+      "name": "llama3.1:8b",
+      "source": "ollama",
+      "size": 4920753328
+    },
+    {
+      "id": "nomic-embed-text:latest",
+      "name": "nomic-embed-text:latest",
+      "source": "ollama",
+      "size": 274302450
+    },
+    {
+      "id": "qwen2.5-coder:latest",
+      "name": "qwen2.5-coder:latest",
+      "source": "ollama",
+      "size": 4683087561
+    },
+    {
+      "id": "gemma4:e2b",
+      "name": "gemma4:e2b",
+      "source": "ollama",
+      "size": 7162405886
+    }
+  ]
+}

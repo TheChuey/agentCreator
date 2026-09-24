@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .topbar {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            background: #252526;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        .title {
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        button {
+            border: 1px solid #555;
+            background: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        button.primary {
+            background: #0e639c;
+            border-color: #1177bb;
+        }
+
+        .container {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: #252526;
+            border: 1px solid #3f3f46;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .tree-item {
+            user-select: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tree-item.folder {
+            cursor: pointer;
+        }
+
+        .tree-item.folder .toggle {
+            display: inline-block;
+            width: 12px;
+            font-size: 11px;
+            color: #bbb;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tree-item:hover {
+            background: #2a2d2e;
+        }
+
+        .children {
+            margin-left: 16px;
+        }
+
+        .children.collapsed {
+            display: none;
+        }
+
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: #007acc;
+            color: white;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="title">Project Manager Dashboard</div>
+    <button class="primary" onclick="openEditor()">Editor</button>
+    <button onclick="openEditorPopup()">Editor (Popup)</button>
+    <button onclick="refreshProject()">Refresh</button>
+</div>
+
+<div class="container">
+    <div class="actions">
+        <button class="primary" onclick="openEditor()">Open Full Editor</button>
+        <button onclick="openEditorPopup()">Launch Editor Window</button>
+        <button onclick="submitCreateFilePrompt()">+ New File</button>
+        <button onclick="submitCreateFolderPrompt()">+ New Folder</button>
+    </div>
+
+    <div class="card">
+        <h2>Project Workspace</h2>
+        <div id="projectTree">Loading files...</div>
+    </div>
+</div>
+
+<div class="statusbar">
+    <div id="statusMessage">Ready</div>
+</div>
+
+<script type="module">
+import API from '/static/js/api.js';
+
+async function loadProject() {
+  setStatus('Loading project...');
+  try {
+    const data = await API.project();
+    renderTree(data.filesystem || []);
+    setStatus('Project loaded');
+  } catch (err) {
+    setStatus('Error: ' + err.message);
+  }
+}
+
+function renderTree(items) {
+  const container = document.getElementById('projectTree');
+  container.innerHTML = '';
+  renderItems(items, container);
+}
+
+function renderItems(items, container) {
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'tree-item';
+    if (item.type === 'directory') {
+      div.classList.add('folder');
+      div.dataset.path = item.path;
+      const toggle = document.createElement('span');
+      toggle.className = 'toggle';
+      toggle.textContent = '+';
+      const label = document.createElement('span');
+      label.textContent = '📁 ' + item.name;
+      label.style.flex = '1';
+      label.style.marginLeft = '4px';
+      div.appendChild(toggle);
+      div.appendChild(label);
+      div.onclick = (e) => {
+        e.stopPropagation();
+        toggleFolder(div);
+      };
+      container.appendChild(div);
+      if (item.children && item.children.length) {
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = 'children collapsed';
+        container.appendChild(childrenContainer);
+        renderItems(item.children, childrenContainer);
+      }
+    } else {
+      const label = document.createElement('span');
+      label.textContent = getFileIcon(item.name) + ' ' + item.name;
+      div.appendChild(label);
+      const btnGroup = document.createElement('div');
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = (e) => { e.stopPropagation(); openEditor(item.path); };
+      const popupBtn = document.createElement('button');
+      popupBtn.textContent = 'Popup';
+      popupBtn.style.marginLeft = '4px';
+      popupBtn.onclick = (e) => { e.stopPropagation(); openEditorPopup(item.path); };
+      btnGroup.appendChild(editBtn);
+      btnGroup.appendChild(popupBtn);
+      div.appendChild(btnGroup);
+      container.appendChild(div);
+    }
+  });
+}
+
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const icons = {
+    py: '🐍',
+    html: '🌐', htm: '🌐',
+    css: '🎨',
+    js: '🟨', mjs: '🟨', jsx: '🟨',
+    ts: '🔷', tsx: '🔷',
+    json: '📋',
+    md: '📝',
+    sql: '🗄️',
+    xml: '🧾',
+    sh: '⌨️', bat: '⌨️', ps1: '⌨️',
+    yaml: '⚙️', yml: '⚙️', toml: '⚙️', ini: '⚙️', cfg: '⚙️', env: '⚙️',
+    txt: '📄', csv: '📄'
+  };
+  return icons[ext] || '📄';
+}
+
+function toggleFolder(div) {
+  const toggle = div.querySelector('.toggle');
+  if (toggle) {
+    toggle.classList.toggle('expanded');
+    toggle.textContent = toggle.classList.contains('expanded') ? '−' : '+';
+  }
+  const children = div.nextElementSibling;
+  if (children && children.classList.contains('children')) {
+    children.classList.toggle('collapsed');
+  }
+}
+
+async function submitCreateFilePrompt() {
+  const path = prompt('Enter file path/name:');
+  if (!path) return;
+  try {
+    await API.fileCreate(path, '');
+    await loadProject();
+    openEditor(path);
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function submitCreateFolderPrompt() {
+  const path = prompt('Enter folder path:');
+  if (!path) return;
+  try {
+    await API.directoryCreate(path);
+    await loadProject();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+function openEditor(filePath) {
+  let url = '/editor';
+  if (filePath) url += '?path=' + encodeURIComponent(filePath);
+  window.location.href = url;
+}
+
+function openEditorPopup(filePath) {
+  let url = '/editor';
+  if (filePath) url += '?path=' + encodeURIComponent(filePath);
+  const width = 1200; const height = 800;
+  const left = (window.screen.width - width) / 2;
+  const top = (window.screen.height - height) / 2;
+  window.open(url, 'ProjectManagerEditorPopup', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
+}
+
+function refreshProject() {
+  loadProject();
+}
+
+function setStatus(msg) {
+  document.getElementById('statusMessage').textContent = msg;
+}
+
+window.openEditor = openEditor;
+window.openEditorPopup = openEditorPopup;
+window.refreshProject = refreshProject;
+window.submitCreateFilePrompt = submitCreateFilePrompt;
+window.submitCreateFolderPrompt = submitCreateFolderPrompt;
+
+loadProject();
+</script>
+
+</body>
+</html>

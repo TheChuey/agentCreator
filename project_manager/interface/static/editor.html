@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager Editor</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .topbar {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            background: #252526;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        .title {
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        button {
+            border: 1px solid #555;
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        button.primary {
+            background: #0e639c;
+            border-color: #1177bb;
+        }
+
+        button.danger {
+            background: #7f1d1d;
+        }
+
+        .workspace {
+            display: flex;
+            height: calc(100vh - 74px);
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-width: 180px;
+            background: #252526;
+            border-right: 1px solid #3f3f46;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 10px;
+            border-bottom: 1px solid #3f3f46;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resize-handle {
+            width: 4px;
+            cursor: col-resize;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .resize-handle:hover {
+            background: #0e639c;
+        }
+
+        .tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .tree-item {
+            user-select: none;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 3px;
+        }
+
+        .tree-item:hover {
+            background: #2a2d2e;
+        }
+
+        .tree-item.selected {
+            background: #094771;
+        }
+
+        .tree-item.folder {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tree-item.folder .toggle {
+            display: inline-block;
+            width: 12px;
+            font-size: 11px;
+            color: #bbb;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tree-item.folder .label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .children {
+            margin-left: 12px;
+        }
+
+        .children.collapsed {
+            display: none;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+        }
+
+        .filebar {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            background: #1f1f1f;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        #unsavedIndicator {
+            color: #e2c08d;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        #editor {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+        }
+
+        .statusbar {
+            height: 26px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: #007acc;
+            color: white;
+            font-size: 12px;
+        }
+
+        .status-message {
+            flex: 1;
+        }
+
+        /* ---------------------------------------------------
+           AGENT / PIPELINE SIDEBAR
+           --------------------------------------------------- */
+
+        .agent-sidebar {
+            width: 300px;
+            min-width: 240px;
+            background: #1f1f1f;
+            border-left: 1px solid #3f3f46;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .agent-sidebar.hidden {
+            display: none;
+        }
+
+        .agent-section {
+            padding: 10px;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        .agent-section-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .agent-sidebar textarea {
+            width: 100%;
+            background: #2a2d2e;
+            color: #fff;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            padding: 6px;
+            font-family: inherit;
+            font-size: 12px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .agent-sidebar button {
+            margin: 4px 2px;
+            font-size: 12px;
+        }
+
+        .agent-list {
+            max-height: 190px;
+            overflow-y: auto;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        .agent-option {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 2px 0;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .queue-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        .queue-item {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            font-size: 12px;
+            padding: 2px 0;
+        }
+
+        .queue-item .qidx {
+            color: #70b7ed;
+            min-width: 18px;
+        }
+
+        .queue-item button {
+            margin: 0;
+            padding: 0 6px;
+            font-size: 11px;
+        }
+
+        .result-box {
+            background: #181b24;
+            border: 1px solid #292d38;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .step-card-ok {
+            color: #72b784;
+            font-weight: bold;
+        }
+
+        .result-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #dfe2e8;
+            margin-top: 4px;
+        }
+    </style>
+
+    <!-- Monaco Loader CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="title">Project Manager Editor</div>
+    <button id="homeBtn" onclick="goHome()">🏠 Home</button>
+    <button id="saveBtn" class="primary" onclick="saveFile()">Save</button>
+    <button id="newFileBtn" onclick="newFile()">+ File</button>
+    <button id="newFolderBtn" onclick="newFolder()">+ Folder</button>
+    <button id="renameBtn" onclick="renameSelected()">Rename</button>
+    <button id="deleteBtn" class="danger" onclick="deleteSelected()">Delete</button>
+    <button id="agentCreateBtn" title="Scaffold workspace/agents/<name>/agent.json + agent.md">+ Agent</button>
+    <button id="runAgentBtn" title="Run the currently open agent definition">Run Agent</button>
+    <button id="pipelineBtn" title="Toggle the pipeline panel">Pipeline</button>
+    <button id="refreshBtn" onclick="refreshTree()">Refresh</button>
+</div>
+
+<div class="workspace">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>PROJECT FILES</span>
+        </div>
+        <div id="tree" class="tree">Loading...</div>
+    </div>
+    
+    <div class="resize-handle" id="resizeHandle"></div>
+
+    <div class="editor-area">
+        <div class="filebar">
+            <div>
+                <span id="currentFile">No file selected</span>
+                <span id="unsavedIndicator"></span>
+            </div>
+            <div id="language">plaintext</div>
+        </div>
+        <div id="editor"></div>
+    </div>
+
+    <div id="agentPanel" class="agent-sidebar">
+        <div class="agent-section">
+            <div class="agent-section-title">RUN AGENT</div>
+            <div id="runAgentHint" style="font-size:12px;color:#8991a2;margin-bottom:6px;">
+                Open an agents/&lt;id&gt;/agent.json or agent.md to run it.
+            </div>
+            <textarea id="agentPrompt" rows="3" placeholder="Instruction for the agent…"></textarea>
+            <button id="runAgentBtnRun" class="primary">Run Agent</button>
+            <div id="agentResult"></div>
+        </div>
+
+        <div class="agent-section">
+            <div class="agent-section-title">PIPELINE · CASCADE</div>
+            <div style="font-size:12px;color:#8991a2;margin-bottom:6px;">
+                Tick multiple agents, order them, send one message - each agent
+                passes its reply to the next.
+            </div>
+            <div id="pipelineAgents" class="agent-list">Loading agents…</div>
+            <div id="pipelineQueue" class="queue-list">Queue empty.</div>
+            <button id="pipelineClearBtn">Clear queue</button>
+            <select id="modelBox" title="Model override" style="width:100%;margin:4px 0;background:#2a2d2e;color:#fff;border:1px solid #3f3f46;border-radius:4px;padding:4px;"></select>
+            <textarea id="pipelinePrompt" rows="3" placeholder="Idea / message to cascade through the queue…"></textarea>
+            <button id="pipelineRunBtn" class="primary">Run Pipeline</button>
+            <div id="pipelineResult"></div>
+        </div>
+    </div>
+</div>
+
+<div class="statusbar">
+    <div id="statusMessage" class="status-message">Initializing...</div>
+</div>
+
+<script type="module" src="/static/js/main.js"></script>
+
+</body>
+</html>

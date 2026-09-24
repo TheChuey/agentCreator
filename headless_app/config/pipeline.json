@@ -1,0 +1,9 @@
+{
+  "name": "module-generation",
+  "description": "One idea -> a working drop-in custom module. Step 1 drafts the feature plan, Step 2 turns it into a blueprint grounded on the skills reference, Step 3 writes the .py module file.",
+  "steps": [
+    "feature_planner_agent",
+    "execute_engineer_agent",
+    "module_builder_agent"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "feature_planner_agent",
+  "name": "Feature Planner Agent",
+  "description": "Step 1: Translates raw feature ideas into a functional specification list (UI actions, endpoint contracts, storage needs) without writing code.",
+  "mode": "chat",
+  "model": "qwen2.5-coder:latest",
+  "tools": []
+}

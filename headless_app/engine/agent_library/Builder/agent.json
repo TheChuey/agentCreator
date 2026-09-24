@@ -1,0 +1,12 @@
+{
+  "id": "module_builder_agent",
+  "name": "Module Builder Agent",
+  "description": "Step 3: Confirms the target save location, then compiles Step 2 blueprints into complete 3-phase drop-in Python modules.",
+  "mode": "agent",
+  "model": "qwen2.5-coder:latest",
+  "tools": [
+    "map_files",
+    "read_file",
+    "write_text_file"
+  ]
+}

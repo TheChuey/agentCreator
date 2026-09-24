@@ -1,0 +1,35 @@
+{
+  "id": "rag_assistant",
+  "name": "RAG Assistant",
+  "description": "Stateful agent with workspace file-management access and memory retrieval.",
+  "mode": "agent",
+  "model": "gemma4:e2b",
+  "tools": [
+    "map_files",
+    "read_file",
+    "write_text_file",
+    "delete_files",
+    "get_current_date",
+    "search_chat_logs"
+  ],
+  "tests": [
+    {
+      "id": "custom-mtqa6k4j-s1wo",
+      "name": "Please help me consolidate my chat records in: E:\\data\\rag_s...",
+      "steps": [
+        "Please help me consolidate my chat records in: E:\\data\\rag_store\\chatlog\\agent-text-records",
+        "Follow these steps sequentially using your tools:",
+        "Run `map_files` on that directory to find all \".txt\" files.",
+        "Use `read_file` to open and extract the text from each discovered file.",
+        "Combine all the chat lines, remove any duplicate logs or repeat entries, and organize them into one chronological file.",
+        "Run `write_text_file` to save this clean consolidated log in that same directory as \"consolidated_chat_records.txt\".",
+        "Call `delete_files` with approved=False for all the original duplicate files you read, and ask me for my confirmation to permanently delete them."
+      ],
+      "expectedResult": {
+        "mode": "type",
+        "value": "nonEmpty"
+      },
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager Chat</title>
+
+    <style>
+        /* =========================================================
+           RESET / BASE
+           ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+            background: #0f1117;
+            color: #e6e8ee;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        button,
+        textarea {
+            font-family: inherit;
+        }
+
+
+        /* =========================================================
+           TOP BAR
+           ========================================================= */
+
+        .chatbar {
+            height: 58px;
+            min-height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 20px;
+
+            background: #151821;
+            border-bottom: 1px solid #292d38;
+        }
+
+        .chat-title-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 9px;
+
+            background: #252a38;
+            border: 1px solid #343949;
+
+            font-size: 17px;
+        }
+
+        .title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f3f7;
+        }
+
+        .subtitle {
+            margin-top: 2px;
+            font-size: 11px;
+            color: #7f8798;
+        }
+
+        .status-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #777;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #8991a2;
+        }
+
+
+        /* =========================================================
+           MAIN CHAT AREA
+           ========================================================= */
+
+        #chatLog {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 28px 22px 30px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+
+            background:
+                radial-gradient(
+                    circle at top center,
+                    rgba(58, 65, 85, 0.12),
+                    transparent 45%
+                ),
+                #0f1117;
+        }
+
+        /* Scrollbar */
+
+        #chatLog::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chatLog::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chatLog::-webkit-scrollbar-thumb {
+            background: #303543;
+            border-radius: 10px;
+        }
+
+        #chatLog::-webkit-scrollbar-thumb:hover {
+            background: #3b4150;
+        }
+
+
+        /* =========================================================
+           MESSAGE CARD
+           ========================================================= */
+
+        .msg {
+            width: min(850px, 90%);
+
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            padding: 13px 15px;
+
+            border-radius: 12px;
+
+            background: #181b24;
+            border: 1px solid #292d38;
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .msg-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #858d9e;
+        }
+
+        .msg-body {
+            word-break: break-word;
+            white-space: pre-wrap;
+
+            font-size: 14px;
+            line-height: 1.55;
+
+            color: #dfe2e8;
+        }
+
+        .msg-meta {
+            align-self: flex-end;
+
+            font-size: 10px;
+            color: #626a7a;
+        }
+
+
+        /* =========================================================
+           USER MESSAGE
+           ========================================================= */
+
+        .msg.user {
+            align-self: flex-end;
+
+            background: #1b2634;
+            border-color: #29445e;
+        }
+
+        .msg.user .msg-label {
+            color: #70b7ed;
+        }
+
+        .msg.user .msg-body {
+            color: #edf6ff;
+        }
+
+
+        /* =========================================================
+           EVENT MESSAGE
+           ========================================================= */
+
+        .msg.event {
+            width: min(750px, 85%);
+
+            background: #151e19;
+            border-color: #27402f;
+        }
+
+        .msg.event .msg-label {
+            color: #72b784;
+        }
+
+        .msg.event .msg-body {
+            color: #b9d8bf;
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           SYSTEM MESSAGE
+           ========================================================= */
+
+        .msg.system {
+            width: min(750px, 85%);
+
+            background: #14161c;
+            border-color: #292d35;
+        }
+
+        .msg.system .msg-label {
+            color: #777f90;
+        }
+
+        .msg.system .msg-body {
+            color: #9299a8;
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           EMPTY / LOADING MESSAGE
+           ========================================================= */
+
+        .msg.system:first-child {
+            opacity: 0.85;
+        }
+
+
+        /* =========================================================
+           INPUT AREA
+           ========================================================= */
+
+        .chatfoot {
+            padding: 14px 20px 18px;
+
+            background: #151821;
+            border-top: 1px solid #292d38;
+        }
+
+        .input-container {
+            width: min(900px, 100%);
+            margin: 0 auto;
+
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+
+            padding: 9px;
+
+            background: #1b1f29;
+            border: 1px solid #303543;
+            border-radius: 14px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .input-container:focus-within {
+            border-color: #3d6d96;
+
+            box-shadow:
+                0 0 0 3px rgba(61, 109, 150, 0.12);
+        }
+
+
+        /* =========================================================
+           AGENT / MODEL SELECTOR ROW
+           ========================================================= */
+
+        .select-row {
+            width: min(900px, 100%);
+            margin: 0 auto 8px;
+
+            display: flex;
+            gap: 8px;
+        }
+
+        .select-row select {
+            flex: 1;
+
+            padding: 6px 9px;
+
+            background: #1b1f29;
+            color: #dfe2e8;
+
+            border: 1px solid #303543;
+            border-radius: 9px;
+
+            font-size: 12px;
+            outline: none;
+        }
+
+        .select-row select:focus {
+            border-color: #3d6d96;
+        }
+
+
+        /* =========================================================
+           TEXT INPUT
+           ========================================================= */
+
+        #chatInput {
+            flex: 1;
+
+            min-height: 42px;
+            max-height: 160px;
+
+            padding: 10px 11px;
+
+            background: transparent;
+            color: #edf0f5;
+
+            border: none;
+            outline: none;
+
+            resize: none;
+
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        #chatInput::placeholder {
+            color: #697182;
+        }
+
+
+        /* =========================================================
+           SEND BUTTON
+           ========================================================= */
+
+        #chatSend {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border: 1px solid #3c4554;
+            border-radius: 10px;
+
+            background: #27303d;
+            color: #dce7f2;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                transform 0.1s ease;
+        }
+
+        #chatSend:hover {
+            background: #314052;
+            border-color: #4b5c70;
+        }
+
+        #chatSend:active {
+            transform: scale(0.96);
+        }
+
+        #chatSend:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================================================
+           INPUT FOOTER HINT
+           ========================================================= */
+
+        .input-hint {
+            width: min(900px, 100%);
+            margin: 7px auto 0;
+
+            text-align: center;
+
+            font-size: 10px;
+            color: #5f6675;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 700px) {
+
+            .chatbar {
+                padding: 0 14px;
+            }
+
+            .subtitle {
+                display: none;
+            }
+
+            #chatLog {
+                padding: 18px 12px 22px;
+            }
+
+            .msg {
+                width: 94%;
+            }
+
+            .chatfoot {
+                padding: 10px 10px 12px;
+            }
+
+            .input-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <header class="chatbar">
+
+        <div class="chat-title-area">
+
+            <div class="chat-icon">
+                💬
+            </div>
+
+            <div>
+                <div class="title">
+                    Project Chat
+                </div>
+
+                <div class="subtitle">
+                    Project Manager
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="status-area">
+
+            <span id="statusDot" class="status-dot"></span>
+
+            <span id="chatStatus" class="status">
+                Connecting…
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         CHAT MESSAGES
+         ========================================================= -->
+
+    <main id="chatLog">
+
+        <div class="msg system">
+
+            <span class="msg-label">
+                SYSTEM
+            </span>
+
+            <span class="msg-body">
+                Loading messages…
+            </span>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================================
+         CHAT INPUT
+         ========================================================= -->
+
+    <footer class="chatfoot">
+
+        <div class="select-row">
+
+            <select id="agentSelect" title="Agent to run"></select>
+
+            <select id="modelSelect" title="Model override (default: agent's own)"></select>
+
+        </div>
+
+        <form id="chatForm">
+
+            <div class="input-container">
+
+                <textarea
+                    id="chatInput"
+                    rows="1"
+                    placeholder="Message Project Manager…"
+                    autocomplete="off"
+                ></textarea>
+
+                <button
+                    id="chatSend"
+                    type="submit"
+                    aria-label="Send message"
+                    title="Send message"
+                >
+                    ↑
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="input-hint">
+            Press Enter to send · Shift + Enter for a new line
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================================
+         EXISTING CHAT JAVASCRIPT
+         ========================================================= -->
+
+    <script type="module" src="/static/js/chat.js"></script>
+
+
+    <!-- =========================================================
+         SMALL UI ENHANCEMENTS
+         These do not replace chat.js.
+         ========================================================= -->
+
+    <script>
+
+        /*
+         * Automatically grow the message box.
+         * This does not communicate with the backend.
+         */
+
+        const chatInput = document.getElementById("chatInput");
+
+        if (chatInput) {
+
+            chatInput.addEventListener("input", () => {
+
+                chatInput.style.height = "auto";
+
+                chatInput.style.height =
+                    Math.min(chatInput.scrollHeight, 160) + "px";
+
+            });
+
+
+            /*
+             * Enter = send
+             * Shift + Enter = new line
+             *
+             * The existing form submission handled by chat.js
+             * remains responsible for actually sending the message.
+             */
+
+            chatInput.addEventListener("keydown", (event) => {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    const form =
+                        document.getElementById("chatForm");
+
+                    if (form) {
+                        form.requestSubmit();
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /*
+         * Automatically keep the newest message visible.
+         *
+         * MutationObserver watches for messages added by chat.js.
+         */
+
+        const chatLog =
+            document.getElementById("chatLog");
+
+        if (chatLog) {
+
+            const observer =
+                new MutationObserver(() => {
+
+                    chatLog.scrollTop =
+                        chatLog.scrollHeight;
+
+                });
+
+            observer.observe(chatLog, {
+                childList: true,
+                subtree: true
+            });
+
+        }
+
+    </script>
+
+</body>
+</html>

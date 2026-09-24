@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .topbar {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            background: #252526;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        .title {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        #projectName {
+            color: #4fc3f7;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        button {
+            border: 1px solid #555;
+            background: #333;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        button.primary {
+            background: #0e639c;
+            border-color: #1177bb;
+        }
+
+        button.danger {
+            background: #7f1d1d;
+        }
+
+        .scope-toggle {
+            display: flex;
+            border: 1px solid #3f3f46;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 12px;
+        }
+
+        .scope-toggle button {
+            border: none;
+            border-radius: 0;
+            background: #252526;
+            padding: 6px 12px;
+        }
+
+        .scope-toggle button.active {
+            background: #0e639c;
+        }
+
+        .workspace {
+            display: flex;
+            height: calc(100vh - 74px);
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 280px;
+            min-width: 180px;
+            background: #252526;
+            border-right: 1px solid #3f3f46;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 10px;
+            border-bottom: 1px solid #3f3f46;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resize-handle {
+            width: 4px;
+            cursor: col-resize;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .resize-handle:hover {
+            background: #0e639c;
+        }
+
+        .tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        /* ---- Dev scripts quick links ---- */
+        .dev-links {
+            border-bottom: 1px solid #3f3f46;
+            padding: 8px;
+        }
+
+        .dev-links-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .dev-link {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #d1d5db;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .dev-link:hover {
+            background: #2a2d2e;
+            border-color: #3f3f46;
+        }
+
+        .tree-item {
+            user-select: none;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 3px;
+        }
+
+        .tree-item:hover {
+            background: #2a2d2e;
+        }
+
+        .tree-item.selected {
+            background: #094771;
+        }
+
+        .tree-item.folder {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tree-item.folder .toggle {
+            display: inline-block;
+            width: 12px;
+            font-size: 11px;
+            color: #bbb;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .tree-item.folder .label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .children {
+            margin-left: 12px;
+        }
+
+        .children.collapsed {
+            display: none;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+        }
+
+        .filebar {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            background: #1f1f1f;
+            border-bottom: 1px solid #3f3f46;
+        }
+
+        #unsavedIndicator {
+            color: #e2c08d;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        #editor {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+        }
+
+        .statusbar {
+            height: 26px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            background: #007acc;
+            color: white;
+            font-size: 12px;
+        }
+
+        .status-message {
+            flex: 1;
+        }
+    </style>
+
+    <!-- Monaco Loader CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="title">Project Manager</div>
+    <span id="projectName">…</span>
+
+    <div class="scope-toggle" role="group" aria-label="Scope">
+        <button id="scopeWs" type="button" class="active">Workspace</button>
+        <button id="scopeApp" type="button">Dev</button>
+    </div>
+
+    <button id="saveBtn" class="primary" type="button">Save</button>
+    <button id="newFileBtn" type="button">+ File</button>
+    <button id="newFolderBtn" type="button">+ Folder</button>
+    <button id="renameBtn" type="button">Rename</button>
+    <button id="deleteBtn" class="danger" type="button">Delete</button>
+    <button id="refreshBtn" type="button">Refresh</button>
+
+    <div class="spacer"></div>
+
+    <button id="chatBtn" class="primary" type="button">💬 Chat</button>
+    <button id="editorBtn" type="button">📝 Editor</button>
+    <a href="/" style="color:#fff; text-decoration:none; font-size:13px;">Home</a>
+</div>
+
+<div class="workspace">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>PROJECT FILES</span>
+        </div>
+
+        <div class="dev-links">
+            <div class="dev-links-head">
+                <span>Dev scripts</span>
+                <button id="devLinksToggle" type="button" style="padding:0 6px; font-size:12px;">−</button>
+            </div>
+            <div id="devLinks"></div>
+        </div>
+
+        <div id="tree" class="tree">Loading...</div>
+    </div>
+
+    <div class="resize-handle" id="resizeHandle"></div>
+
+    <div class="editor-area">
+        <div class="filebar">
+            <div>
+                <span id="currentFile">No file selected</span>
+                <span id="unsavedIndicator"></span>
+            </div>
+            <div id="language">plaintext</div>
+        </div>
+        <div id="editor"></div>
+    </div>
+</div>
+
+<div class="statusbar">
+    <div id="statusMessage" class="status-message">Initializing...</div>
+</div>
+
+<script type="module" src="/static/js/main.js"></script>
+
+</body>
+</html>
