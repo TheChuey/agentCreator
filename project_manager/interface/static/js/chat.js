@@ -13,6 +13,7 @@ const agentSelect = document.getElementById('agentSelect');
 const modelSelect = document.getElementById('modelSelect');
 const agentChip = document.getElementById('activeAgentChip');
 const agentName = document.getElementById('activeAgentName');
+const savedChatsList = document.getElementById('savedChatsList');
 
 /* Agent id requested by the home page card, e.g. /chat?agent=rag_assistant */
 const requestedAgent = new URLSearchParams(window.location.search).get('agent');
@@ -37,8 +38,38 @@ function appendLine(role, text, meta = '', labelText = null) {
     ts.textContent = meta;
     line.appendChild(ts);
   }
+  /* Every real message gets a copy button; the handler is the global
+     copyMsg() in chat.html, shared with the saved-session rows. */
+  const actions = document.createElement('span');
+  actions.className = 'msg-actions';
+  const copyBtn = document.createElement('button');
+  copyBtn.type = 'button';
+  copyBtn.className = 'btn-msg-action';
+  copyBtn.title = 'Copy this message';
+  copyBtn.innerHTML = '<i data-lucide="copy" style="width:13px;"></i> Copy';
+  copyBtn.addEventListener('click', () => copyText(body.textContent, 'Message copied to clipboard'));
+  actions.appendChild(copyBtn);
+  line.appendChild(actions);
   log.appendChild(line);
   log.scrollTop = log.scrollHeight;
+  if (window.lucide) window.lucide.createIcons();
+}
+
+/* Clipboard write with a textarea fallback, because the async
+   clipboard API is unavailable on http:// origins. */
+function copyText(text, message) {
+  const area = document.createElement('textarea');
+  area.value = text;
+  document.body.appendChild(area);
+  area.select();
+  try {
+    document.execCommand('copy');
+    showToast(message);
+  } catch (e) {
+    showToast('Copy failed - select the text manually');
+  } finally {
+    document.body.removeChild(area);
+  }
 }
 
 function appendTools(tools) {
@@ -147,8 +178,10 @@ async function populateSelectors() {
   agentSelect.addEventListener('change', async () => {
     localStorage.setItem('pmAgent', agentSelect.value);
     paintAgentChip();
-    /* Each agent has its own thread, so swap the transcript. */
+    /* Each agent has its own thread and its own saved sessions, so
+       swap both. */
     await loadHistory();
+    await renderSavedChats();
   });
 
   modelSelect.addEventListener('change', () => {
@@ -225,7 +258,10 @@ Session.onEvent = (msg) => {
    first paint would show the previous agent's thread. */
 initTopbar({ page: 'chat' });
 populateSelectors()
-  .then(loadHistory)
+  .then(() => {
+    loadHistory();
+    renderSavedChats();
+  })
   .catch((e) => setStatus('Failed to start: ' + e.message));
 Session.connect();
 
@@ -285,5 +321,215 @@ async function wipeChat() {
   }
 }
 
+/* ================================================================
+   SAVED CHAT SESSIONS
+   ================================================================
+   A session is a stored copy of one agent's thread, kept on the
+   server under workspace/data/chat_sessions/<agent_id>/. Each row
+   can be reopened, copied to the clipboard, downloaded to disk or
+   deleted. The live thread is never modified by any of this. */
+
+function sessionText(record) {
+  const lines = [
+    `# ${record.title || 'Chat session'}`,
+    '',
+    `Agent: ${record.agent_id}`,
+    `Saved: ${record.created || ''}`,
+    ''
+  ];
+  for (const entry of record.entries || []) {
+    const who = entry.sender === 'user' ? 'You' : (entry.agent || 'Agent');
+    const ts = entry.ts ? new Date(entry.ts).toLocaleString() : '';
+    lines.push(`## ${who}${ts ? ' - ' + ts : ''}`, '', entry.message || '', '');
+  }
+  return lines.join('\n');
+}
+
+function sessionStamp(created) {
+  if (!created) return '';
+  const when = new Date(created);
+  if (isNaN(when.getTime())) return created;
+  return when.toLocaleString();
+}
+
+function rowAction(icon, title, handler) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn-row-action';
+  btn.title = title;
+  btn.setAttribute('aria-label', title);
+  btn.innerHTML = `<i data-lucide="${icon}" style="width:13px;"></i>`;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handler();
+  });
+  return btn;
+}
+
+function sessionRow(session) {
+  const agentId = activeAgentId();
+  const item = document.createElement('div');
+  item.className = 'saved-chat-item';
+  item.title = 'Open this saved session';
+
+  const info = document.createElement('div');
+  info.className = 'saved-chat-info';
+  const title = document.createElement('div');
+  title.className = 'saved-chat-title';
+  title.textContent = session.title || session.id;
+  const meta = document.createElement('div');
+  meta.className = 'saved-chat-date';
+  const count = session.entry_count === 1 ? '1 message' : `${session.entry_count} messages`;
+  meta.textContent = `${count} · ${sessionStamp(session.created)}`;
+  info.appendChild(title);
+  info.appendChild(meta);
+
+  const actions = document.createElement('div');
+  actions.className = 'saved-chat-actions';
+
+  actions.appendChild(rowAction('message-square', 'Open in chat', () => {
+    openSavedSession(session.id, agentId);
+  }));
+
+  actions.appendChild(rowAction('copy', 'Copy transcript', () => {
+    copySavedSession(session.id, agentId);
+  }));
+
+  /* An anchor, not a button: the endpoint answers with a
+     Content-Disposition attachment, so a plain link hands the file
+     to the browser's own download handling and can also be
+     right-clicked into "Save as". */
+  const download = document.createElement('a');
+  download.className = 'btn-row-action';
+  download.href = API.chatSessionExportUrl(session.id, agentId, 'md');
+  download.download = '';
+  download.title = 'Download to disk (.md)';
+  download.setAttribute('aria-label', 'Download to disk');
+  download.innerHTML = '<i data-lucide="download" style="width:13px;"></i>';
+  download.addEventListener('click', (e) => e.stopPropagation());
+  actions.appendChild(download);
+
+  const jsonDownload = document.createElement('a');
+  jsonDownload.className = 'btn-row-action';
+  jsonDownload.href = API.chatSessionExportUrl(session.id, agentId, 'json');
+  jsonDownload.download = '';
+  jsonDownload.title = 'Download raw data (.json)';
+  jsonDownload.setAttribute('aria-label', 'Download raw data');
+  jsonDownload.innerHTML = '<i data-lucide="braces" style="width:13px;"></i>';
+  jsonDownload.addEventListener('click', (e) => e.stopPropagation());
+  actions.appendChild(jsonDownload);
+
+  actions.appendChild(rowAction('trash-2', 'Delete this saved session', () => {
+    deleteSavedSession(session, agentId);
+  }));
+
+  item.appendChild(info);
+  item.appendChild(actions);
+  item.addEventListener('click', () => openSavedSession(session.id, agentId));
+  return item;
+}
+
+function emptySessionRow(text) {
+  const item = document.createElement('div');
+  item.className = 'saved-chat-empty';
+  item.textContent = text;
+  return item;
+}
+
+async function renderSavedChats() {
+  if (!savedChatsList) return;
+  const agentId = activeAgentId();
+  savedChatsList.innerHTML = '';
+  if (!agentId) {
+    savedChatsList.appendChild(emptySessionRow('Select an agent to see its saved sessions.'));
+    return;
+  }
+  try {
+    const data = await API.chatSessions(agentId);
+    const sessions = data.sessions || [];
+    if (!sessions.length) {
+      savedChatsList.appendChild(
+        emptySessionRow(`No saved sessions for ${agentLabel(agentId)} yet. Use Save Session to keep a copy of this thread.`)
+      );
+      return;
+    }
+    for (const session of sessions) {
+      savedChatsList.appendChild(sessionRow(session));
+    }
+    if (window.lucide) window.lucide.createIcons();
+  } catch (e) {
+    savedChatsList.appendChild(emptySessionRow('Could not load saved sessions: ' + e.message));
+  }
+}
+
+async function saveCurrentChat() {
+  const agentId = activeAgentId();
+  if (!agentId) {
+    showToast('Select an agent first');
+    return;
+  }
+  const suggested = (log.textContent || '').trim().split('\n').pop();
+  const title = prompt(
+    `Save the current ${agentLabel(agentId)} thread as a named session:`,
+    suggested ? suggested.slice(0, 60) : ''
+  );
+  if (title === null) return;
+  try {
+    const res = await API.chatSessionSave(agentId, title.trim() || null);
+    await renderSavedChats();
+    const saved = res.session || {};
+    showToast(`Saved "${saved.title || saved.id}" (${saved.entry_count || 0} messages)`);
+  } catch (e) {
+    alert('Failed to save the session: ' + e.message);
+  }
+}
+
+function showSession(record) {
+  log.innerHTML = '';
+  const entries = record.entries || [];
+  if (!entries.length) {
+    appendLine('system', 'This saved session has no messages.');
+    return;
+  }
+  for (const entry of entries) {
+    const ts = entry.ts ? new Date(entry.ts).toLocaleTimeString() : '';
+    const who = entry.agent ? agentLabel(entry.agent) : null;
+    appendLine(entry.sender === 'user' ? 'user' : 'system', entry.message, ts, who);
+  }
+  setStatus(`Loaded saved session: ${record.title || record.id}`);
+}
+
+async function openSavedSession(sessionId, agentId) {
+  try {
+    const record = await API.chatSession(sessionId, agentId);
+    showSession(record);
+    showToast(`Loaded "${record.title || sessionId}"`);
+  } catch (e) {
+    alert('Failed to open the session: ' + e.message);
+  }
+}
+
+async function copySavedSession(sessionId, agentId) {
+  try {
+    const record = await API.chatSession(sessionId, agentId);
+    copyText(sessionText(record), 'Session copied to clipboard');
+  } catch (e) {
+    alert('Failed to copy the session: ' + e.message);
+  }
+}
+
+async function deleteSavedSession(session, agentId) {
+  const label = session.title || session.id;
+  if (!confirm(`Delete the saved session "${label}"? The live chat history is not affected.`)) return;
+  try {
+    await API.chatSessionDelete(session.id, agentId);
+    await renderSavedChats();
+    showToast('Saved session deleted');
+  } catch (e) {
+    alert('Failed to delete the session: ' + e.message);
+  }
+}
+
 window.scaffoldNewAgent = scaffoldNewAgent;
 window.wipeChat = wipeChat;
+window.saveCurrentChat = saveCurrentChat;

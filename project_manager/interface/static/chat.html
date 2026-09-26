@@ -394,24 +394,8 @@
             align-items: flex-end;
         }
 
-        .msg.user .msg-content-card {
-            background: var(--user-msg-bg);
-            border: 1px solid #334155;
-            border-radius: 18px 18px 4px 18px;
-            padding: 12px 18px;
-            max-width: 80%;
-        }
-
         .msg.ai, .msg.system {
             align-items: flex-start;
-        }
-
-        .msg.ai .msg-content-card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            width: 100%;
         }
 
         .msg-label {
@@ -641,12 +625,51 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             cursor: pointer;
             transition: background 0.15s;
         }
 
         .saved-chat-item:hover {
             background: var(--bg-card-hover);
+        }
+
+        .saved-chat-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .btn-row-action {
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            width: 26px;
+            height: 26px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .btn-row-action:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .saved-chat-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            padding: 10px 12px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-subtle);
+            border-radius: var(--radius-md);
         }
 
         .saved-chat-info {
@@ -882,20 +905,12 @@
                 <div class="saved-chats-section">
                     <div class="section-label">
                         <span>Saved Chats</span>
-                        <button class="btn-save-current" onclick="saveCurrentChat()">
+                        <button class="btn-save-current" onclick="saveCurrentChat()" title="Save the current thread as a named session">
                             <i data-lucide="bookmark" style="width:12px;"></i> Save Session
                         </button>
                     </div>
 
-                    <div class="saved-chats-list" id="savedChatsList">
-                        <div class="saved-chat-item" onclick="loadSavedChat('Agent Blueprint Draft')">
-                            <div class="saved-chat-info">
-                                <div class="saved-chat-title">Agent Blueprint Draft</div>
-                                <div class="saved-chat-date">Saved 2 hours ago</div>
-                            </div>
-                            <i data-lucide="chevron-right" style="width:14px; color:var(--text-muted);"></i>
-                        </div>
-                    </div>
+                    <div class="saved-chats-list" id="savedChatsList"></div>
                 </div>
 
             </div>
@@ -965,26 +980,10 @@
             showToast('Note removed');
         }
 
-        // Copy Message Content to Clipboard
-        function copyMsg(btn) {
-            const bodyText = btn.closest('.msg-content-card').querySelector('.msg-body').innerText;
-            
-            // execCommand copy implementation for frame safety
-            const tempArea = document.createElement('textarea');
-            tempArea.value = bodyText;
-            document.body.appendChild(tempArea);
-            tempArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempArea);
-
-            showToast('Copied to clipboard!');
-        }
+        // Copying lives in chat.js (copyText), which owns the transcript
+        // and the saved-session rows.
 
         // Placeholder Action Handlers
-        function msgAction(actionName) {
-            showToast(`${actionName} action saved`);
-        }
-
         function runTestFunc(funcName) {
             showToast(`Triggered: ${funcName}`);
         }
@@ -997,34 +996,9 @@
             }
         }
 
-        // Save & Load Chat Functions
-        function saveCurrentChat() {
-            const savedList = document.getElementById('savedChatsList');
-            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const item = document.createElement('div');
-            item.className = 'saved-chat-item';
-            item.onclick = () => loadSavedChat(`Saved Session (${now})`);
-            item.innerHTML = `
-                <div class="saved-chat-info">
-                    <div class="saved-chat-title">Saved Session (${now})</div>
-                    <div class="saved-chat-date">Just now</div>
-                </div>
-                <i data-lucide="chevron-right" style="width:14px; color:var(--text-muted);"></i>
-            `;
-            savedList.prepend(item);
-            lucide.createIcons();
-            showToast('Current chat session saved!');
-        }
-
-        function loadSavedChat(title) {
-            showToast(`Loaded: ${title}`);
-        }
-
         // Textarea Auto-growth and Keyboard handling
         const chatInput = document.getElementById("chatInput");
         const chatForm = document.getElementById("chatForm");
-        const chatLog = document.getElementById("chatLog");
 
         if (chatInput) {
             chatInput.addEventListener("input", () => {
@@ -1043,57 +1017,11 @@
         }
 
         // Form Submit Handler
-        if (chatForm) {
-            chatForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const text = chatInput.value.trim();
-                if (!text) return;
-
-                appendMessage("user", text);
-                chatInput.value = "";
-                chatInput.style.height = "auto";
-
-                // Simulated AI response (if external backend module isn't active)
-                setTimeout(() => {
-                    appendMessage("ai", `Received agent instructions:\n"${text}"\nReady for function testing.`);
-                }, 700);
-            });
-        }
-
-        function appendMessage(role, text) {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `msg ${role}`;
-
-            if (role === "user") {
-                msgDiv.innerHTML = `
-                    <div class="msg-content-card">
-                        <div class="msg-body">${escapeHtml(text)}</div>
-                    </div>
-                `;
-            } else {
-                msgDiv.innerHTML = `
-                    <div class="msg-content-card">
-                        <span class="msg-label">AI AGENT CREATOR</span>
-                        <div class="msg-body">${escapeHtml(text)}</div>
-                        <div class="msg-actions">
-                            <button class="btn-msg-action" onclick="copyMsg(this)">
-                                <i data-lucide="copy" style="width:13px;"></i> Copy
-                            </button>
-                            <button class="btn-msg-action" onclick="msgAction('Save')">
-                                <i data-lucide="bookmark" style="width:13px;"></i> Save
-                            </button>
-                            <button class="btn-msg-action" onclick="msgAction('Fork')">
-                                <i data-lucide="git-fork" style="width:13px;"></i> Fork
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-
-            chatLog.appendChild(msgDiv);
-            chatLog.scrollTop = chatLog.scrollHeight;
-            lucide.createIcons();
-        }
+        /* Sending lives entirely in chat.js, which owns the real
+           /api/chat round trip and the transcript. Nothing is bound
+           here: a second listener would echo the message locally and
+           answer with a simulated reply. Enter is handled above by
+           dispatching the same submit event. */
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

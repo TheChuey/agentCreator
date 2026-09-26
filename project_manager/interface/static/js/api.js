@@ -97,6 +97,38 @@ const API = {
     return this.request('DELETE', `/api/chat${query}`);
   },
 
+  /* ---- Saved chat sessions ----
+     A session is a stored copy of one agent's thread. Sessions are
+     per agent, so the agent is sent with every call. */
+
+  chatSessions(agent = null) {
+    const query = agent ? `?agent=${encodeURIComponent(agent)}` : '';
+    return this.request('GET', `/api/chat/sessions${query}`);
+  },
+
+  chatSessionSave(agent, title = null) {
+    return this.request('POST', '/api/chat/sessions', { agent_id: agent, title });
+  },
+
+  chatSession(id, agent = null) {
+    const query = agent ? `?agent=${encodeURIComponent(agent)}` : '';
+    return this.request('GET', `/api/chat/sessions/${encodeURIComponent(id)}${query}`);
+  },
+
+  chatSessionDelete(id, agent = null) {
+    const query = agent ? `?agent=${encodeURIComponent(agent)}` : '';
+    return this.request('DELETE', `/api/chat/sessions/${encodeURIComponent(id)}${query}`);
+  },
+
+  /* Built as a URL rather than fetched: the endpoint answers with a
+     Content-Disposition attachment, and a plain link hands the file
+     to the browser's download handling (i.e. the user's disk). */
+  chatSessionExportUrl(id, agent = null, format = 'md') {
+    const params = new URLSearchParams({ format });
+    if (agent) params.set('agent', agent);
+    return `/api/chat/sessions/${encodeURIComponent(id)}/export?${params.toString()}`;
+  },
+
   sessions() {
     return this.request('GET', '/api/sessions');
   },
