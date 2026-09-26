@@ -54,8 +54,8 @@
         }
 
         .app-header {
-            height: 52px;
-            min-height: 52px;
+            height: 54px;
+            min-height: 54px;
             background: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -88,18 +88,12 @@
             font-weight: 700;
             letter-spacing: -0.01em;
             color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 8px;
-            /* Keep these buttons hugging the nav at the far right
-               instead of drifting into the middle of the header. */
-            margin-left: auto;
         }
 
         .btn-header {
@@ -302,39 +296,11 @@
             font-size: 12px;
         }
 
-    .agent-controls {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-
-    /* Active agent chip: colored to match that agent's home card */
-    .agent-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--agent-color, #4fc3f7);
-        border: 1px solid var(--agent-color, #4fc3f7);
-        background: color-mix(in srgb, var(--agent-color, #4fc3f7) 16%, transparent);
-        white-space: nowrap;
-    }
-
-    .agent-chip[hidden] {
-        display: none;
-    }
-
-    .agent-chip-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--agent-color, #4fc3f7);
-        box-shadow: 0 0 6px var(--agent-color, #4fc3f7);
-    }
-
+        .agent-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
         .agent-controls select {
             background: var(--bg-card);
@@ -727,7 +693,7 @@
 </head>
 <body>
 
-    <header class="app-header" data-pm-header>
+    <header class="app-header">
         <div class="header-left">
             <button class="btn-header btn-icon-only" id="toggleSources" title="Toggle Sources & Notes">
                 <i data-lucide="panel-left"></i>
@@ -793,10 +759,6 @@
             <div class="chat-top-status">
                 <div class="agent-controls">
                     <span>Active Agent:</span>
-                    <span id="activeAgentChip" class="agent-chip" hidden>
-                        <span class="agent-chip-dot"></span>
-                        <span id="activeAgentName">agent</span>
-                    </span>
                     <select id="agentSelect" title="Agent selection">
                         <option value="builder">Agent Builder v1</option>
                         <option value="code_executor">Code Executor</option>
@@ -812,8 +774,15 @@
                 </div>
             </div>
 
-            <!-- Main Chat Conversation Feed (populated by chat.js) -->
-            <div id="chatLog"></div>
+            <!-- Main Chat Conversation Feed -->
+            <div id="chatLog">
+                <div class="msg system">
+                    <div class="msg-content-card">
+                        <span class="msg-label">SYSTEM</span>
+                        <div class="msg-body">AI Agent Creator initialized. Type a message or click 'Send to Chat' on any note in your left sidebar.</div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Chat Footer & Input Box -->
             <footer class="chat-foot">
@@ -871,10 +840,6 @@
                     <div class="test-func-card" onclick="runTestFunc('View API Logs')">
                         <i data-lucide="file-code"></i>
                         <span>API Logs</span>
-                    </div>
-                    <div class="test-func-card" onclick="wipeChat()" title="Clear the chat history">
-                        <i data-lucide="trash-2"></i>
-                        <span>Wipe Chat</span>
                     </div>
                 </div>
 
@@ -990,11 +955,7 @@
         }
 
         function createNewAgent() {
-            if (typeof scaffoldNewAgent === 'function') {
-                scaffoldNewAgent();
-            } else {
-                showToast('Agent creator not ready yet');
-            }
+            showToast('Started new agent project session');
         }
 
         // Save & Load Chat Functions

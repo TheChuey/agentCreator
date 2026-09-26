@@ -2,7 +2,15 @@
 let editor = null;
 
 const Editor = {
+  /* The home page has no editor host; it is editor.html's job. */
+  hasHost() {
+    return !!document.getElementById('editor');
+  },
+
   init() {
+    if (!this.hasHost()) {
+      return Promise.resolve(null);
+    }
     return new Promise((resolve, reject) => {
       if (typeof require === 'undefined') {
         reject(new Error('Monaco loader not found'));
@@ -48,6 +56,15 @@ const Editor = {
   setLanguage(lang) {
     if (editor && monaco && editor.getModel()) {
       monaco.editor.setModelLanguage(editor.getModel(), lang);
+    }
+  },
+
+  setReadOnly(flag) {
+    if (editor) {
+      editor.updateOptions({
+        readOnly: !!flag,
+        domReadOnly: !!flag
+      });
     }
   },
 

@@ -1,39 +1,63 @@
 /* Project tree rendering module */
 import API from './api.js';
 
-/* Curated "important app scripts" shown as quick links in Dev view. */
-const DEV_LINKS = [
-  { name: 'server.py', icon: '🐍', path: 'server.py' },
-  { name: 'README.md', icon: '📝', path: 'README.md' },
-  { name: 'requirements.txt', icon: '📄', path: 'requirements.txt' },
-  { name: 'parameters/filesystem.py', icon: '⚙️', path: 'parameters/filesystem.py' },
-  { name: 'interface/core/operations.py', icon: '🧩', path: 'interface/core/operations.py' },
-  { name: 'interface/core/defaults.py', icon: '🧩', path: 'interface/core/defaults.py' },
-  { name: 'interface/routers/files.py', icon: '🌐', path: 'interface/routers/files.py' },
-  { name: 'interface/routers/chat.py', icon: '🌐', path: 'interface/routers/chat.py' },
-  { name: 'interface/clients/editor_client.py', icon: '🔗', path: 'interface/clients/editor_client.py' },
-  { name: 'scripts/run.sh', icon: '⌨️', path: 'scripts/run.sh' },
-  { name: 'scripts/run.bat', icon: '⌨️', path: 'scripts/run.bat' }
-];
-
 const Tree = {
   root: [],
+  roots: {},
+  activeRoot: null,
   selectedPath: null,
-  scope: 'workspace',
   expanded: new Set(),
   onFileSelect: null,
   onFolderSelect: null,
-  onDevLink: null,
+  onRootSelect: null,
 
-  async load(scope = 'workspace') {
-    this.scope = scope;
-    const data = await API.project(scope);
+  /* The top level of the tree is the set of browser roots, so the
+     tree doubles as the folder switcher. Clicking a root folder
+     makes it the folder that file operations act on. */
+
+  rootOf(path) {
+    if (!path) return null;
+    const head = String(path).split('/')[0];
+    return head in this.roots ? head : null;
+  },
+
+  isWritable() {
+    if (this.activeRoot === null) return true;
+    return this.roots[this.activeRoot] !== false;
+  },
+
+  nodeFor(path, items = this.root) {
+    for (const item of items || []) {
+      if (item.path === path) return item;
+      if (item.children) {
+        const hit = this.nodeFor(path, item.children);
+        if (hit) return hit;
+      }
+    }
+    return null;
+  },
+
+  async load() {
+    const data = await API.project();
     this.root = data.filesystem || [];
+    this.roots = {};
+    for (const node of this.root) {
+      this.roots[node.name] = node.writable !== false;
+    }
+    if (!(this.activeRoot in this.roots)) {
+      const firstWritable = this.root.find(n => n.writable !== false);
+      this.activeRoot = firstWritable ? firstWritable.name : (this.root[0]?.name ?? null);
+    }
+    /* Show every root folder expanded so the available folders are
+       visible without having to click each one open. */
+    for (const node of this.root) {
+      this.expanded.add(this.key(node.path));
+    }
     this.render();
   },
 
   key(path) {
-    return this.scope + ':' + path;
+    return path;
   },
 
   render(containerId = 'tree') {
@@ -43,13 +67,23 @@ const Tree = {
     this.renderItems(this.root, container);
   },
 
-  renderItems(items, container) {
+  renderItems(items, container, depth = 0) {
     for (const item of items) {
       const row = document.createElement('div');
       row.className = 'tree-item';
       if (item.type === 'directory') {
         row.classList.add('folder');
         row.dataset.path = item.path;
+        const isRoot = depth === 0 && item.root;
+        if (isRoot) {
+          row.classList.add('root');
+          if (item.name === this.activeRoot) {
+            row.classList.add('active');
+          }
+          if (item.writable === false) {
+            row.classList.add('readonly');
+          }
+        }
         if (this.selectedPath === item.path) {
           row.classList.add('selected');
         }
@@ -59,27 +93,50 @@ const Tree = {
         toggle.textContent = isExpanded ? '−' : '+';
         const label = document.createElement('span');
         label.className = 'label';
-        label.textContent = '📁 ' + item.name;
+        label.textContent = (isRoot ? '🗂 ' : '📁 ') + item.name;
         row.appendChild(toggle);
         row.appendChild(label);
+        if (isRoot && item.writable === false) {
+          const lock = document.createElement('span');
+          lock.className = 'root-lock';
+          lock.textContent = '🔒';
+          lock.title = 'Read-only';
+          row.appendChild(lock);
+        }
         const children = document.createElement('div');
         children.className = 'children' + (isExpanded ? '' : ' collapsed');
         row.onclick = () => {
           this.selectedPath = item.path;
+          if (isRoot) {
+            const changed = this.activeRoot !== item.name;
+            this.activeRoot = item.name;
+            if (changed && this.onRootSelect) this.onRootSelect(item.name);
+          }
           if (this.onFolderSelect) this.onFolderSelect(item.path);
           this.render();
           this.toggle(item.path);
         };
         container.appendChild(row);
         container.appendChild(children);
-        this.renderItems(item.children || [], children);
+        this.renderItems(item.children || [], children, depth + 1);
       } else {
         row.textContent = this.getFileIcon(item.name) + ' ' + item.name;
+        if (item.editable === false) {
+          row.classList.add('readonly');
+          row.title = item.size > 0
+            ? 'Read-only: not an editable text file, or too large'
+            : 'Read-only';
+        }
         if (this.selectedPath === item.path) {
           row.classList.add('selected');
         }
         row.onclick = () => {
           this.selectedPath = item.path;
+          const rootName = this.rootOf(item.path);
+          if (rootName && rootName !== this.activeRoot) {
+            this.activeRoot = rootName;
+            if (this.onRootSelect) this.onRootSelect(rootName);
+          }
           if (this.onFileSelect) this.onFileSelect(item.path);
           this.render();
         };
@@ -122,24 +179,7 @@ const Tree = {
   },
 
   refresh() {
-    return this.load(this.scope);
-  },
-
-  renderDevLinks(containerId = 'devLinks') {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    for (const link of DEV_LINKS) {
-      const row = document.createElement('button');
-      row.className = 'dev-link';
-      row.type = 'button';
-      row.textContent = link.icon + ' ' + link.name;
-      row.title = link.path;
-      row.onclick = () => {
-        if (this.onDevLink) this.onDevLink(link);
-      };
-      container.appendChild(row);
-    }
+    return this.load();
   },
 
   getFileIcon(name) {

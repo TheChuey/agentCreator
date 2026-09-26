@@ -22,7 +22,7 @@
         }
 
         .topbar {
-            height: 48px;
+            height: 52px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -34,6 +34,17 @@
         .title {
             font-weight: bold;
             margin-right: 12px;
+        }
+
+        /* Home for this page's own tools; the nav keeps the far right. */
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spacer {
+            flex: 1;
         }
 
         button {
@@ -60,7 +71,7 @@
 
         .workspace {
             display: flex;
-            height: calc(100vh - 74px);
+            height: calc(100vh - 78px);
             width: 100%;
         }
 
@@ -133,6 +144,40 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* ---- Browser root folders ---- */
+        .tree-item.root {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .tree-item.root.active {
+            color: #e5e7eb;
+        }
+
+        .tree-item.root.readonly .label {
+            color: #6b7280;
+        }
+
+        .root-lock {
+            margin-left: auto;
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .tree-item.readonly {
+            opacity: 0.6;
+        }
+
+        #readOnlyIndicator {
+            color: #d97706;
+            font-size: 11px;
+            margin-left: 8px;
         }
 
         .children {
@@ -312,24 +357,28 @@
 </head>
 <body>
 
-<div class="topbar">
-    <div class="title">Project Manager Editor</div>
-    <button id="homeBtn" onclick="goHome()">🏠 Home</button>
-    <button id="saveBtn" class="primary" onclick="saveFile()">Save</button>
-    <button id="newFileBtn" onclick="newFile()">+ File</button>
-    <button id="newFolderBtn" onclick="newFolder()">+ Folder</button>
-    <button id="renameBtn" onclick="renameSelected()">Rename</button>
-    <button id="deleteBtn" class="danger" onclick="deleteSelected()">Delete</button>
-    <button id="agentCreateBtn" title="Scaffold workspace/agents/<name>/agent.json + agent.md">+ Agent</button>
-    <button id="runAgentBtn" title="Run the currently open agent definition">Run Agent</button>
-    <button id="pipelineBtn" title="Toggle the pipeline panel">Pipeline</button>
-    <button id="refreshBtn" onclick="refreshTree()">Refresh</button>
+<div class="topbar" data-pm-header>
+    <div class="title">Project Manager</div>
+
+    <div class="topbar-actions" id="pageActions">
+        <button id="saveBtn" class="primary" type="button">Save</button>
+        <button id="newFileBtn" type="button">+ File</button>
+        <button id="newFolderBtn" type="button">+ Folder</button>
+        <button id="renameBtn" type="button">Rename</button>
+        <button id="deleteBtn" class="danger" type="button">Delete</button>
+        <button id="refreshBtn" type="button">Refresh</button>
+        <button id="agentCreateBtn" title="Scaffold workspace/agents/&lt;name&gt;/agent.json + agent.md">+ Agent</button>
+        <button id="runAgentBtn" title="Run the currently open agent definition">Run Agent</button>
+        <button id="pipelineBtn" title="Toggle the pipeline panel">Pipeline</button>
+    </div>
+
+    <div class="spacer"></div>
 </div>
 
 <div class="workspace">
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span>PROJECT FILES</span>
+            <span>FOLDERS</span>
         </div>
         <div id="tree" class="tree">Loading...</div>
     </div>
@@ -341,6 +390,7 @@
             <div>
                 <span id="currentFile">No file selected</span>
                 <span id="unsavedIndicator"></span>
+            <span id="readOnlyIndicator"></span>
             </div>
             <div id="language">plaintext</div>
         </div>

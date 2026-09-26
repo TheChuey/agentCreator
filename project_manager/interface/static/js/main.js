@@ -4,12 +4,36 @@ import Session from './session.js';
 import Tree from './tree.js';
 import Editor from './editor.js';
 import { initAgentsPanel, updateRunTarget } from './agents.js';
+import { initAgentCards, openChatWithAgent } from './agentCards.js';
+import { initTopbar } from './topbar.js';
 
 let currentFile = null;
 let currentLanguage = 'plaintext';
 let isDirty = false;
 let currentIsFolder = false;
-let scope = 'workspace';
+let currentIsReadOnly = false;
+
+/* main.js is shared by home.html and editor.html. Only editor.html
+   carries a #editor host, so every editor call is guarded. */
+const hasEditor = () => Editor.hasHost();
+
+/* Paths are browser-root-qualified (workspace/..., source_files/...),
+   so no scope needs to be tracked or sent. The active folder is the
+   root folder selected in the tree. */
+
+function isPathReadOnly(path) {
+  const rootName = Tree.rootOf(path);
+  if (rootName && Tree.roots[rootName] === false) return true;
+  const node = Tree.nodeFor(path);
+  if (node && node.editable === false) return true;
+  return false;
+}
+
+function applyReadOnly() {
+  if (hasEditor()) Editor.setReadOnly(currentIsReadOnly);
+  const el = document.getElementById('readOnlyIndicator');
+  if (el) el.textContent = currentIsReadOnly ? '🔒 READ-ONLY' : '';
+}
 
 function getLanguage(filePath) {
   if (!filePath) return 'plaintext';
@@ -50,6 +74,7 @@ function updateFileDisplay() {
   if (lang) lang.textContent = currentLanguage;
   const dirty = document.getElementById('unsavedIndicator');
   if (dirty) dirty.textContent = isDirty ? '● UNSAVED' : '';
+  applyReadOnly();
 }
 
 async function openFile(filePath) {
@@ -57,19 +82,32 @@ async function openFile(filePath) {
     const proceed = confirm('You have unsaved changes. Open another file?');
     if (!proceed) return;
   }
+  /* Home has no editor, so opening a file means handing it to
+     editor.html rather than rendering it here. */
+  if (!hasEditor()) {
+    const root = Tree.rootOf(filePath) || Tree.activeRoot;
+    window.location.href =
+      `/editor?path=${encodeURIComponent(filePath)}&root=${encodeURIComponent(root)}`;
+    return;
+  }
   setStatus('Opening ' + filePath + '...');
   try {
-    const data = await API.fileRead(filePath, scope);
+    const data = await API.fileRead(filePath);
     currentFile = filePath;
     currentIsFolder = false;
+    currentIsReadOnly = isPathReadOnly(filePath);
     currentLanguage = getLanguage(filePath);
-    Editor.setValue(data.content || '');
-    Editor.setLanguage(currentLanguage);
+    if (hasEditor()) {
+      Editor.setValue(data.content || '');
+      Editor.setLanguage(currentLanguage);
+    }
     isDirty = false;
     updateFileDisplay();
     Tree.setSelected(filePath);
     Tree.reveal(filePath);
-    setStatus('Opened ' + filePath);
+    setStatus(currentIsReadOnly
+      ? 'Opened ' + filePath + ' (read-only)'
+      : 'Opened ' + filePath);
     updateRunTarget();
   } catch (error) {
     setStatus('Error: ' + error.message);
@@ -94,9 +132,17 @@ async function saveFile() {
     alert('Select a file to save. Folders cannot be saved as files.');
     return;
   }
+  if (!hasEditor()) {
+    alert('Open the file in the editor to save it.');
+    return;
+  }
+  if (currentIsReadOnly) {
+    alert('This file is read-only: ' + currentFile);
+    return;
+  }
   setStatus('Saving...');
   try {
-    await API.fileWrite(currentFile, Editor.getValue(), scope);
+    await API.fileWrite(currentFile, Editor.getValue());
     isDirty = false;
     updateFileDisplay();
     setStatus('Saved ' + currentFile);
@@ -107,11 +153,30 @@ async function saveFile() {
   }
 }
 
+function requireWritableRoot(path) {
+  const rootName = Tree.rootOf(path);
+  if (rootName && Tree.roots[rootName] === false) {
+    alert(rootName + ' is read-only.');
+    return false;
+  }
+  return true;
+}
+
+function isRootFolder(path) {
+  return Tree.rootOf(path) === path;
+}
+
 async function newFile() {
-  const fileName = prompt('Enter new file path/name:');
+  if (!Tree.isWritable()) {
+    alert(Tree.activeRoot + ' is read-only.');
+    return;
+  }
+  const suggestion = (currentIsFolder ? currentFile : Tree.activeRoot) + '/';
+  const fileName = prompt('Enter new file path/name:', suggestion);
   if (!fileName) return;
+  if (!requireWritableRoot(fileName)) return;
   try {
-    await API.fileCreate(fileName, '', scope);
+    await API.fileCreate(fileName, '');
     await Tree.refresh();
     await openFile(fileName);
     setStatus('Created ' + fileName);
@@ -121,10 +186,16 @@ async function newFile() {
 }
 
 async function newFolder() {
-  const folderPath = prompt('Enter new folder path:');
+  if (!Tree.isWritable()) {
+    alert(Tree.activeRoot + ' is read-only.');
+    return;
+  }
+  const suggestion = (currentIsFolder ? currentFile : Tree.activeRoot) + '/';
+  const folderPath = prompt('Enter new folder path:', suggestion);
   if (!folderPath) return;
+  if (!requireWritableRoot(folderPath)) return;
   try {
-    await API.directoryCreate(folderPath, scope);
+    await API.directoryCreate(folderPath);
     await Tree.refresh();
     setStatus('Created folder ' + folderPath);
   } catch (error) {
@@ -137,10 +208,16 @@ async function renameSelected() {
     alert('Select a file or folder first.');
     return;
   }
+  if (!requireWritableRoot(currentFile)) return;
+  if (isRootFolder(currentFile)) {
+    alert('A root folder cannot be renamed.');
+    return;
+  }
   const newName = prompt('Enter the new name/path:', currentFile);
   if (!newName || newName === currentFile) return;
+  if (!requireWritableRoot(newName)) return;
   try {
-    await API.pathRename(currentFile, newName, scope);
+    await API.pathRename(currentFile, newName);
     currentFile = newName;
     await Tree.refresh();
     if (currentIsFolder) {
@@ -159,18 +236,24 @@ async function deleteSelected() {
     alert('Select a file or folder first.');
     return;
   }
+  if (!requireWritableRoot(currentFile)) return;
+  if (isRootFolder(currentFile)) {
+    alert('A root folder cannot be deleted.');
+    return;
+  }
   const confirmed = confirm((currentIsFolder ? 'Delete folder ' : 'Delete file ') + currentFile + '?');
   if (!confirmed) return;
   try {
     if (currentIsFolder) {
-      await API.directoryDelete(currentFile, scope);
+      await API.directoryDelete(currentFile);
     } else {
-      await API.fileDelete(currentFile, scope);
+      await API.fileDelete(currentFile);
     }
-    currentFile = null;
-    currentIsFolder = false;
-    Editor.setValue('');
-    isDirty = false;
+            currentFile = null;
+            currentIsFolder = false;
+            currentIsReadOnly = false;
+            if (hasEditor()) Editor.setValue('');
+            isDirty = false;
     updateFileDisplay();
     await Tree.refresh();
     setStatus('Deleted.');
@@ -185,91 +268,32 @@ async function refreshTree() {
   setStatus('Refreshed.');
 }
 
-function updateScopeButtons() {
-  const wsBtn = document.getElementById('scopeWs');
-  const appBtn = document.getElementById('scopeApp');
-  if (wsBtn) wsBtn.classList.toggle('active', scope === 'workspace');
-  if (appBtn) appBtn.classList.toggle('active', scope === 'app');
+function selectRoot(rootName) {
+  setStatus('Working in ' + rootName
+    + (Tree.roots[rootName] === false ? ' (read-only)' : ''));
 }
 
-async function setScope(nextScope) {
-  if (scope === nextScope) return;
-  if (isDirty) {
-    const proceed = confirm('You have unsaved changes. Switch scope?');
-    if (!proceed) return;
-  }
-  scope = nextScope;
-  currentFile = null;
-  currentIsFolder = false;
-  Editor.setValue('');
-  isDirty = false;
-  updateFileDisplay();
-  updateScopeButtons();
-  setStatus(scope === 'app' ? 'Dev mode: application files' : 'Workspace mode: project files');
-  try {
-    await Tree.load(scope);
-  } catch (error) {
-    setStatus('Error: ' + error.message);
-  }
-}
-
-async function openDevLink(link) {
-  if (scope !== 'app') {
-    scope = 'app';
-    updateScopeButtons();
-  }
-  setStatus('Opening ' + link.path + '...');
-  try {
-    await Tree.load(scope);
-    await openFile(link.path);
-  } catch (error) {
-    setStatus('Error: ' + error.message);
-  }
-}
-
-function openChatPopup() {
-  const width = 420; const height = 600;
-  const left = (window.screen.width - width) / 2;
-  const top = (window.screen.height - height) / 2;
-  window.open('/chat', 'ProjectManagerChat', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no`);
-}
-
-function goHome() {
-  window.location.href = '/';
-}
-
-function goEditor() {
-  window.location.href = '/editor';
+function openChatPopup(agentId) {
+  openChatWithAgent(agentId);
 }
 
 function init() {
   Editor.init()
     .then(async () => {
-      Editor.onChange(() => {
-        if (currentFile) {
-          isDirty = true;
-          updateFileDisplay();
-        }
-      });
+      initTopbar({ page: hasEditor() ? 'editor' : 'home' });
+
+      if (hasEditor()) {
+        Editor.onChange(() => {
+          if (currentFile) {
+            isDirty = true;
+            updateFileDisplay();
+          }
+        });
+      }
 
       Tree.onFileSelect = openFile;
       Tree.onFolderSelect = selectFolder;
-      Tree.onDevLink = openDevLink;
-
-      // ---- Dev-script quick links ----
-      if (document.getElementById('devLinks')) {
-        Tree.renderDevLinks('devLinks');
-      }
-
-      const devLinksToggle = document.getElementById('devLinksToggle');
-      const devLinksBox = document.getElementById('devLinks');
-      if (devLinksToggle && devLinksBox) {
-        devLinksToggle.addEventListener('click', () => {
-          const hidden = devLinksBox.style.display === 'none';
-          devLinksBox.style.display = hidden ? '' : 'none';
-          devLinksToggle.textContent = hidden ? '−' : '+';
-        });
-      }
+      Tree.onRootSelect = selectRoot;
 
       // ---- Project name ----
       if (document.getElementById('projectName')) {
@@ -282,21 +306,15 @@ function init() {
         }
       }
 
-      // ---- Scope toggle ----
-      document.getElementById('scopeWs')?.addEventListener('click', () => setScope('workspace'));
-      document.getElementById('scopeApp')?.addEventListener('click', () => setScope('app'));
-      updateScopeButtons();
-
       // ---- Top bar actions ----
+      /* Page navigation lives in the shared topbar; only this page's
+         own tools are wired here. */
       document.getElementById('saveBtn')?.addEventListener('click', saveFile);
       document.getElementById('newFileBtn')?.addEventListener('click', newFile);
       document.getElementById('newFolderBtn')?.addEventListener('click', newFolder);
       document.getElementById('renameBtn')?.addEventListener('click', renameSelected);
       document.getElementById('deleteBtn')?.addEventListener('click', deleteSelected);
       document.getElementById('refreshBtn')?.addEventListener('click', refreshTree);
-      document.getElementById('chatBtn')?.addEventListener('click', openChatPopup);
-      document.getElementById('editorBtn')?.addEventListener('click', goEditor);
-      document.getElementById('homeBtn')?.addEventListener('click', goHome);
 
       document.addEventListener('keydown', (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
@@ -328,7 +346,19 @@ function init() {
       });
 
       setStatus('Ready');
-      await Tree.load(scope);
+      await Tree.load();
+
+      /* Home page: agent cards replace the editor. */
+      if (document.getElementById('agentCards')) {
+        try {
+          await initAgentCards({ onOpen: openChatPopup });
+        } catch (e) {
+          const host = document.getElementById('agentCards');
+          host.textContent = 'Failed to load agents: ' + e.message;
+        }
+        return;
+      }
+
       initAgentsPanel({
         getCurrentFile: () => currentFile,
         isDirty: () => isDirty,
@@ -339,13 +369,11 @@ function init() {
       });
       const urlParams = new URLSearchParams(window.location.search);
       const initialPath = urlParams.get('path');
-      const initialScope = urlParams.get('scope');
-      if (initialScope === 'app' || initialScope === 'workspace') {
-        scope = initialScope;
-        updateScopeButtons();
+      const initialRoot = urlParams.get('root');
+      if (initialRoot && initialRoot in Tree.roots) {
+        Tree.activeRoot = initialRoot;
       }
       if (initialPath) {
-        if (initialScope === 'app') await Tree.load('app');
         await openFile(initialPath);
       }
     })
@@ -358,4 +386,4 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
-export { openFile, saveFile, newFile, newFolder, renameSelected, deleteSelected, refreshTree, setScope, openDevLink, goHome, goEditor, currentFile, isDirty };
+export { openFile, saveFile, newFile, newFolder, renameSelected, deleteSelected, refreshTree, openChatPopup, currentFile, isDirty };

@@ -204,8 +204,10 @@ function updateRunTarget() {
     if (btn) btn.disabled = true;
     return;
   }
-  const m = /^agents\/([^/]+)\/(agent\.json|agent\.md)$/.exec(cf);
+  const m = /^workspace\/agents\/([^/]+)\/(agent\.json|agent\.md)$/.exec(cf);
   if (m) {
+    /* The agent-run API takes workspace-relative paths, so these
+       stay unprefixed even though the open file is root-qualified. */
     state.jsonPath = `agents/${m[1]}/agent.json`;
     state.mdPath = `agents/${m[1]}/agent.md`;
     if (hint) hint.textContent = `Will run: ${m[1]} (${state.jsonPath})`;
@@ -293,7 +295,10 @@ async function scaffoldAgent() {
     alert('Use only letters, numbers, underscore or dash.');
     return;
   }
+  /* The tree/editor use root-qualified paths; the agent-run API
+     uses workspace-relative ones. */
   const rel = `agents/${name}`;
+  const full = `workspace/${rel}`;
   const json = JSON.stringify({
     id: name,
     name: name.replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
@@ -313,15 +318,15 @@ async function scaffoldAgent() {
     `\n## output format\n` +
     `\nDescribe the shape of the reply the agent must produce.\n`;
   try {
-    await API.fileCreate(`${rel}/agent.json`, json);
-    await API.fileCreate(`${rel}/agent.md`, md);
+    await API.fileCreate(`${full}/agent.json`, json);
+    await API.fileCreate(`${full}/agent.md`, md);
     state.queue = state.queue.filter(q => q.json_path !== `${rel}/agent.json`);
     loadPanelData();
     if (state.ctx) {
       await state.ctx.refreshTree();
-      await state.ctx.openFile(`${rel}/agent.json`);
+      await state.ctx.openFile(`${full}/agent.json`);
     }
-    setPanel('agentResult', `Created ${rel}/agent.json + agent.md`);
+    setPanel('agentResult', `Created ${full}/agent.json + agent.md`);
   } catch (e) {
     alert('Failed to scaffold agent: ' + e.message);
   }

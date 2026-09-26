@@ -106,6 +106,29 @@
             background: #2a2d2e;
         }
 
+        /* ---- Browser root folders ---- */
+        .tree-item.root {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        .tree-item.root.readonly .label {
+            color: #6b7280;
+        }
+
+        .root-lock {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .tree-item.readonly {
+            opacity: 0.6;
+        }
+
         .children {
             margin-left: 16px;
         }
@@ -159,10 +182,16 @@
 <script type="module">
 import API from '/static/js/api.js';
 
+let roots = {};
+
 async function loadProject() {
   setStatus('Loading project...');
   try {
     const data = await API.project();
+    roots = {};
+    for (const node of data.filesystem || []) {
+      roots[node.name] = node.writable !== false;
+    }
     renderTree(data.filesystem || []);
     setStatus('Project loaded');
   } catch (err) {
@@ -173,25 +202,37 @@ async function loadProject() {
 function renderTree(items) {
   const container = document.getElementById('projectTree');
   container.innerHTML = '';
-  renderItems(items, container);
+  renderItems(items, container, 0);
 }
 
-function renderItems(items, container) {
+function renderItems(items, container, depth) {
   items.forEach(item => {
     const div = document.createElement('div');
     div.className = 'tree-item';
     if (item.type === 'directory') {
       div.classList.add('folder');
       div.dataset.path = item.path;
+      const isRoot = depth === 0 && item.root;
+      if (isRoot) {
+        div.classList.add('root');
+        if (item.writable === false) div.classList.add('readonly');
+      }
       const toggle = document.createElement('span');
       toggle.className = 'toggle';
       toggle.textContent = '+';
       const label = document.createElement('span');
-      label.textContent = '📁 ' + item.name;
+      label.textContent = (isRoot ? '🗂 ' : '📁 ') + item.name;
       label.style.flex = '1';
       label.style.marginLeft = '4px';
       div.appendChild(toggle);
       div.appendChild(label);
+      if (isRoot && item.writable === false) {
+        const lock = document.createElement('span');
+        lock.className = 'root-lock';
+        lock.textContent = '🔒';
+        lock.title = 'Read-only';
+        div.appendChild(lock);
+      }
       div.onclick = (e) => {
         e.stopPropagation();
         toggleFolder(div);
@@ -201,9 +242,13 @@ function renderItems(items, container) {
         const childrenContainer = document.createElement('div');
         childrenContainer.className = 'children collapsed';
         container.appendChild(childrenContainer);
-        renderItems(item.children, childrenContainer);
+        renderItems(item.children, childrenContainer, depth + 1);
       }
     } else {
+      if (item.editable === false) {
+        div.classList.add('readonly');
+        div.title = 'Read-only';
+      }
       const label = document.createElement('span');
       label.textContent = getFileIcon(item.name) + ' ' + item.name;
       div.appendChild(label);
@@ -255,8 +300,13 @@ function toggleFolder(div) {
 }
 
 async function submitCreateFilePrompt() {
-  const path = prompt('Enter file path/name:');
+  if (!roots[activeRoot()]) {
+    alert(activeRoot() + ' is read-only.');
+    return;
+  }
+  const path = prompt('Enter file path/name:', activeRoot() + '/');
   if (!path) return;
+  if (!isWritablePath(path)) return;
   try {
     await API.fileCreate(path, '');
     await loadProject();
@@ -267,8 +317,13 @@ async function submitCreateFilePrompt() {
 }
 
 async function submitCreateFolderPrompt() {
-  const path = prompt('Enter folder path:');
+  if (!roots[activeRoot()]) {
+    alert(activeRoot() + ' is read-only.');
+    return;
+  }
+  const path = prompt('Enter folder path:', activeRoot() + '/');
   if (!path) return;
+  if (!isWritablePath(path)) return;
   try {
     await API.directoryCreate(path);
     await loadProject();
@@ -277,15 +332,32 @@ async function submitCreateFolderPrompt() {
   }
 }
 
+function activeRoot() {
+  return Object.keys(roots)[0] ?? '';
+}
+
+function isWritablePath(path) {
+  const head = String(path).split('/')[0];
+  if (head in roots && roots[head] === false) {
+    alert(head + ' is read-only.');
+    return false;
+  }
+  return true;
+}
+
 function openEditor(filePath) {
   let url = '/editor';
   if (filePath) url += '?path=' + encodeURIComponent(filePath);
+  const head = filePath ? filePath.split('/')[0] : '';
+  if (head) url += '&root=' + encodeURIComponent(head);
   window.location.href = url;
 }
 
 function openEditorPopup(filePath) {
   let url = '/editor';
   if (filePath) url += '?path=' + encodeURIComponent(filePath);
+  const head = filePath ? filePath.split('/')[0] : '';
+  if (head) url += '&root=' + encodeURIComponent(head);
   const width = 1200; const height = 800;
   const left = (window.screen.width - width) / 2;
   const top = (window.screen.height - height) / 2;

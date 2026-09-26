@@ -27,44 +27,74 @@ const API = {
     return this.request('GET', '/api/health');
   },
 
-  project(scope = 'workspace') {
-    return this.request('GET', `/api/project?scope=${encodeURIComponent(scope)}`);
+  /* ---- Scope handling ----
+     A null scope selects the browser view, where paths may carry
+     a browser-root prefix (workspace/..., source_files/...). An
+     explicit 'workspace' or 'app' keeps the legacy single-root
+     view. Omitting the parameter entirely is what makes the API
+     return the browser tree. */
+
+  withPath(path, scope) {
+    const params = new URLSearchParams({ path });
+    if (scope) params.set('scope', scope);
+    return params.toString();
   },
 
-  fileRead(path, scope = 'workspace') {
-    return this.request('GET', `/api/file/read?path=${encodeURIComponent(path)}&scope=${encodeURIComponent(scope)}`);
+  withScope(body, scope) {
+    if (!scope) return body;
+    return { ...body, scope };
   },
 
-  fileWrite(path, content, scope = 'workspace') {
-    return this.request('PUT', '/api/file/write', { path, content, scope });
+  project(scope = null) {
+    const params = new URLSearchParams();
+    if (scope) params.set('scope', scope);
+    const query = params.toString();
+    return this.request('GET', '/api/project' + (query ? `?${query}` : ''));
   },
 
-  fileCreate(path, content = '', scope = 'workspace') {
-    return this.request('POST', '/api/file/create', { path, content, scope });
+  fileRead(path, scope = null) {
+    return this.request('GET', `/api/file/read?${this.withPath(path, scope)}`);
   },
 
-  fileDelete(path, scope = 'workspace') {
-    return this.request('DELETE', `/api/file/delete?path=${encodeURIComponent(path)}&scope=${encodeURIComponent(scope)}`);
+  fileWrite(path, content, scope = null) {
+    return this.request('PUT', '/api/file/write', this.withScope({ path, content }, scope));
   },
 
-  directoryCreate(path, scope = 'workspace') {
-    return this.request('POST', `/api/directory/create?path=${encodeURIComponent(path)}&scope=${encodeURIComponent(scope)}`);
+  fileCreate(path, content = '', scope = null) {
+    return this.request('POST', '/api/file/create', this.withScope({ path, content }, scope));
   },
 
-  directoryDelete(path, scope = 'workspace') {
-    return this.request('DELETE', `/api/directory/delete?path=${encodeURIComponent(path)}&scope=${encodeURIComponent(scope)}`);
+  fileDelete(path, scope = null) {
+    return this.request('DELETE', `/api/file/delete?${this.withPath(path, scope)}`);
   },
 
-  pathRename(oldPath, newPath, scope = 'workspace') {
-    return this.request('PUT', '/api/path/rename', { old_path: oldPath, new_path: newPath, scope });
+  directoryCreate(path, scope = null) {
+    return this.request('POST', `/api/directory/create?${this.withPath(path, scope)}`);
+  },
+
+  directoryDelete(path, scope = null) {
+    return this.request('DELETE', `/api/directory/delete?${this.withPath(path, scope)}`);
+  },
+
+  pathRename(oldPath, newPath, scope = null) {
+    return this.request('PUT', '/api/path/rename', this.withScope({ old_path: oldPath, new_path: newPath }, scope));
   },
 
   chatSend(message, agent_id = null, model = null) {
     return this.request('POST', '/api/chat', { message, agent_id, model });
   },
 
-  chatHistory(limit = 100) {
-    return this.request('GET', `/api/chat?limit=${limit}`);
+  /* Chat history is scoped per agent. Omitting the agent returns
+     the whole log, which is what headless_app expects. */
+  chatHistory(limit = 100, agent = null) {
+    const params = new URLSearchParams({ limit });
+    if (agent) params.set('agent', agent);
+    return this.request('GET', `/api/chat?${params.toString()}`);
+  },
+
+  chatClear(agent = null) {
+    const query = agent ? `?agent=${encodeURIComponent(agent)}` : '';
+    return this.request('DELETE', `/api/chat${query}`);
   },
 
   sessions() {
