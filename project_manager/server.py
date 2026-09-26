@@ -22,6 +22,7 @@ turning Project Manager operations into HTTP contracts.
 from __future__ import annotations
 
 import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -68,6 +69,56 @@ EDITOR_HTML = STATIC_DIR / "editor.html"
 
 CHAT_HTML = STATIC_DIR / "chat.html"
 
+#: Name the engine knows this agent root by. Re-registering the same
+#: name replaces it and promotes it, so restarting the server is safe.
+WORKSPACE_AGENT_ROOT = "workspace"
+
+
+# ============================================================
+# AGENT ROOT REGISTRATION
+# ============================================================
+
+def _ensure_headless_on_path() -> bool:
+    """Put headless_app/ on sys.path so the engine can be imported."""
+    candidate = (PROJECT_ROOT.parent / "headless_app").resolve()
+    if candidate.is_dir() and str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
+    return candidate.is_dir()
+
+
+def register_workspace_agent_root() -> bool:
+    """Teach the agent engine about ``workspace/agents/``.
+
+    Without this the engine only knows its bundled ``agent_library/``,
+    so an agent created in the Project Manager shows up in the UI but
+    ``build_agent()`` raises AgentNotFoundError and chat replies 400.
+    Registration is idempotent.
+
+    Returns:
+        True when the root was registered.
+    """
+    if not _ensure_headless_on_path():
+        return False
+    from engine.agents.roots import register_agent_root
+
+    agents_dir = Path(filesystem.PROJECT_ROOT) / "agents"
+    agents_dir.mkdir(parents=True, exist_ok=True)
+    register_agent_root(
+        WORKSPACE_AGENT_ROOT,
+        agents_dir,
+        source="workspace",
+    )
+    return True
+
+
+def unregister_workspace_agent_root() -> None:
+    """Drop the workspace root again (used on shutdown)."""
+    try:
+        from engine.agents.roots import unregister_agent_root
+    except ImportError:
+        return
+    unregister_agent_root(WORKSPACE_AGENT_ROOT)
+
 
 # ============================================================
 # APPLICATION FACTORY
@@ -76,12 +127,21 @@ CHAT_HTML = STATIC_DIR / "chat.html"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Build the basic project filesystem on startup.
+    Build the basic project filesystem on startup and register the
+    workspace agent root with the agent engine.
     """
 
     filesystem.build_project_filesystem()
 
-    yield
+    if register_workspace_agent_root():
+        print("[server] registered agent root: workspace/agents/")
+    else:
+        print("[server] headless_app/ not found - workspace agents unavailable")
+
+    try:
+        yield
+    finally:
+        unregister_workspace_agent_root()
 
 
 def create_app() -> FastAPI:

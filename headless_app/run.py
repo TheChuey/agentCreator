@@ -69,7 +69,7 @@ def _read_message(args) -> str:
 def cmd_list_agents(args) -> int:
     agents = list_agents()
     if not agents:
-        print("No agents found in engine/agent_library/.")
+        print("No agents found. Register an agent root and check its agent.json files.")
         return 1
     for agent in agents:
         tools = "chat" if agent["mode"] == "chat" else agent["model"] or "default model"
@@ -129,7 +129,7 @@ def cmd_run_pipeline(args) -> int:
         print("No message provided. Use --message or pipe stdin.")
         return 2
     steps = args.steps or None
-    result = runner.run_pipeline(steps, message, model=args.model)
+    result = runner.run_pipeline(message, agent_configs=steps, model=args.model)
     _print_run(result, args)
     if result.get("outputs"):
         print("\nPIPELINE STEPS")

@@ -1,21 +1,23 @@
 """
-bridge/routers/agents.py
-========================
+interface/routers/agents.py
+===========================
 
 Agent registry, run, and pipeline endpoints for the Project Manager.
 
-Turns the Project Manager into an agent workspace: browse every agent
-(library + workspace), run one agent from its ``agent.json``/``agent.md``
-files, or cascade many agents one after another (each later step receives
-every earlier step's reply) through ``/api/pipeline``.
+Every agent is built and run through ``interface_runner.AgentInterface``,
+the same seam the headless CLI uses, so behaviour cannot drift between
+frontends. Discovery likewise has a single source of truth: the engine's
+agent roots (``engine/agents/roots.py``). The Project Manager registers
+``<workspace>/agents/`` as a root at startup, so an agent created in the
+workspace behaves exactly like a bundled library agent.
 
     GET  /api/agents
-        -> library agents (engine/agent_library/) plus workspace agents
-           discovered under <workspace>/agents/<name>/agent.json.
+        -> every agent across every registered root (library +
+           workspace), highest-precedence root first.
 
     GET  /api/agents/{agent_id}
-        -> {"source", "meta", "sections"} for one agent (workspace first,
-           library fallback), so the editor can open/read its definition.
+        -> {"source", "meta", "sections"} for one agent, resolved through
+           the loader, so the editor can open/read its definition.
 
     POST /api/agents/run
         {"json_path", "md_path" | "agent_id", "message", "model"?}
@@ -71,14 +73,9 @@ def _ensure_headless_on_path() -> None:
 
 _ensure_headless_on_path()
 
-from engine.agents.factory import (  # noqa: E402
-    build_agent,
-    build_agent_from_definition,
-)
 from engine.agents.loader import AgentNotFoundError  # noqa: E402
 from engine.agents.registry import list_agents  # noqa: E402
-from engine.pipeline import load_pipeline, run_pipeline  # noqa: E402
-from tools.chatlog import append_chat  # noqa: E402
+from engine.pipeline import load_pipeline  # noqa: E402
 
 try:
     from bridge.providers import DirectProjectIO  # noqa: E402
@@ -148,7 +145,13 @@ def _workspace() -> Path | None:
 
 
 def _resolve(relative_path: str) -> Path:
-    """Safe absolute path for a workspace-relative agent file path."""
+    """Safe absolute path for an agent file path.
+
+    Workspace-relative paths ("agents/demo/agent.json") are the documented
+    input. An absolute path is also accepted, but only when it really is
+    inside the workspace, so a queue saved from a previous session cannot
+    reach outside the project.
+    """
     filesystem = _pm_filesystem()
     if filesystem is None:
         candidate = Path(relative_path)
@@ -158,6 +161,15 @@ def _resolve(relative_path: str) -> Path:
             "Running outside the Project Manager - a workspace-relative "
             "path cannot be resolved."
         )
+    if Path(relative_path).is_absolute():
+        resolved = Path(relative_path).resolve()
+        try:
+            resolved.relative_to(Path(filesystem.PROJECT_ROOT).resolve())
+        except ValueError:
+            raise ValueError(
+                "Access outside the project directory is not allowed."
+            )
+        return resolved
     return filesystem.resolve_project_path(relative_path)
 
 
@@ -170,66 +182,72 @@ def _provider() -> Any:
     return DirectProjectIO()
 
 
-# ============================================================
-# WORKSPACE AGENT DISCOVERY
-# ============================================================
+def _api_path(path: str | None) -> str | None:
+    """Translate an engine path into a workspace-relative API path.
 
-def _workspace_agents() -> list[dict]:
-    """Scan <workspace>/agents/*/agent.json for runnable agent definitions."""
+    The engine reports absolute paths (its own truth), but the API contract is
+    workspace-relative ("agents/<name>/agent.md") because that is what the
+    frontend stores in the pipeline queue and sends back to the run endpoints.
+    Returns None for anything outside the workspace (a library agent).
+    """
+    if not path:
+        return None
     workspace = _workspace()
     if workspace is None:
-        return []
-
-    discovered: list[dict] = []
-    base = workspace / "agents"
-    if not base.is_dir():
-        return discovered
-
-    for agent_dir in sorted(base.iterdir()):
-        if not agent_dir.is_dir() or agent_dir.name.startswith(("_", ".")):
-            continue
-        json_file = agent_dir / "agent.json"
-        md_file = agent_dir / "agent.md"
-        if not json_file.exists() or not md_file.exists():
-            continue
-        try:
-            meta = json.loads(json_file.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-
-        rel_dir = f"agents/{agent_dir.name}"
-        discovered.append({
-            "id": meta.get("id") or agent_dir.name,
-            "name": meta.get("name") or agent_dir.name,
-            "description": meta.get("description", ""),
-            "mode": meta.get("mode", "chat"),
-            "model": meta.get("model", "") or "",
-            "tools": meta.get("tools", []),
-            "source": "workspace",
-            "json_path": f"{rel_dir}/agent.json",
-            "md_path": f"{rel_dir}/agent.md",
-            "dir": rel_dir,
-        })
-
-    return discovered
+        return None
+    try:
+        rel = Path(path).resolve().relative_to(Path(workspace).resolve())
+    except (ValueError, OSError):
+        return None
+    return rel.as_posix()
 
 
-def _all_agents() -> list[dict]:
-    library = [dict(a, source="library") for a in list_agents()]
-    return library + _workspace_agents()
+def _agent_payload(summary: dict) -> dict:
+    """Shape one registry summary for /api/agents.
+
+    json_path/md_path are present only for workspace agents, matching the
+    contract the pipeline queue and editor already depend on.
+    """
+    payload = {
+        "id": summary["id"],
+        "name": summary["name"],
+        "description": summary["description"],
+        "mode": summary["mode"],
+        "model": summary["model"],
+        "tools": summary["tools"],
+        "source": summary["source"],
+        "complete": summary["complete"],
+    }
+    json_path = _api_path(summary.get("json_path"))
+    if json_path is not None:
+        payload["json_path"] = json_path
+        payload["md_path"] = _api_path(summary.get("md_path"))
+    return payload
+
+
+_runner_cache: Any = None
+
+
+def _runner() -> Any:
+    """The shared AgentInterface, the single engine entry point.
+
+    Stateless between requests: each run builds a fresh agent bound to its
+    own tools and session, so concurrent agents cannot interfere.
+    """
+    global _runner_cache
+    if _runner_cache is None:
+        from interface_runner import AgentInterface  # noqa: E402
+
+        _runner_cache = AgentInterface(
+            bridge=_provider(),
+            log_sink=_mirror_pm_log,
+        )
+    return _runner_cache
 
 
 # ============================================================
 # CHAT LOG RECORDING
 # ============================================================
-
-def _record_entries(user_message: str, reply: str) -> list[dict]:
-    user_entry = append_chat("user", user_message)
-    reply_entry = append_chat("agent", reply)
-    _mirror_pm_log(user_entry)
-    _mirror_pm_log(reply_entry)
-    return [user_entry, reply_entry]
-
 
 def _validated_message(message: str) -> str:
     text = message.strip()
@@ -254,17 +272,18 @@ def list_all_agents(
     request: Request,
 ):
     """
-    Return every runnable agent: library (engine/agent_library/) and
-    workspace (workspace/agents/<name>/) definitions.
+    Return every runnable agent, from every registered agent root.
 
-    Workspace agents include json_path/md_path so the frontend can run or
-    open them directly.
+    Discovery is the engine's single source of truth
+    (engine/agents/registry.py), so the library and workspace agents
+    arrive through one code path. Workspace agents include
+    json_path/md_path so the frontend can run or open them directly.
     """
 
     try:
 
         return {
-            "agents": _all_agents(),
+            "agents": [_agent_payload(a) for a in list_agents()],
         }
 
     except Exception as error:
@@ -282,44 +301,40 @@ def get_agent_definition(
     agent_id: str,
 ):
     """
-    Return one agent's metadata + markdown sections. Workspace agents
-    (agents/<id>/) win over library agents with the same id.
+    Return one agent's metadata + markdown sections.
+
+    Resolution goes through the loader, so a workspace agent wins over
+    a library agent with the same id - the same precedence discovery
+    and ``build_agent`` use.
     """
 
-    from engine.agents.loader import load_definition
-
-    workspace = _workspace()
-    ws_dir = (workspace / "agents" / agent_id) if workspace is not None else None
-
-    if ws_dir is not None and (ws_dir / "agent.json").exists():
-        try:
-            meta = json.loads(
-                (ws_dir / "agent.json").read_text(encoding="utf-8")
-            )
-        except (OSError, json.JSONDecodeError) as exc:
-            raise project_manager_error(
-                ValueError(f"Agent config unreadable: {ws_dir / 'agent.json'} ({exc})")
-            )
-        md_file = ws_dir / "agent.md"
-        md_text = md_file.read_text(encoding="utf-8")
-        from engine.agents.loader import _parse_sections, _clean_body
-        raw = _parse_sections(md_text)
-        sections = {name: _clean_body(body) for name, body in raw.items()}
-        return {
-            "source": "workspace",
-            "meta": meta,
-            "sections": sections,
-            "json_path": f"agents/{agent_id}/agent.json",
-            "md_path": f"agents/{agent_id}/agent.md",
-        }
+    from engine.agents.loader import (
+        agent_json_path,
+        agent_md_path,
+        load_definition,
+    )
+    from engine.agents.roots import find_agent
 
     try:
+
         definition = load_definition(agent_id)
-        return {
-            "source": "library",
+
+        found = find_agent(agent_id)
+        source = found[0].source if found is not None else "library"
+
+        payload = {
+            "source": source,
             "meta": definition["meta"],
             "sections": definition["sections"],
         }
+
+        json_path = _api_path(agent_json_path(agent_id))
+        if json_path is not None:
+            payload["json_path"] = json_path
+            payload["md_path"] = _api_path(agent_md_path(agent_id))
+
+        return payload
+
     except Exception as error:
         raise project_manager_error(
             ValueError(f"Agent not found: {agent_id} ({error})")
@@ -344,7 +359,8 @@ def run_single_agent(
                    workspace-relative paths to agent.json + agent.md
                    (e.g. "agents/demo/agent.json"). When given, the agent
                    is built from those files; otherwise agent_id is used.
-        agent_id:  library agent to run when json_path is not given.
+        agent_id:  agent id (any registered root) to run when json_path is
+                   not given.
         model:     optional model override.
     """
 
@@ -352,43 +368,30 @@ def run_single_agent(
 
     try:
 
-        if payload.json_path and payload.md_path:
-            json_file = _resolve(str(payload.json_path))
-            md_file = _resolve(str(payload.md_path))
-            agent = build_agent_from_definition(
-                str(json_file),
-                str(md_file),
-                model=payload.model,
-                bridge=_provider(),
-            )
-            agent_id = str(agent.profile.id)
-        elif payload.agent_id:
-            agent_id = payload.agent_id
-            agent = build_agent(
-                agent_id,
-                model=payload.model,
-                bridge=_provider(),
-            )
-        else:
-            raise project_manager_error(
-                ValueError(
-                    "Provide json_path + md_path, or an agent_id, to run."
-                )
-            )
+        # Workspace-relative paths must become absolute (and stay inside
+        # the workspace) before the engine reads them.
+        json_file = _resolve(str(payload.json_path)) if payload.json_path else None
+        md_file = _resolve(str(payload.md_path)) if payload.md_path else None
 
-        reply = agent.think(message)
+        result = _runner().run_single_agent(
+            message,
+            json_path=str(json_file) if json_file else None,
+            md_path=str(md_file) if md_file else None,
+            agent_id=payload.agent_id or None,
+            model=payload.model,
+        )
 
-        entries = _record_entries(message, reply)
+        entries = result.get("entries") or []
 
         return {
             "status": "ok",
-            "reply": reply,
-            "agent_id": agent_id,
-            "name": agent.profile.name,
-            "description": agent.profile.description,
-            "model": agent.model,
-            "tool_events": agent.tool_events,
-            "entry": entries[0],
+            "reply": result["reply"],
+            "agent_id": result["agent_id"],
+            "name": result.get("name", ""),
+            "description": result.get("description", ""),
+            "model": result.get("model"),
+            "tool_events": result.get("tool_events") or [],
+            "entry": entries[0] if entries else None,
         }
 
     except AgentNotFoundError as error:
@@ -426,7 +429,7 @@ def pipeline_options(
 
         return {
             "default_steps": load_pipeline(),
-            "candidates": _all_agents(),
+            "candidates": [_agent_payload(a) for a in list_agents()],
         }
 
     except Exception as error:
@@ -486,14 +489,11 @@ def run_agent_pipeline(
             else:
                 normalized.append(str(step))
 
-        result = run_pipeline(
+        result = _runner().run_pipeline(
             message,
+            agent_configs=normalized,
             model=payload.model,
-            steps=normalized,
-            bridge=_provider(),
         )
-
-        _record_entries(message, result["reply"])
 
         return {
             "status": "ok",

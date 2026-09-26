@@ -13,7 +13,8 @@ Registered tools (IDs in agent.json):
     map_files, read_file, write_text_file, delete_files,
     get_current_date, tell_me_the_date_and_time, search_chat_logs
 
-File tools run against one of three backends, selected once via configure():
+File tools run against one of three backends, selected per agent (or, for the
+standalone CLI, once per process via configure()):
 
     * a Project Manager bridge (HTTP)          - the Project Manager server
                                                   is the filesystem authority
@@ -27,11 +28,17 @@ The provider is a small object with a stable surface:
     .list_tree() -> nested tree   .read(rel) -> str     .write(rel, content)
     .create(rel, content)         .delete(rel)          .exists(rel) -> bool
 
-The shared FileSession lives in tools/state.py.
+Which provider a tool call uses is resolved by current_provider(): the binding
+installed for that specific call (tools.registry.resolve_tools) wins over the
+process default, so agents running side by side never share filesystem state.
+
+The FileSession (tools/state.py) is per agent, created at build time.
 """
 
 import os
 import sys
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 
@@ -45,19 +52,47 @@ from tools.chatlog import search_text as _search_chatlog  # noqa: E402
 # PROVIDER SELECTION
 # ---------------------------------------------------------------------------
 
-#: The active Project Manager provider (None = operate on the local disk).
+#: Process-wide default provider (None = operate on the local disk). This is
+#: only the fallback for callers that do not bind a provider of their own;
+#: per-agent binding goes through the ``_bound_provider`` context variable so
+#: two agents can never fight over one module global.
 _io: Any = None
+
+#: Provider bound for the duration of a single tool call (see
+#: tools.registry.resolve_tools). A ContextVar keeps the binding scoped to
+#: the running thread/task, so concurrent agents stay independent.
+_bound_provider: ContextVar = ContextVar("tool_provider", default=None)
 
 
 def configure(provider: Any) -> None:
-    """Point the file tools at a Project Manager provider (or None for local).
+    """Set the process-wide default provider (None for local disk).
 
     The provider decides where files live AND how paths are translated. Both
     the HTTP bridge (bridge.client) and the in-process filesystem authority
     (bridge.providers.DirectProjectIO) implement the same surface.
+
+    Prefer per-agent binding (tools.registry.resolve_tools(ids, provider)):
+    this global remains for backwards compatibility and for the standalone
+    headless CLI.
     """
     global _io
     _io = provider
+
+
+def current_provider() -> Any:
+    """The provider in force right now: the per-call binding, else the default."""
+    bound = _bound_provider.get()
+    return _io if bound is None else bound
+
+
+@contextmanager
+def using(provider: Any):
+    """Activate ``provider`` for the duration of the block."""
+    token = _bound_provider.set(provider)
+    try:
+        yield provider
+    finally:
+        _bound_provider.reset(token)
 
 
 # ---------------------------------------------------------------------------
@@ -205,25 +240,26 @@ def read_file(path: str, ocr: bool = True) -> dict:
             data keys: path, filename, file_type, extracted_content, status
     """
     raw = _unquote_path(path)
+    io = current_provider()
 
-    if _io is not None:
+    if io is not None:
         # Project Manager is the filesystem authority. Plain text is read
         # through the provider; binary documents are converted locally when
         # the file is reachable on this machine, otherwise the provider's
         # own answer (or error) is returned.
         try:
-            rel = _io.relpath(raw)
+            rel = io.relpath(raw)
         except Exception as exc:
             return {"success": False, "tool": "read_file", "data": {}, "error": str(exc)}
 
         if _is_plain_text(rel):
             try:
-                content = _io.read(rel)
+                content = io.read(rel)
                 return {
                     "success": True,
                     "tool": "read_file",
                     "data": {
-                        "path": str(Path(_io.workspace_root) / rel),
+                        "path": str(Path(io.workspace_root) / rel),
                         "path_relative": rel,
                         "filename": Path(rel).name,
                         "file_type": Path(rel).suffix.lower(),
@@ -237,19 +273,19 @@ def read_file(path: str, ocr: bool = True) -> dict:
 
         # Binary document: best-effort local Docling conversion, then the
         # provider's read (which may serve extracted text or refuse).
-        local = Path(_io.workspace_root) / rel
+        local = Path(io.workspace_root) / rel
         if local.is_file():
             try:
                 return _read_local_file(local, ocr)
             except Exception as exc:
                 pass
         try:
-            content = _io.read(rel)
+            content = io.read(rel)
             return {
                 "success": True,
                 "tool": "read_file",
                 "data": {
-                    "path": str(Path(_io.workspace_root) / rel),
+                    "path": str(Path(io.workspace_root) / rel),
                     "path_relative": rel,
                     "filename": Path(rel).name,
                     "file_type": Path(rel).suffix.lower(),
@@ -343,14 +379,15 @@ def map_files(path: str, max_depth: int = 8, max_entries: int = 5000) -> dict:
     if isinstance(max_entries, str) and max_entries.strip().isdigit():
         max_entries = int(max_entries)
     raw = _unquote_path(path)
+    io = current_provider()
 
-    if _io is not None:
+    if io is not None:
         try:
-            base = _io.relpath(raw)
+            base = io.relpath(raw)
         except Exception as exc:
             return {"success": False, "tool": "map_files", "data": {}, "error": str(exc)}
         try:
-            flat = _flatten_tree(_io.list_tree())
+            flat = _flatten_tree(io.list_tree())
         except Exception as exc:
             return {"success": False, "tool": "map_files", "data": {}, "error": str(exc)}
 
@@ -373,7 +410,7 @@ def map_files(path: str, max_depth: int = 8, max_entries: int = 5000) -> dict:
                 continue
             files_data.append({
                 "name": entry.get("name") or rel_parts[-1],
-                "path": str(Path(_io.workspace_root) / rel),
+                "path": str(Path(io.workspace_root) / rel),
                 "path_relative": rel,
                 "extension": Path(rel).suffix,
                 "type": entry.get("type", "file"),
@@ -481,20 +518,22 @@ def write_text_file(name: str, content: str, output_path: str, overwrite: bool =
             "error": "Missing required arguments. Need name (file name), content (text), and output_path (folder)."
         }
 
-    if _io is not None:
+    io = current_provider()
+
+    if io is not None:
         try:
-            rel_dir = _io.relpath(_unquote_path(output_path)).strip("/")
+            rel_dir = io.relpath(_unquote_path(output_path)).strip("/")
         except Exception as exc:
             return {"success": False, "tool": "write_text_file", "data": {}, "error": str(exc)}
         rel_file = f"{rel_dir}/{_unquote_path(name)}" if rel_dir else f"{_unquote_path(name)}"
         try:
             if overwrite:
-                _io.write(rel_file, content)
+                io.write(rel_file, content)
             else:
-                _io.create(rel_file, content)
+                io.create(rel_file, content)
         except Exception as exc:
             return {"success": False, "tool": "write_text_file", "data": {}, "error": str(exc)}
-        absolute = str(Path(_io.workspace_root) / rel_file)
+        absolute = str(Path(io.workspace_root) / rel_file)
         return {
             "success": True,
             "tool": "write_text_file",
@@ -577,14 +616,15 @@ def delete_files(file_list: list, approved: bool = False) -> dict:
             "error": "Deletion requires explicit approval. Set approved=True to finalize."
         }
 
+    io = current_provider()
     results = {}
     for f_path in file_list:
         try:
-            if _io is not None:
-                rel = _io.relpath(f_path)
-                if _io.exists(rel):
-                    _io.delete(rel)
-                    results[f_path] = "deleted" if not _io.exists(rel) else "failed_to_verify"
+            if io is not None:
+                rel = io.relpath(f_path)
+                if io.exists(rel):
+                    io.delete(rel)
+                    results[f_path] = "deleted" if not io.exists(rel) else "failed_to_verify"
                 else:
                     results[f_path] = "file_not_found"
             else:
