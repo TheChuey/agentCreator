@@ -28,7 +28,7 @@ class FileWriteRequest(BaseModel):
 
     content: str
 
-    scope: str = "workspace"
+    scope: str | None = None
 
 
 class FileCreateRequest(BaseModel):
@@ -37,7 +37,7 @@ class FileCreateRequest(BaseModel):
 
     content: str = ""
 
-    scope: str = "workspace"
+    scope: str | None = None
 
 
 # ============================================================
@@ -48,16 +48,17 @@ class FileCreateRequest(BaseModel):
 def read_file(
     request: Request,
     path: str,
-    scope: str = "workspace",
+    scope: str | None = None,
 ):
     """
     Read a project text file.
 
     Query params:
         path:
-            Root-relative file path.
+            Browser-root-qualified or root-relative file path.
         scope:
-            ``"workspace"`` (default) or ``"app"``.
+            Omit for the browser view; ``"workspace"`` or
+            ``"app"`` for a legacy single-root view.
     """
 
     try:
@@ -143,16 +144,17 @@ def create_file(
 def delete_file(
     request: Request,
     path: str,
-    scope: str = "workspace",
+    scope: str | None = None,
 ):
     """
     Delete a project file.
 
     Query params:
         path:
-            Root-relative file path.
+            Browser-root-qualified or root-relative file path.
         scope:
-            ``"workspace"`` (default) or ``"app"``.
+            Omit for the browser view; ``"workspace"`` or
+            ``"app"`` for a legacy single-root view.
     """
 
     try:

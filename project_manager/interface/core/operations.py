@@ -57,6 +57,28 @@ def _root_for(scope: str | None) -> Path:
     return _filesystem.PROJECT_ROOT
 
 
+def _target(
+    path: str,
+    scope: str | None,
+) -> tuple[str, Path, str | None]:
+    """
+    Resolve a request path into the arguments the filesystem
+    operations expect.
+
+    A path prefixed with a browser root (``source_files/AGENTS.md``)
+    resolves inside that root. Anything else keeps the legacy
+    behaviour and resolves against the scope's root.
+
+    Returns:
+        ``(stripped_relative, root, root_name)``.
+    """
+
+    return _filesystem.resolve_browse_target(
+        path,
+        _root_for(scope),
+    )
+
+
 # ============================================================
 # EDITOR INTERFACE
 # ============================================================
@@ -113,22 +135,49 @@ class EditorInterface:
 
     def tree(
         self,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Project state: project info, active root and filesystem tree.
 
         Args:
             scope:
-                ``"workspace"`` (default) or ``"app"``.
+                None (default) returns the browser tree, whose top
+                level is the configured ``BROWSE_ROOTS`` folders.
+                ``"workspace"`` or ``"app"`` return the legacy
+                single-root tree for that scope.
         """
 
         try:
 
+            if not scope:
+
+                return {
+                    "scope": None,
+                    "project": self.filesystem.read_project_info(),
+                    "roots": [
+                        {
+                            "name": name,
+                            "writable": bool(
+                                config.get(
+                                    "writable",
+                                    False,
+                                )
+                            ),
+                        }
+                        for name, config
+                        in self.filesystem.BROWSE_ROOTS.items()
+                    ],
+                    "root": str(
+                        self.filesystem.PROJECT_ROOT
+                    ),
+                    "filesystem": self.filesystem.read_browse_filesystem(),
+                }
+
             root = _root_for(scope)
 
             return {
-                "scope": scope or "workspace",
+                "scope": scope,
                 "project": self.filesystem.read_project_info(),
                 "root": str(root),
                 "filesystem": self.filesystem.read_filesystem(
@@ -156,42 +205,52 @@ class EditorInterface:
     def open(
         self,
         path: str,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> str:
         """
         Open a project file and return its contents.
 
         Args:
             path:
-                Root-relative file path.
+                Root-qualified or root-relative file path.
             scope:
-                ``"workspace"`` (default) or ``"app"``.
+                ``None`` (default) or ``"workspace"`` or ``"app"``.
 
         Returns:
             The file contents.
         """
 
+        stripped, root, _ = _target(path, scope)
+
         return self.filesystem.read_file(
-            path,
-            root=_root_for(scope),
+            stripped,
+            root=root,
         )
 
     def save(
         self,
         path: str,
         content: str,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Write file contents back to the project filesystem.
 
-        Publishes a ``saved`` event on success.
+        Publishes a ``saved`` event on success. Raises ValueError
+        if the path targets a read-only browser root.
         """
 
-        self.filesystem.write_file(
+        self.filesystem.require_writable(
             path,
+            _root_for(scope),
+        )
+
+        stripped, root, _ = _target(path, scope)
+
+        self.filesystem.write_file(
+            stripped,
             content,
-            root=_root_for(scope),
+            root=root,
         )
 
         self.events.publish(
@@ -214,18 +273,26 @@ class EditorInterface:
         self,
         path: str,
         content: str = "",
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new project file.
 
-        Publishes a ``created`` event on success.
+        Publishes a ``created`` event on success. Raises ValueError
+        if the path targets a read-only browser root.
         """
 
-        self.filesystem.create_file(
+        self.filesystem.require_writable(
             path,
+            _root_for(scope),
+        )
+
+        stripped, root, _ = _target(path, scope)
+
+        self.filesystem.create_file(
+            stripped,
             content,
-            root=_root_for(scope),
+            root=root,
         )
 
         self.events.publish(
@@ -243,17 +310,25 @@ class EditorInterface:
     def create_directory(
         self,
         path: str,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Create a new project directory.
 
-        Publishes a ``created`` event on success.
+        Publishes a ``created`` event on success. Raises ValueError
+        if the path targets a read-only browser root.
         """
 
-        self.filesystem.create_directory(
+        self.filesystem.require_writable(
             path,
-            root=_root_for(scope),
+            _root_for(scope),
+        )
+
+        stripped, root, _ = _target(path, scope)
+
+        self.filesystem.create_directory(
+            stripped,
+            root=root,
         )
 
         self.events.publish(
@@ -276,18 +351,48 @@ class EditorInterface:
         self,
         old_path: str,
         new_path: str,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Rename or move a project file/directory.
 
-        Publishes a ``renamed`` event on success.
+        Publishes a ``renamed`` event on success. Raises ValueError
+        if either path targets a read-only browser root, or if the
+        two paths belong to different browser roots.
         """
 
-        self.filesystem.rename_path(
+        self.filesystem.require_writable(
             old_path,
+            _root_for(scope),
+        )
+
+        self.filesystem.require_writable(
             new_path,
-            root=_root_for(scope),
+            _root_for(scope),
+        )
+
+        old_stripped, old_root, old_name = _target(
+            old_path,
+            scope,
+        )
+
+        new_stripped, new_root, new_name = _target(
+            new_path,
+            scope,
+        )
+
+        if old_root != new_root:
+
+            raise ValueError(
+                "Cannot rename across browser roots "
+                f"({old_name or 'scope'} -> "
+                f"{new_name or 'scope'})."
+            )
+
+        self.filesystem.rename_path(
+            old_stripped,
+            new_stripped,
+            root=old_root,
         )
 
         self.events.publish(
@@ -311,17 +416,25 @@ class EditorInterface:
     def delete(
         self,
         path: str,
-        scope: str | None = "workspace",
+        scope: str | None = None,
     ) -> dict[str, Any]:
         """
         Delete a project file or directory.
 
-        Publishes a ``deleted`` event on success.
+        Publishes a ``deleted`` event on success. Raises ValueError
+        if the path targets a read-only browser root.
         """
 
-        self.filesystem.delete_path(
+        self.filesystem.require_writable(
             path,
-            root=_root_for(scope),
+            _root_for(scope),
+        )
+
+        stripped, root, _ = _target(path, scope)
+
+        self.filesystem.delete_path(
+            stripped,
+            root=root,
         )
 
         self.events.publish(

@@ -23,16 +23,17 @@ router = APIRouter()
 def create_directory(
     request: Request,
     path: str,
-    scope: str = "workspace",
+    scope: str | None = None,
 ):
     """
     Create a project directory.
 
     Query params:
         path:
-            Root-relative directory path.
+            Browser-root-qualified or root-relative directory path.
         scope:
-            ``"workspace"`` (default) or ``"app"``.
+            Omit for the browser view; ``"workspace"`` or
+            ``"app"`` for a legacy single-root view.
     """
 
     try:
@@ -57,16 +58,17 @@ def create_directory(
 def delete_directory(
     request: Request,
     path: str,
-    scope: str = "workspace",
+    scope: str | None = None,
 ):
     """
     Delete a project directory.
 
     Query params:
         path:
-            Root-relative directory path.
+            Browser-root-qualified or root-relative directory path.
         scope:
-            ``"workspace"`` (default) or ``"app"``.
+            Omit for the browser view; ``"workspace"`` or
+            ``"app"`` for a legacy single-root view.
     """
 
     try:

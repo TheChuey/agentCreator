@@ -26,7 +26,7 @@ class RenameRequest(BaseModel):
 
     new_path: str
 
-    scope: str = "workspace"
+    scope: str | None = None
 
 
 # ============================================================

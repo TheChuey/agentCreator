@@ -31,16 +31,22 @@ def controller() -> Any:
 # SCOPE HANDLING
 # ============================================================
 
-def normalize_scope(scope: str | None) -> str:
+def normalize_scope(scope: str | None) -> str | None:
     """
     Validate and normalize a scope query parameter.
+
+    Returns None when the parameter is absent, which selects the
+    browser view (paths may carry a browser-root prefix). An
+    explicit scope keeps the legacy single-root behaviour.
 
     Raises:
         HTTPException (422):
             If the scope is not a known scope.
     """
 
-    scope = scope or "workspace"
+    if scope is None:
+
+        return None
 
     if scope not in VALID_SCOPES:
 

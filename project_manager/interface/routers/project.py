@@ -50,14 +50,16 @@ def health(
 @router.get("/api/project")
 def get_project(
     request: Request,
-    scope: str = "workspace",
+    scope: str | None = None,
 ):
     """
     Project information and filesystem tree.
 
     Query params:
         scope:
-            ``"workspace"`` (default) or ``"app"``.
+            Omit for the browser tree, whose top level is the
+            configured browser roots. ``"workspace"`` or ``"app"``
+            return the legacy single-root tree.
     """
 
     try:

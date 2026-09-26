@@ -42,6 +42,8 @@ PROJECT_ROOT = REPO_ROOT / "workspace"
 
 PROJECT_JSON = PROJECT_ROOT / "project.json"
 
+SOURCE_FILES_ROOT = REPO_ROOT.parent / "source_files"
+
 
 # ============================================================
 # STANDARD PROJECT FOLDERS
@@ -55,6 +57,34 @@ PROJECT_FOLDERS = [
     "config",
     "data",
 ]
+
+
+# ============================================================
+# BROWSER ROOTS
+# ============================================================
+
+# The two folders the file browser shows. Add a folder here to
+# make it appear in the tree; set ``writable`` to False to make it
+# browse-only. Keys are the path prefixes the API understands, so
+# ``source_files/AGENTS.md`` and ``workspace/project.json`` resolve
+# inside their own root.
+
+BROWSE_ROOTS: dict[str, dict[str, Any]] = {
+    "workspace": {
+        "path": PROJECT_ROOT,
+        "writable": True,
+    },
+    "source_files": {
+        "path": SOURCE_FILES_ROOT,
+        "writable": False,
+    },
+}
+
+
+# Files above this size open read-only so the browser editor
+# never tries to render a multi-megabyte document.
+
+MAX_EDITABLE_BYTES = 512 * 1024
 
 
 # ============================================================
@@ -183,6 +213,225 @@ def resolve_project_path(
 
 
 # ============================================================
+# BROWSER ROOT RESOLUTION
+# ============================================================
+
+def split_root(
+    relative_path: str,
+) -> tuple[str | None, str]:
+    """
+    Split a path into its browser-root name and the remainder.
+
+    Returns:
+        ``(root_name, remainder)``. ``root_name`` is None when the
+        first segment is not a known root, meaning the caller
+        should treat the path as legacy and root-relative.
+    """
+
+    normalized = relative_path.replace(
+        "\\",
+        "/",
+    ).strip()
+
+    head, separator, tail = normalized.partition(
+        "/"
+    )
+
+    if not separator:
+
+        return None, normalized
+
+    if head in BROWSE_ROOTS:
+
+        return head, tail
+
+    return None, normalized
+
+
+def is_writable_root(
+    root_name: str | None,
+) -> bool:
+    """
+    Whether a browser root accepts writes.
+
+    Legacy (root-less) paths are treated as writable so existing
+    callers keep working.
+    """
+
+    if root_name is None:
+
+        return True
+
+    return bool(
+        BROWSE_ROOTS[root_name].get(
+            "writable",
+            False,
+        )
+    )
+
+
+def resolve_browse_target(
+    relative_path: str,
+    legacy_root: Path | None = None,
+) -> tuple[str, Path, str | None]:
+    """
+    Split a possibly root-qualified path into the arguments the
+    filesystem operations expect.
+
+    ``source_files/AGENTS.md`` resolves inside the ``source_files``
+    root. Paths without a known root prefix fall back to
+    ``legacy_root`` (the managed workspace by default) so existing
+    API callers are unaffected.
+
+    Args:
+        relative_path:
+            Root-qualified or legacy relative path.
+        legacy_root:
+            Root used when the path carries no root prefix.
+
+    Returns:
+        ``(stripped_relative, root, root_name)``. ``root_name`` is
+        None for legacy paths.
+
+    Raises:
+        ValueError:
+            If the path is empty or names a root with no remainder.
+    """
+
+    root_name, remainder = split_root(
+        relative_path
+    )
+
+    if root_name is None:
+
+        return (
+            relative_path,
+            legacy_root
+            if legacy_root is not None
+            else PROJECT_ROOT,
+            None,
+        )
+
+    if not remainder:
+
+        raise ValueError(
+            "A path inside "
+            f"{root_name} is required."
+        )
+
+    return (
+        remainder,
+        BROWSE_ROOTS[root_name]["path"],
+        root_name,
+    )
+
+
+def resolve_browse_path(
+    relative_path: str,
+    legacy_root: Path | None = None,
+) -> tuple[Path, str | None]:
+    """
+    Resolve a possibly root-qualified path to a safe absolute path.
+
+    Returns:
+        ``(absolute_path, root_name)``. ``root_name`` is None for
+        legacy paths.
+
+    Raises:
+        ValueError:
+            If the path is empty or escapes its root.
+    """
+
+    stripped, root, root_name = (
+        resolve_browse_target(
+            relative_path,
+            legacy_root,
+        )
+    )
+
+    return resolve_project_path(
+        stripped,
+        root,
+    ), root_name
+
+
+def require_writable(
+    relative_path: str,
+    legacy_root: Path | None = None,
+) -> str | None:
+    """
+    Ensure a path may be written to.
+
+    Args:
+        relative_path:
+            Root-qualified or legacy relative path.
+        legacy_root:
+            Root used when the path carries no root prefix.
+
+    Returns:
+        The resolved root name (None for legacy paths).
+
+    Raises:
+        ValueError:
+            If the path targets a read-only root.
+    """
+
+    _, root_name = resolve_browse_path(
+        relative_path,
+        legacy_root,
+    )
+
+    if not is_writable_root(root_name):
+
+        raise ValueError(
+            f"{root_name} is read-only."
+        )
+
+    return root_name
+
+
+def read_browse_filesystem() -> list[dict[str, Any]]:
+    """
+    Build the browser tree.
+
+    The top level is always the configured ``BROWSE_ROOTS`` folders,
+    so the tree itself acts as the folder switcher. Every node path
+    is prefixed with its root name.
+
+    Roots that do not exist on disk are skipped.
+    """
+
+    results: list[dict[str, Any]] = []
+
+    for root_name, config in BROWSE_ROOTS.items():
+
+        root_path: Path = config["path"]
+
+        if not root_path.is_dir():
+
+            continue
+
+        results.append(
+            {
+                "name": root_name,
+                "path": root_name,
+                "type": "directory",
+                "root": root_name,
+                "writable": bool(
+                    config.get("writable", False)
+                ),
+                "children": read_filesystem(
+                    root_path,
+                    _root=root_path,
+                    _prefix=root_name,
+                ),
+            }
+        )
+
+    return results
+
+
+# ============================================================
 # PROJECT INITIALIZATION
 # ============================================================
 
@@ -289,6 +538,23 @@ def is_text_file(path: Path) -> bool:
     )
 
 
+def is_oversized(path: Path) -> bool:
+    """
+    Determine whether a file is too large to edit in the browser.
+
+    Very large files are marked non-editable so the editor does
+    not try to render a multi-megabyte document.
+    """
+
+    try:
+
+        return path.stat().st_size > MAX_EDITABLE_BYTES
+
+    except OSError:
+
+        return False
+
+
 # ============================================================
 # READ FILESYSTEM
 # ============================================================
@@ -296,9 +562,21 @@ def is_text_file(path: Path) -> bool:
 def read_filesystem(
     directory: Path | None = None,
     _root: Path | None = None,
+    _prefix: str = "",
 ) -> list[dict[str, Any]]:
     """
     Recursively read the project filesystem.
+
+    Args:
+        directory:
+            Directory to list.
+        _root:
+            Root the emitted paths are relative to.
+        _prefix:
+            Prepended to every emitted path. Used by
+            :func:`read_browse_filesystem` so each node carries its
+            browser-root name (``source_files/AGENTS.md``), which is
+            what lets the API resolve the path back to its root.
 
     Returns:
         JSON-friendly file/folder tree.
@@ -348,6 +626,12 @@ def read_filesystem(
             "/",
         )
 
+        if _prefix:
+
+            relative_path = (
+                f"{_prefix}/{relative_path}"
+            )
+
         # ----------------------------------------------------
         # DIRECTORY
         # ----------------------------------------------------
@@ -362,6 +646,7 @@ def read_filesystem(
                     "children": read_filesystem(
                         child,
                         _root=_root,
+                        _prefix=_prefix,
                     ),
                 }
             )
@@ -386,8 +671,9 @@ def read_filesystem(
                     "path": relative_path,
                     "type": "file",
                     "size": size,
-                    "editable": is_text_file(
-                        child
+                    "editable": (
+                        is_text_file(child)
+                        and not is_oversized(child)
                     ),
                 }
             )
