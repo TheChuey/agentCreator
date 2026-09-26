@@ -1,0 +1,12 @@
+{
+  "id": "Jesus",
+  "name": "Jesus",
+  "description": "A custom agent scaffolded from the editor.",
+  "mode": "agent",
+  "model": "",
+  "tools": [
+    "map_files",
+    "read_file",
+    "write_text_file"
+  ]
+}
