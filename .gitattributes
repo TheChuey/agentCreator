@@ -1,0 +1,13 @@
+# Text files use LF line endings everywhere.
+* text=auto eol=lf
+
+# Explicit text / code files
+*.py text eol=lf
+*.sh text eol=lf
+*.bat text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf

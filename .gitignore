@@ -28,3 +28,6 @@ htmlcov/
 *.jsonl
 project_manager/workspace/ws_evt_probe.txt
 project_manager/workspace/data/
+
+# Local working notes
+planSave.txt

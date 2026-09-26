@@ -1,1 +1,0 @@
-{"id": "demo", "name": "Demo Agent", "description": "test workspace agent", "mode": "agent", "model": "", "tools": ["map_files"]}
