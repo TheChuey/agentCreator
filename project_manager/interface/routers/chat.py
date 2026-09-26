@@ -59,7 +59,7 @@ _ensure_headless_on_path()
 from engine.agents.factory import build_agent  # noqa: E402
 from engine.agents.loader import AgentNotFoundError  # noqa: E402
 from engine.agents.registry import list_agents  # noqa: E402
-from tools.chatlog import append_chat, read_history  # noqa: E402
+from tools.chatlog import append_chat, clear_chat, read_history  # noqa: E402
 
 try:
     from bridge.providers import DirectProjectIO  # noqa: E402
@@ -133,10 +133,14 @@ def _mirror_pm_log(entry: dict) -> None:
         pass  # fail-safe: never break the chat response over a log write
 
 
-def _record_entries(user_message: str, reply: str) -> list[dict]:
-    """Persist user + reply to the headless chat log; mirror to PM's log."""
-    user_entry = append_chat("user", user_message)
-    reply_entry = append_chat("agent", reply)
+def _record_entries(user_message: str, reply: str, agent_id: str) -> list[dict]:
+    """Persist user + reply to the headless chat log; mirror to PM's log.
+
+    The agent id is stored on both entries so each agent keeps its own
+    conversation in the shared log.
+    """
+    user_entry = append_chat("user", user_message, agent=agent_id)
+    reply_entry = append_chat("agent", reply, agent=agent_id)
     _mirror_pm_log(user_entry)
     _mirror_pm_log(reply_entry)
     return [user_entry, reply_entry]
@@ -199,7 +203,7 @@ def send_chat_message(
 
         reply = agent.think(message)
 
-        entries = _record_entries(message, reply)
+        entries = _record_entries(message, reply, agent_id)
 
         return {
             "status": "ok",
@@ -233,6 +237,7 @@ def send_chat_message(
 def get_chat_history(
     request: Request,
     limit: int = DEFAULT_LIMIT,
+    agent: str | None = None,
 ):
     """
     Return the most recent chat entries.
@@ -240,12 +245,86 @@ def get_chat_history(
     Query params:
         limit:
             Maximum number of entries to return.
+        agent:
+            Restrict the history to one agent's thread. Omit to
+            return the whole log.
     """
 
     try:
 
         return {
-            "entries": read_history(limit),
+            "entries": read_history(limit, agent=agent),
+        }
+
+    except Exception as error:
+
+        raise project_manager_error(
+            error
+        )
+
+
+# ============================================================
+# CLEAR CHAT HISTORY
+# ============================================================
+
+def _clear_mirror(agent: str | None) -> int:
+    """Apply the same wipe to the Project Manager's own chat.log."""
+    from parameters import filesystem
+
+    log_path = filesystem.resolve_project_path("data/chat.log")
+    if not log_path.exists():
+        return 0
+    if not agent:
+        with log_path.open("r", encoding="utf-8") as handle:
+            removed = sum(1 for line in handle if line.strip())
+        log_path.write_text("", encoding="utf-8")
+        return removed
+
+    kept: list[str] = []
+    removed = 0
+    with log_path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if entry.get("agent") == agent:
+                removed += 1
+                continue
+            kept.append(line if line.endswith("\n") else line + "\n")
+    log_path.write_text("".join(kept), encoding="utf-8")
+    return removed
+
+
+@router.delete("/api/chat")
+def clear_chat_history(
+    request: Request,
+    agent: str | None = None,
+):
+    """
+    Wipe the chat history.
+
+    Truncates the headless chat log (data/chatlog/chat.log) and mirrors the
+    wipe onto the Project Manager's own log (workspace/data/chat.log).
+    With ``agent`` set, only that agent's thread is wiped in both logs.
+    Returns how many entries were removed.
+    """
+
+    try:
+
+        removed = clear_chat(agent=agent)
+
+        try:
+            mirrored = _clear_mirror(agent)
+        except Exception:
+            mirrored = removed  # fail-safe: headless log is the authority
+
+        return {
+            "status": "ok",
+            "cleared": removed,
+            "mirrored_cleared": mirrored,
         }
 
     except Exception as error:

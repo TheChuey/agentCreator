@@ -40,17 +40,29 @@ def _iso_ts() -> str:
 # CHAT LOG
 # ==========================================================================
 
-def append_chat(sender: str, message: str) -> dict:
-    """Append one timestamped chat entry. Returns the stored entry dict."""
+def append_chat(sender: str, message: str, agent: str | None = None) -> dict:
+    """Append one timestamped chat entry. Returns the stored entry dict.
+
+    ``agent`` tags the entry with the agent that produced it so a
+    caller can keep separate per-agent threads in one log. Callers
+    that do not pass it keep the original unscoped behaviour.
+    """
     CHATLOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     entry = {"ts": _iso_ts(), "sender": sender, "message": message}
+    if agent:
+        entry["agent"] = agent
     with CHATLOG_FILE.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return entry
 
 
-def read_history(limit: int = DEFAULT_HISTORY_LIMIT) -> list[dict]:
-    """Most recent chat entries in chronological order."""
+def read_history(limit: int = DEFAULT_HISTORY_LIMIT, agent: str | None = None) -> list[dict]:
+    """Most recent chat entries in chronological order.
+
+    With ``agent`` set, only that agent's entries are returned.
+    Entries written before per-agent tagging have no agent key and
+    therefore belong to no thread.
+    """
     limit = max(1, min(limit, MAX_HISTORY_LIMIT))
     entries: list[dict] = []
     if not CHATLOG_FILE.exists():
@@ -61,10 +73,48 @@ def read_history(limit: int = DEFAULT_HISTORY_LIMIT) -> list[dict]:
             if not line:
                 continue
             try:
-                entries.append(json.loads(line))
+                entry = json.loads(line)
             except json.JSONDecodeError:
                 continue
+            if agent and entry.get("agent") != agent:
+                continue
+            entries.append(entry)
     return entries[-limit:]
+
+
+def clear_chat(agent: str | None = None) -> int:
+    """Wipe the chat log entirely. Returns how many entries were removed.
+
+    With ``agent`` set, only that agent's entries are removed and
+    every other thread is preserved.
+    """
+    if not CHATLOG_FILE.exists():
+        return 0
+    if not agent:
+        removed = 0
+        with CHATLOG_FILE.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    removed += 1
+        CHATLOG_FILE.write_text("", encoding="utf-8")
+        return removed
+
+    kept: list[str] = []
+    removed = 0
+    with CHATLOG_FILE.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if entry.get("agent") == agent:
+                removed += 1
+                continue
+            kept.append(line if line.endswith("\n") else line + "\n")
+    CHATLOG_FILE.write_text("".join(kept), encoding="utf-8")
+    return removed
 
 
 def search_text(query: str, limit: int = 15) -> str:

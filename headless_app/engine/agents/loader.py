@@ -2,7 +2,7 @@
 app/agents/loader.py
 ====================
 
-Locates, reads, and parses one agent definition from agent_library/.
+Locates, reads, and parses one agent definition.
 
 An agent folder contains:
     agent.json  - metadata/configuration (id, name, mode, tools, model)
@@ -11,6 +11,12 @@ An agent folder contains:
 load_definition() returns:
     {"meta": {...agent.json...}, "sections": {...parsed markdown sections...}}
 
+Where agents live is decided by engine/agents/roots.py: the engine ships
+with ``agent_library/``, and a host application may register more roots
+(the Project Manager registers ``workspace/agents/``). Lookups here search
+every registered root, so an agent is found by id regardless of which root
+owns it.
+
 This module does NOT run agents. Its job is only: find, read, parse, return.
 """
 
@@ -18,63 +24,68 @@ import json
 import re
 from pathlib import Path
 
-AGENT_LIBRARY_DIR = Path(__file__).resolve().parent.parent / "agent_library"
-AGENT_META_FILE = "agent.json"
-AGENT_MD_FILE = "agent.md"
+from engine.agents import roots
+from engine.agents.roots import (  # noqa: F401  (re-exported for callers)
+    AGENT_MD_FILE,
+    AGENT_META_FILE,
+    AgentRoot,
+    LIBRARY_ROOT_NAME,
+    register_agent_root,
+    unregister_agent_root,
+)
+
+#: Backwards-compatible alias for the built-in library root directory.
+AGENT_LIBRARY_DIR = roots.DEFAULT_LIBRARY_DIR
 
 
 def agent_dir(agent_id: str) -> Path:
-    """The folder for an agent id inside agent_library/.
+    """The folder for an agent id inside the highest-precedence root.
 
-    First tries the literal ``agent_library/<agent_id>`` path (fast path).
-    When that is missing or not a directory, scans ``agent_library/*/agent.json``
-    and returns the first folder (sorted) whose ``meta["id"]`` matches, so
-    folder names with spaces, kebab-case, etc. all work as long as the
-    ``agent.json`` ``id`` field is set. Falls back to the literal path so
-    callers that create folders (``save_markdown``) still work for brand-new
-    agents.
+    Searches every registered root (see engine/agents/roots.py): first the
+    literal ``<root>/<agent_id>`` path, then each root's folders matched by
+    their ``agent.json`` ``id`` field, so folder names and ids may differ.
+    Falls back to the literal library path so callers that create folders
+    (``save_markdown``) still work for brand-new agents.
     """
-    resolved = _resolve_agent_dir(agent_id)
-    return resolved if resolved is not None else AGENT_LIBRARY_DIR / agent_id
+    found = roots.find_agent(agent_id)
+    if found is not None:
+        return found[1]
+    return AGENT_LIBRARY_DIR / agent_id
+
+
+def agent_root(agent_id: str) -> AgentRoot | None:
+    """The registered root that owns ``agent_id``, or None."""
+    found = roots.find_agent(agent_id)
+    return found[0] if found is not None else None
+
+
+def agent_json_path(agent_id: str) -> str | None:
+    """Workspace-relative ``agent.json`` path for a registered agent."""
+    found = roots.find_agent(agent_id)
+    if found is None:
+        return None
+    root, directory = found
+    return root.json_path(directory)
+
+
+def agent_md_path(agent_id: str) -> str | None:
+    """Workspace-relative ``agent.md`` path for a registered agent."""
+    found = roots.find_agent(agent_id)
+    if found is None:
+        return None
+    root, directory = found
+    return root.md_path(directory)
 
 
 def _resolve_agent_dir(agent_id: str) -> Path | None:
-    """Find the on-disk folder for an agent by id.
-
-    Two strategies, tried in order:
-        1. Literal: ``AGENT_LIBRARY_DIR / agent_id`` exists and is a directory.
-        2. Scan: walk every subfolder of ``AGENT_LIBRARY_DIR``, read its
-           ``agent.json``, and return the first (sorted by folder name) whose
-           ``meta["id"]`` equals ``agent_id``.
+    """Find the on-disk folder for an agent by id across all roots.
 
     Returns ``None`` when nothing matches so callers can fall back to the
     literal path (which preserves the existing create-folder semantics for
     ``save_markdown`` on genuinely new agents).
     """
-    literal = AGENT_LIBRARY_DIR / agent_id
-    if literal.is_dir():
-        return literal
-
-    # Scan: read agent.json in each sibling folder, match by "id" field.
-    # Folders are sorted for deterministic tie-breaking when (unlikely)
-    # multiple folders declare the same id.
-    candidates: list[tuple[str, Path]] = []
-    if AGENT_LIBRARY_DIR.exists():
-        for child in AGENT_LIBRARY_DIR.iterdir():
-            if not child.is_dir() or child.name.startswith(("_", ".")):
-                continue
-            meta_file = child / AGENT_META_FILE
-            if not meta_file.exists():
-                continue
-            try:
-                meta = json.loads(meta_file.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                continue
-            if meta.get("id") == agent_id:
-                candidates.append((child.name, child))
-
-    candidates.sort(key=lambda t: t[0])
-    return candidates[0][1] if candidates else None
+    found = roots.find_agent(agent_id)
+    return found[1] if found is not None else None
 
 
 def save_meta(agent_id: str, meta: dict) -> dict:
