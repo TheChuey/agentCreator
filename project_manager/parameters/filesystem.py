@@ -66,7 +66,7 @@ PROJECT_FOLDERS = [
 # The two folders the file browser shows. Add a folder here to
 # make it appear in the tree; set ``writable`` to False to make it
 # browse-only. Keys are the path prefixes the API understands, so
-# ``source_files/AGENTS.md`` and ``workspace/project.json`` resolve
+# ``source_files/APP_CODE_SNAPSHOT.md`` and ``workspace/project.json`` resolve
 # inside their own root.
 
 BROWSE_ROOTS: dict[str, dict[str, Any]] = {
@@ -278,8 +278,8 @@ def resolve_browse_target(
     Split a possibly root-qualified path into the arguments the
     filesystem operations expect.
 
-    ``source_files/AGENTS.md`` resolves inside the ``source_files``
-    root. Paths without a known root prefix fall back to
+    ``source_files/APP_CODE_SNAPSHOT.md`` resolves inside the
+    ``source_files`` root. Paths without a known root prefix fall back to
     ``legacy_root`` (the managed workspace by default) so existing
     API callers are unaffected.
 
@@ -575,8 +575,8 @@ def read_filesystem(
         _prefix:
             Prepended to every emitted path. Used by
             :func:`read_browse_filesystem` so each node carries its
-            browser-root name (``source_files/AGENTS.md``), which is
-            what lets the API resolve the path back to its root.
+            browser-root name (``source_files/APP_CODE_SNAPSHOT.md``),
+            which is what lets the API resolve the path back to its root.
 
     Returns:
         JSON-friendly file/folder tree.

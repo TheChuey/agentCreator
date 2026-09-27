@@ -2,7 +2,7 @@
 run.py
 ======
 
-Command-line entry point for the headless GenV1 engine.
+Command-line entry point for the headless agentCreator engine.
 
 Examples:
     python run.py list-agents
@@ -141,7 +141,7 @@ def cmd_run_pipeline(args) -> int:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="run.py",
-        description="Headless GenV1 agent engine runner.",
+        description="Headless agentCreator engine runner.",
     )
     parser.add_argument(
         "--base-url",

@@ -6,7 +6,7 @@ Agent-backed Project Manager chat router (drop-in replacement).
 
 The Project Manager keeps a stub chat surface: ``POST /api/chat`` logs a
 message and ``GET /api/chat`` fetches history. This router swaps the stub
-handler for the GenV1 agent engine, so the Project Manager becomes a fully
+handler for the agentCreator engine, so the Project Manager becomes a fully
 agent-driven server:
 
     POST /api/chat  {"message": str, "agent_id": str?, "model": str?}

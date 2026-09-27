@@ -1,7 +1,7 @@
 {
   "id": "execute_engineer_agent",
   "name": "Execute Engineer Agent",
-  "description": "Step 2: Uses read_file to inspect ux_module_designer_skills.md and translates Step 1 functional plans into section-by-section pseudo-code and Genessis Python blueprints.",
+  "description": "Step 2: Uses read_file to inspect ux_module_designer_skills.md and translates Step 1 functional plans into section-by-section pseudo-code and agentCreator Python blueprints.",
   "mode": "agent",
   "model": "qwen2.5-coder:latest",
   "tools": [

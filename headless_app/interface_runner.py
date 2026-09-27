@@ -2,7 +2,7 @@
 interface_runner.py
 ===================
 
-The single execution seam of the GenV1 engine.
+The single execution seam of the agentCreator engine.
 
 Every caller - the headless CLI (run.py) and the Project Manager routers -
 goes through this module, so build/think/log behaviour cannot drift
