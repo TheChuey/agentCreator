@@ -15,7 +15,12 @@ const API = {
       } catch (e) {
         detail = '';
       }
-      throw new Error(detail || `Request failed: ${res.status}`);
+      const error = new Error(detail || `Request failed: ${res.status}`);
+      /* The status rides along on the error so a caller can tell
+         "not there yet" (404) from "refused" (403/500) without having
+         to match on the message text. */
+      error.status = res.status;
+      throw error;
     }
     if (res.status === 204 || !res.headers.get('content-type')?.includes('application/json')) {
       return {};

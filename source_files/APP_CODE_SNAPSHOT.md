@@ -6,8 +6,8 @@ Verbatim copy of every source file in the agentCreator repository, in one docume
 | ----- | ----- |
 | Scope | `agentCreator/` |
 | Contains | file contents, verbatim |
-| Files | 83 |
-| Generated | 2026-09-26 |
+| Files | 85 |
+| Generated | 2026-09-28 |
 | Generator | `scripts/gen_master_copy.py` |
 | Regenerate | `.venv/Scripts/python -m scripts.gen_master_copy` |
 | Companions | [`headless_app_MASTER_COPY.md`](headless_app_MASTER_COPY.md) — `headless_app/`, [`project_manager_MASTER_COPY.md`](project_manager_MASTER_COPY.md) — `project_manager/` |
@@ -82,7 +82,7 @@ server running without the agent engine.
 
 ## File Index
 
-All 83 embedded files, with their size, so a reader can decide what to open. The contents are further down, in this same order, each under a `### path` heading and an `<!-- ==== n/total : path ==== -->` marker.
+All 85 embedded files, with their size, so a reader can decide what to open. The contents are further down, in this same order, each under a `### path` heading and an `<!-- ==== n/total : path ==== -->` marker.
 
 | # | File | Lines | Bytes |
 | - | ---- | ----- | ----- |
@@ -141,35 +141,37 @@ All 83 embedded files, with their size, so a reader can decide what to open. The
 | 53 | `project_manager/interface/routers/paths.py` | 58 | 1272 |
 | 54 | `project_manager/interface/routers/project.py` | 99 | 2082 |
 | 55 | `project_manager/interface/routers/ws.py` | 225 | 5759 |
-| 56 | `project_manager/interface/static/chat.html` | 1044 | 33333 |
-| 57 | `project_manager/interface/static/editor.html` | 436 | 11855 |
-| 58 | `project_manager/interface/static/home.html` | 374 | 9197 |
-| 59 | `project_manager/interface/static/index.html` | 386 | 10707 |
-| 60 | `project_manager/interface/static/js/agentCards.js` | 98 | 3009 |
-| 61 | `project_manager/interface/static/js/agentColors.js` | 70 | 2178 |
-| 62 | `project_manager/interface/static/js/agents.js` | 371 | 11495 |
-| 63 | `project_manager/interface/static/js/api.js` | 164 | 5255 |
-| 64 | `project_manager/interface/static/js/chat.js` | 536 | 18689 |
-| 65 | `project_manager/interface/static/js/editor.js` | 83 | 1899 |
-| 66 | `project_manager/interface/static/js/main.js` | 390 | 11758 |
-| 67 | `project_manager/interface/static/js/session.js` | 63 | 1448 |
-| 68 | `project_manager/interface/static/js/topbar.js` | 109 | 2643 |
-| 69 | `project_manager/interface/static/js/tree.js` | 206 | 6627 |
-| 70 | `project_manager/parameters/__init__.py` | 6 | 171 |
-| 71 | `project_manager/parameters/filesystem.py` | 994 | 21873 |
-| 72 | `project_manager/README.md` | 162 | 7391 |
-| 73 | `project_manager/requirements.txt` | 5 | 78 |
-| 74 | `project_manager/scripts/run.bat` | 16 | 445 |
-| 75 | `project_manager/scripts/run.sh` | 23 | 513 |
-| 76 | `project_manager/scripts/setup.sh` | 33 | 882 |
-| 77 | `project_manager/server.py` | 226 | 6702 |
-| 78 | `project_manager/workspace/agents/ProjectManager/agent.json` | 12 | 235 |
-| 79 | `project_manager/workspace/agents/ProjectManager/agent.md` | 18 | 307 |
-| 80 | `project_manager/workspace/project.json` | 6 | 95 |
-| 81 | `scripts/gen_master_copy.py` | 2077 | 63257 |
-| 82 | `scripts/venv.bat` | 35 | 1136 |
-| 83 | `scripts/venv.ps1` | 40 | 1691 |
-| | **83 files** | **17536** | **532683** |
+| 56 | `project_manager/interface/static/Agentpromptbuilder.html` | 1126 | 39377 |
+| 57 | `project_manager/interface/static/chat.html` | 1044 | 33333 |
+| 58 | `project_manager/interface/static/editor.html` | 436 | 11855 |
+| 59 | `project_manager/interface/static/home.html` | 374 | 9197 |
+| 60 | `project_manager/interface/static/index.html` | 386 | 10707 |
+| 61 | `project_manager/interface/static/js/agentCards.js` | 98 | 3009 |
+| 62 | `project_manager/interface/static/js/agentColors.js` | 70 | 2178 |
+| 63 | `project_manager/interface/static/js/agents.js` | 371 | 11495 |
+| 64 | `project_manager/interface/static/js/api.js` | 169 | 5499 |
+| 65 | `project_manager/interface/static/js/chat.js` | 536 | 18689 |
+| 66 | `project_manager/interface/static/js/editor.js` | 83 | 1899 |
+| 67 | `project_manager/interface/static/js/main.js` | 390 | 11758 |
+| 68 | `project_manager/interface/static/js/session.js` | 63 | 1448 |
+| 69 | `project_manager/interface/static/js/topbar.js` | 159 | 4351 |
+| 70 | `project_manager/interface/static/js/tree.js` | 206 | 6627 |
+| 71 | `project_manager/parameters/__init__.py` | 6 | 171 |
+| 72 | `project_manager/parameters/filesystem.py` | 1163 | 25903 |
+| 73 | `project_manager/README.md` | 19 | 1024 |
+| 74 | `project_manager/requirements.txt` | 5 | 78 |
+| 75 | `project_manager/scripts/run.bat` | 16 | 445 |
+| 76 | `project_manager/scripts/run.sh` | 23 | 513 |
+| 77 | `project_manager/scripts/setup.sh` | 33 | 882 |
+| 78 | `project_manager/server.py` | 233 | 6946 |
+| 79 | `project_manager/workspace/agents/ProjectManager/agent.json` | 12 | 235 |
+| 80 | `project_manager/workspace/agents/ProjectManager/agent.md` | 18 | 307 |
+| 81 | `project_manager/workspace/project.json` | 6 | 95 |
+| 82 | `README.md` | 207 | 8446 |
+| 83 | `scripts/gen_master_copy.py` | 2124 | 64212 |
+| 84 | `scripts/venv.bat` | 35 | 1136 |
+| 85 | `scripts/venv.ps1` | 40 | 1691 |
+| | **85 files** | **19004** | **581320** |
 
 ## File Structure
 
@@ -257,6 +259,7 @@ agentCreator/
 │   │       │   ├── session.js
 │   │       │   ├── topbar.js
 │   │       │   └── tree.js
+│   │       ├── Agentpromptbuilder.html
 │   │       ├── chat.html
 │   │       ├── editor.html
 │   │       ├── home.html
@@ -276,10 +279,13 @@ agentCreator/
 │   │   ├── config/
 │   │   ├── data/   # not embedded: runtime output: chat log and saved chat sessions
 │   │   ├── documentation/
-│   │   ├── Project Scope/
+│   │   │   └── PromptBuilderFiles/
+│   │   │       ├── output/
+│   │   │       └── prompt_parts/
+│   │   │           └── rules/
 │   │   ├── project_scope/
-│   │   ├── To Do List/
-│   │   ├── to_do/
+│   │   ├── Tests/
+│   │   ├── To Do/
 │   │   ├── Tools/
 │   │   ├── updates/
 │   │   └── project.json
@@ -294,12 +300,13 @@ agentCreator/
 │   └── venv.ps1
 ├── source_files/
 ├── .gitattributes
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
 ## Scope
 
-This document embeds every source file under `agentCreator/`, **83 files** in total, in case-insensitive path order, verbatim and unmodified.
+This document embeds every source file under `agentCreator/`, **85 files** in total, in case-insensitive path order, verbatim and unmodified.
 
 The following are listed in the structure above but deliberately **not** covered:
 
@@ -324,7 +331,7 @@ Or just this one:
 .venv/Scripts/python -m scripts.gen_master_copy --only agentCreator
 ```
 
-<!-- ==== 1/83 : .gitattributes ==== -->
+<!-- ==== 1/85 : .gitattributes ==== -->
 
 ### .gitattributes
 
@@ -346,7 +353,7 @@ Or just this one:
 
 ---
 
-<!-- ==== 2/83 : .gitignore ==== -->
+<!-- ==== 2/85 : .gitignore ==== -->
 
 ### .gitignore
 
@@ -388,7 +395,7 @@ planSave.txt
 
 ---
 
-<!-- ==== 3/83 : headless_app/bridge/__init__.py ==== -->
+<!-- ==== 3/85 : headless_app/bridge/__init__.py ==== -->
 
 ### headless_app/bridge/__init__.py
 
@@ -408,7 +415,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 4/83 : headless_app/bridge/client.py ==== -->
+<!-- ==== 4/85 : headless_app/bridge/client.py ==== -->
 
 ### headless_app/bridge/client.py
 
@@ -1327,7 +1334,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 5/83 : headless_app/bridge/providers.py ==== -->
+<!-- ==== 5/85 : headless_app/bridge/providers.py ==== -->
 
 ### headless_app/bridge/providers.py
 
@@ -1451,7 +1458,7 @@ __all__ = ["DirectProjectIO"]
 
 ---
 
-<!-- ==== 6/83 : headless_app/bridge/routers/__init__.py ==== -->
+<!-- ==== 6/85 : headless_app/bridge/routers/__init__.py ==== -->
 
 ### headless_app/bridge/routers/__init__.py
 
@@ -1461,7 +1468,7 @@ __all__ = ["DirectProjectIO"]
 
 ---
 
-<!-- ==== 7/83 : headless_app/bridge/routers/agents.py ==== -->
+<!-- ==== 7/85 : headless_app/bridge/routers/agents.py ==== -->
 
 ### headless_app/bridge/routers/agents.py
 
@@ -2028,7 +2035,7 @@ def list_models(
 
 ---
 
-<!-- ==== 8/83 : headless_app/bridge/routers/chat.py ==== -->
+<!-- ==== 8/85 : headless_app/bridge/routers/chat.py ==== -->
 
 ### headless_app/bridge/routers/chat.py
 
@@ -2296,7 +2303,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 9/83 : headless_app/bridge/tools_adapter.py ==== -->
+<!-- ==== 9/85 : headless_app/bridge/tools_adapter.py ==== -->
 
 ### headless_app/bridge/tools_adapter.py
 
@@ -2373,7 +2380,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 10/83 : headless_app/config/models.json ==== -->
+<!-- ==== 10/85 : headless_app/config/models.json ==== -->
 
 ### headless_app/config/models.json
 
@@ -2410,7 +2417,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 11/83 : headless_app/config/pipeline.json ==== -->
+<!-- ==== 11/85 : headless_app/config/pipeline.json ==== -->
 
 ### headless_app/config/pipeline.json
 
@@ -2428,7 +2435,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 12/83 : headless_app/engine/__init__.py ==== -->
+<!-- ==== 12/85 : headless_app/engine/__init__.py ==== -->
 
 ### headless_app/engine/__init__.py
 
@@ -2438,7 +2445,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 13/83 : headless_app/engine/agent_library/Builder/agent.json ==== -->
+<!-- ==== 13/85 : headless_app/engine/agent_library/Builder/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Builder/agent.json
 
@@ -2459,7 +2466,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 14/83 : headless_app/engine/agent_library/Builder/agent.md ==== -->
+<!-- ==== 14/85 : headless_app/engine/agent_library/Builder/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Builder/agent.md
 
@@ -2608,7 +2615,7 @@ def _extension_post_process_hook(record_path: Path, result: dict) -> None:
 
 ---
 
-<!-- ==== 15/83 : headless_app/engine/agent_library/Enginner/agent.json ==== -->
+<!-- ==== 15/85 : headless_app/engine/agent_library/Enginner/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Enginner/agent.json
 
@@ -2627,7 +2634,7 @@ def _extension_post_process_hook(record_path: Path, result: dict) -> None:
 
 ---
 
-<!-- ==== 16/83 : headless_app/engine/agent_library/Enginner/agent.md ==== -->
+<!-- ==== 16/85 : headless_app/engine/agent_library/Enginner/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Enginner/agent.md
 
@@ -2694,7 +2701,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 17/83 : headless_app/engine/agent_library/Planner/agent.json ==== -->
+<!-- ==== 17/85 : headless_app/engine/agent_library/Planner/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Planner/agent.json
 
@@ -2711,7 +2718,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 18/83 : headless_app/engine/agent_library/Planner/agent.md ==== -->
+<!-- ==== 18/85 : headless_app/engine/agent_library/Planner/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Planner/agent.md
 
@@ -2721,7 +2728,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 19/83 : headless_app/engine/agent_library/rag_assistant/agent.json ==== -->
+<!-- ==== 19/85 : headless_app/engine/agent_library/rag_assistant/agent.json ==== -->
 
 ### headless_app/engine/agent_library/rag_assistant/agent.json
 
@@ -2765,7 +2772,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 20/83 : headless_app/engine/agent_library/rag_assistant/agent.md ==== -->
+<!-- ==== 20/85 : headless_app/engine/agent_library/rag_assistant/agent.md ==== -->
 
 ### headless_app/engine/agent_library/rag_assistant/agent.md
 
@@ -2817,7 +2824,7 @@ To ensure no files are deleted accidentally, you must strictly follow this two-s
 
 ---
 
-<!-- ==== 21/83 : headless_app/engine/agents/__init__.py ==== -->
+<!-- ==== 21/85 : headless_app/engine/agents/__init__.py ==== -->
 
 ### headless_app/engine/agents/__init__.py
 
@@ -2827,7 +2834,7 @@ To ensure no files are deleted accidentally, you must strictly follow this two-s
 
 ---
 
-<!-- ==== 22/83 : headless_app/engine/agents/factory.py ==== -->
+<!-- ==== 22/85 : headless_app/engine/agents/factory.py ==== -->
 
 ### headless_app/engine/agents/factory.py
 
@@ -3137,7 +3144,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 23/83 : headless_app/engine/agents/loader.py ==== -->
+<!-- ==== 23/85 : headless_app/engine/agents/loader.py ==== -->
 
 ### headless_app/engine/agents/loader.py
 
@@ -3382,7 +3389,7 @@ def load_definition_from_paths(
 
 ---
 
-<!-- ==== 24/83 : headless_app/engine/agents/registry.py ==== -->
+<!-- ==== 24/85 : headless_app/engine/agents/registry.py ==== -->
 
 ### headless_app/engine/agents/registry.py
 
@@ -3485,7 +3492,7 @@ __all__ = ["list_agents", "get_agent_meta", "AGENT_LIBRARY_DIR"]
 
 ---
 
-<!-- ==== 25/83 : headless_app/engine/agents/roots.py ==== -->
+<!-- ==== 25/85 : headless_app/engine/agents/roots.py ==== -->
 
 ### headless_app/engine/agents/roots.py
 
@@ -3697,7 +3704,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 26/83 : headless_app/engine/core/__init__.py ==== -->
+<!-- ==== 26/85 : headless_app/engine/core/__init__.py ==== -->
 
 ### headless_app/engine/core/__init__.py
 
@@ -3707,7 +3714,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 27/83 : headless_app/engine/core/agent.py ==== -->
+<!-- ==== 27/85 : headless_app/engine/core/agent.py ==== -->
 
 ### headless_app/engine/core/agent.py
 
@@ -4206,7 +4213,7 @@ class Agent:
 
 ---
 
-<!-- ==== 28/83 : headless_app/engine/core/llm.py ==== -->
+<!-- ==== 28/85 : headless_app/engine/core/llm.py ==== -->
 
 ### headless_app/engine/core/llm.py
 
@@ -4478,7 +4485,7 @@ def refresh_models() -> list:
 
 ---
 
-<!-- ==== 29/83 : headless_app/engine/core/prompt.py ==== -->
+<!-- ==== 29/85 : headless_app/engine/core/prompt.py ==== -->
 
 ### headless_app/engine/core/prompt.py
 
@@ -4611,7 +4618,7 @@ class PromptManager:
 
 ---
 
-<!-- ==== 30/83 : headless_app/engine/pipeline.py ==== -->
+<!-- ==== 30/85 : headless_app/engine/pipeline.py ==== -->
 
 ### headless_app/engine/pipeline.py
 
@@ -4809,7 +4816,7 @@ def run_pipeline(user_message: str, model: str | None = None,
 
 ---
 
-<!-- ==== 31/83 : headless_app/interface_runner.py ==== -->
+<!-- ==== 31/85 : headless_app/interface_runner.py ==== -->
 
 ### headless_app/interface_runner.py
 
@@ -5134,7 +5141,7 @@ __all__ = ["AgentInterface", "DEFAULT_HISTORY_LIMIT"]
 
 ---
 
-<!-- ==== 32/83 : headless_app/run.py ==== -->
+<!-- ==== 32/85 : headless_app/run.py ==== -->
 
 ### headless_app/run.py
 
@@ -5343,7 +5350,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 33/83 : headless_app/tools/__init__.py ==== -->
+<!-- ==== 33/85 : headless_app/tools/__init__.py ==== -->
 
 ### headless_app/tools/__init__.py
 
@@ -5353,7 +5360,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 34/83 : headless_app/tools/chatlog.py ==== -->
+<!-- ==== 34/85 : headless_app/tools/chatlog.py ==== -->
 
 ### headless_app/tools/chatlog.py
 
@@ -5529,7 +5536,7 @@ def append_tool_event(event: dict) -> None:
 
 ---
 
-<!-- ==== 35/83 : headless_app/tools/project_tools.py ==== -->
+<!-- ==== 35/85 : headless_app/tools/project_tools.py ==== -->
 
 ### headless_app/tools/project_tools.py
 
@@ -6243,7 +6250,7 @@ if str(ROOT_DIR) not in sys.path:
 
 ---
 
-<!-- ==== 36/83 : headless_app/tools/registry.py ==== -->
+<!-- ==== 36/85 : headless_app/tools/registry.py ==== -->
 
 ### headless_app/tools/registry.py
 
@@ -6406,7 +6413,7 @@ def get_session() -> FileSession:
 
 ---
 
-<!-- ==== 37/83 : headless_app/tools/state.py ==== -->
+<!-- ==== 37/85 : headless_app/tools/state.py ==== -->
 
 ### headless_app/tools/state.py
 
@@ -6487,7 +6494,7 @@ class FileSession:
 
 ---
 
-<!-- ==== 38/83 : project_manager/.gitattributes ==== -->
+<!-- ==== 38/85 : project_manager/.gitattributes ==== -->
 
 ### project_manager/.gitattributes
 
@@ -6509,7 +6516,7 @@ class FileSession:
 
 ---
 
-<!-- ==== 39/83 : project_manager/.gitignore ==== -->
+<!-- ==== 39/85 : project_manager/.gitignore ==== -->
 
 ### project_manager/.gitignore
 
@@ -6545,7 +6552,7 @@ htmlcov/
 
 ---
 
-<!-- ==== 40/83 : project_manager/interface/clients/__init__.py ==== -->
+<!-- ==== 40/85 : project_manager/interface/clients/__init__.py ==== -->
 
 ### project_manager/interface/clients/__init__.py
 
@@ -6575,7 +6582,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 41/83 : project_manager/interface/clients/editor_client.py ==== -->
+<!-- ==== 41/85 : project_manager/interface/clients/editor_client.py ==== -->
 
 ### project_manager/interface/clients/editor_client.py
 
@@ -7279,7 +7286,7 @@ class AsyncEditorClient:
 
 ---
 
-<!-- ==== 42/83 : project_manager/interface/core/__init__.py ==== -->
+<!-- ==== 42/85 : project_manager/interface/core/__init__.py ==== -->
 
 ### project_manager/interface/core/__init__.py
 
@@ -7309,7 +7316,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 43/83 : project_manager/interface/core/defaults.py ==== -->
+<!-- ==== 43/85 : project_manager/interface/core/defaults.py ==== -->
 
 ### project_manager/interface/core/defaults.py
 
@@ -7426,7 +7433,7 @@ def reset_for_tests() -> None:
 
 ---
 
-<!-- ==== 44/83 : project_manager/interface/core/events.py ==== -->
+<!-- ==== 44/85 : project_manager/interface/core/events.py ==== -->
 
 ### project_manager/interface/core/events.py
 
@@ -7538,7 +7545,7 @@ class EventBus:
 
 ---
 
-<!-- ==== 45/83 : project_manager/interface/core/operations.py ==== -->
+<!-- ==== 45/85 : project_manager/interface/core/operations.py ==== -->
 
 ### project_manager/interface/core/operations.py
 
@@ -8007,7 +8014,7 @@ class EditorInterface:
 
 ---
 
-<!-- ==== 46/83 : project_manager/interface/core/session.py ==== -->
+<!-- ==== 46/85 : project_manager/interface/core/session.py ==== -->
 
 ### project_manager/interface/core/session.py
 
@@ -8145,7 +8152,7 @@ class EditorManager:
 
 ---
 
-<!-- ==== 47/83 : project_manager/interface/routers/__init__.py ==== -->
+<!-- ==== 47/85 : project_manager/interface/routers/__init__.py ==== -->
 
 ### project_manager/interface/routers/__init__.py
 
@@ -8212,7 +8219,7 @@ def normalize_scope(scope: str | None) -> str | None:
 
 ---
 
-<!-- ==== 48/83 : project_manager/interface/routers/agents.py ==== -->
+<!-- ==== 48/85 : project_manager/interface/routers/agents.py ==== -->
 
 ### project_manager/interface/routers/agents.py
 
@@ -8779,7 +8786,7 @@ def list_models(
 
 ---
 
-<!-- ==== 49/83 : project_manager/interface/routers/chat.py ==== -->
+<!-- ==== 49/85 : project_manager/interface/routers/chat.py ==== -->
 
 ### project_manager/interface/routers/chat.py
 
@@ -9575,7 +9582,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 50/83 : project_manager/interface/routers/directories.py ==== -->
+<!-- ==== 50/85 : project_manager/interface/routers/directories.py ==== -->
 
 ### project_manager/interface/routers/directories.py
 
@@ -9669,7 +9676,7 @@ def delete_directory(
 
 ---
 
-<!-- ==== 51/83 : project_manager/interface/routers/errors.py ==== -->
+<!-- ==== 51/85 : project_manager/interface/routers/errors.py ==== -->
 
 ### project_manager/interface/routers/errors.py
 
@@ -9750,7 +9757,7 @@ def project_manager_error(
 
 ---
 
-<!-- ==== 52/83 : project_manager/interface/routers/files.py ==== -->
+<!-- ==== 52/85 : project_manager/interface/routers/files.py ==== -->
 
 ### project_manager/interface/routers/files.py
 
@@ -9930,7 +9937,7 @@ def delete_file(
 
 ---
 
-<!-- ==== 53/83 : project_manager/interface/routers/paths.py ==== -->
+<!-- ==== 53/85 : project_manager/interface/routers/paths.py ==== -->
 
 ### project_manager/interface/routers/paths.py
 
@@ -9996,7 +10003,7 @@ def rename_path(
 
 ---
 
-<!-- ==== 54/83 : project_manager/interface/routers/project.py ==== -->
+<!-- ==== 54/85 : project_manager/interface/routers/project.py ==== -->
 
 ### project_manager/interface/routers/project.py
 
@@ -10103,7 +10110,7 @@ def get_sessions(
 
 ---
 
-<!-- ==== 55/83 : project_manager/interface/routers/ws.py ==== -->
+<!-- ==== 55/85 : project_manager/interface/routers/ws.py ==== -->
 
 ### project_manager/interface/routers/ws.py
 
@@ -10336,7 +10343,1141 @@ async def project_manager_socket(
 
 ---
 
-<!-- ==== 56/83 : project_manager/interface/static/chat.html ==== -->
+<!-- ==== 56/85 : project_manager/interface/static/Agentpromptbuilder.html ==== -->
+
+### project_manager/interface/static/Agentpromptbuilder.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Prompt Builder</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#101318;color:#e8edf2}
+header{padding:18px 24px;background:#181d24;border-bottom:1px solid #303741}
+h1{margin:0 0 5px;font-size:22px}
+header p{margin:0;color:#9ca8b5}
+main{max-width:1200px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#151a20;border:1px solid #303741;border-radius:8px;padding:16px}
+.full{grid-column:1 / -1}
+h2{margin:0 0 12px;font-size:16px;color:#dfe6ee;border-bottom:1px solid #303741;padding-bottom:8px}
+label{display:block;margin:10px 0 6px;font-size:13px;color:#aeb9c5}
+.microlabel{display:block;margin:14px 0 5px;font-size:12px;color:#8fa0b3;letter-spacing:.04em}
+.catrow{display:flex;align-items:center;gap:8px;margin-top:6px}
+.catrow select,.catrow input{flex:1;min-width:0}
+.catrow button{flex-shrink:0}
+.catrow[hidden]{display:none}
+input,textarea,select{width:100%;background:#0d1116;color:#edf2f7;border:1px solid #39424d;border-radius:6px;padding:9px;font-family:inherit}
+textarea{min-height:110px;resize:vertical}
+#master_prompt{min-height:320px;font-family:Consolas,Menlo,monospace;font-size:13px}
+button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:#4c8bf5;color:white;font-size:14px}
+button.secondary{background:#303944}
+button.danger{background:#7a2f3c}
+button.tiny{padding:3px 9px;font-size:12px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:hover:not(:disabled){opacity:.92}
+.row{display:flex;gap:8px;margin-top:14px}
+.row button{flex:1}
+.parts-group{margin-bottom:14px}
+.parts-group h3{margin:0 0 6px;font-size:13px;color:#8fa0b3;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.parts-group h3 .count{color:#5c6774;text-transform:none;letter-spacing:0}
+.part-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:14px}
+.part-row input[type=checkbox]{width:auto}
+.part-row .name{margin:0;flex:1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.part-row .actions{display:flex;gap:6px;flex-shrink:0}
+.empty{color:#5c6774;font-size:13px;font-style:italic}
+.empty code{font-style:normal;background:#0d1116;padding:2px 6px;border-radius:5px;border:1px solid #39424d}
+.status{margin-top:14px;padding:10px;border-radius:6px;background:#1a2129;color:#aeb9c5;font-size:13px;white-space:pre-wrap}
+.status.error{color:#ff9b9b}
+.status.ok{color:#8fe3a6}
+.status.warn{color:#f5c96b}
+.folderbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#aeb9c5}
+.folderbar code{background:#0d1116;padding:3px 7px;border-radius:5px;border:1px solid #39424d}
+.folderbar button{margin-left:auto}
+.headrow{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.headrow h2{margin:0;flex:1}
+.parts-group h3 .lockbadge{background:#4a2530;color:#ff9b9b;border:1px solid #6b3341;padding:1px 7px;border-radius:9px;font-size:11px;letter-spacing:.02em;cursor:help}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>Agent Prompt Builder</h1>
+<p>Create reusable prompt parts in categories you can add or remove, select them, and assemble an editable agent.md — written straight into the managed workspace.</p>
+</header>
+
+<main>
+
+<div class="card full">
+<h2>Parts Folder</h2>
+<div class="folderbar">
+<span>Parts:</span>
+<code id="parts_folder_label">…</code>
+<button id="refresh_parts_btn" class="secondary tiny" type="button" disabled title="Re-read the parts folder. Also clears any folder marked as locked after a failed write.">Refresh Parts</button>
+</div>
+<div id="storage_status" class="status">Connecting to the Project Manager…</div>
+</div>
+
+<div class="card">
+<h2 id="form_title">Create Prompt Part</h2>
+
+<label>Category</label>
+<div class="catrow">
+<select id="part_category"></select>
+<button id="new_category_btn" class="secondary tiny" type="button" disabled title="Add a category of your own. It becomes a new folder under prompt_parts.">+ Category</button>
+<button id="delete_category_btn" class="secondary tiny danger" type="button" disabled title="Delete the selected category and every part inside it.">Delete</button>
+</div>
+
+<div class="catrow" id="new_category_row" hidden>
+<input id="new_category_name" placeholder="new category name (e.g. memory)" maxlength="40" autocomplete="off">
+<button id="create_category_btn" class="secondary tiny" type="button" disabled>Create</button>
+</div>
+<div class="microlabel">the category list is stored in <code id="categories_file_label">categories.json</code> and is read on every refresh</div>
+
+<label>Name</label>
+<input id="part_name" placeholder="e.g. planner">
+
+<label>Text</label>
+<textarea id="part_text" placeholder="You are a planning agent..."></textarea>
+
+<div class="row">
+<button id="save_part_btn" type="button" disabled>Save Part</button>
+<button id="clear_form_btn" class="secondary" type="button" disabled>Clear</button>
+</div>
+
+<div id="part_status" class="status">Waiting for the Project Manager…</div>
+</div>
+
+<div class="card">
+<div class="headrow">
+<h2>Available Parts</h2>
+<button id="new_part_btn" class="secondary tiny" type="button" disabled>+ New Part</button>
+</div>
+<div id="parts_list"><div class="empty">Loading parts…</div></div>
+
+<div class="row">
+<button id="create_master_btn" type="button" disabled>Create Master Prompt</button>
+</div>
+</div>
+
+<div class="card full">
+<h2>Master Prompt</h2>
+
+<label>Agent ID (folder name for saving)</label>
+<input id="agent_id" value="new_agent" style="max-width:320px">
+
+<label>Markdown (editable before saving)</label>
+<textarea id="master_prompt" placeholder="Select parts and click 'Create Master Prompt'."></textarea>
+
+<div class="row">
+<button id="save_agent_btn" type="button" disabled>Save to documentation</button>
+<button id="publish_btn" type="button" disabled>Publish for testing</button>
+</div>
+
+<div id="master_status" class="status">Ready.</div>
+</div>
+
+</main>
+
+<script type="module">
+import API from '/static/js/api.js';
+
+// ============================================================
+// CONFIG - the storage locations are fixed, not user-selected.
+// ============================================================
+
+/* Every path is browser-root-qualified (workspace/...), which is what
+   the file API resolves back to a root. The workspace root is the only
+   writable one, so the builder can only ever write inside it - it can
+   no longer be pointed at an arbitrary folder on the user's disk. */
+
+const DOC_ROOT = 'workspace/documentation/PromptBuilderFiles';
+const PARTS_DIR = DOC_ROOT + '/prompt_parts';
+const DOC_OUTPUT_DIR = DOC_ROOT + '/output/agents';
+const AGENTS_DIR = 'workspace/agents';
+
+/* The category list is data, not code. It lives in this file next to the
+   parts folders so it can be added to and subtracted from in the browser
+   - and hand-edited - without touching this script. Array order is the
+   order the dropdown, the parts list and the master prompt sections use,
+   so there is no separate sort key to keep in sync. It sits outside
+   prompt_parts/ so that folder holds nothing but category folders. */
+const CATEGORIES_FILE = DOC_ROOT + '/categories.json';
+const CATEGORIES_VERSION = 1;
+
+const PART_FILE = '.txt';
+
+/* The starting catalogue, written on the first run only. It is also the
+   title lookup: a category typed as "hallucinations" gets the readable
+   title from here rather than the id with a capital letter. */
+const SEED_CATEGORIES = [
+  { id: "role", title: "Role" },
+  { id: "rules", title: "Rules" },
+  { id: "hallucinations", title: "Hallucination Rules" },
+  { id: "tools", title: "Tools" },
+  { id: "skills", title: "Skills" },
+  { id: "input", title: "Input" },
+  { id: "reasoning", title: "Reasoning" },
+  { id: "logic", title: "Logic" }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+
+let categories = [];           // [{id, title}] from the manifest, in order
+let partIndex = {};            // {category: [{name, path}]}
+let textCache = new Map();     // part path -> text
+let selected = new Set();      // "category/name" keys that are checked
+let lockedCategories = new Set(); // categories that refused a write
+let editingCategory = null;    // category the part open in the form belongs to
+let workspaceRoot = "";        // absolute, from /api/health
+let projectRoot = "";          // the parent of workspaceRoot
+let ready = false;             // the parts folder answered at least once
+let assembled = null;          // selection signature of the last build
+
+/* The two buttons the panel and the form can reach, so their disabled
+   state is always derived from one place. */
+const BUTTONS = ["save_part_btn","clear_form_btn","create_master_btn",
+                  "save_agent_btn","publish_btn","refresh_parts_btn",
+                  "new_part_btn","new_category_btn","create_category_btn",
+                  "delete_category_btn"];
+
+function $(id){ return document.getElementById(id); }
+
+function setStatus(id, message, kind){
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+function setReady(value){
+  ready = value;
+  for (const id of BUTTONS){
+    $(id).disabled = !value;
+  }
+}
+
+/* Buttons stay disabled for the duration of an operation so a double
+   click cannot fire two writes at the same file. */
+function setBusy(busy){
+  if (busy && !ready) return;
+  for (const id of BUTTONS){
+    $(id).disabled = busy ? true : !ready;
+  }
+}
+
+function partKey(category, name){ return category + "/" + name; }
+
+function categoryPath(id){
+  return PARTS_DIR + "/" + id;
+}
+
+function partPath(category, name){
+  return categoryPath(category) + "/" + name + PART_FILE;
+}
+
+function relativePath(path){
+  return path.startsWith(DOC_ROOT + "/")
+    ? path.slice(DOC_ROOT.length + 1)
+    : path;
+}
+
+function safeSlug(value){
+  value = (value || "").trim().toLowerCase();
+  value = value.replace(/[^a-z0-9_-]+/g, "_");
+  value = value.replace(/_+/g, "_").replace(/^_|_$/g, "");
+  if (!value) throw new Error("Name cannot be empty.");
+  return value;
+}
+
+/* A category added in the browser has no entry in the seed, so its id is
+   the title unless it is one of the seeded ones. */
+function titleFor(id){
+  const seeded = SEED_CATEGORIES.find(cat => cat.id === id);
+  if (seeded) return seeded.title;
+  return id.replace(/[_-]+/g, " ")
+           .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* agent.json needs a human label; derive one from the id rather than
+   adding a field the builder would then have to keep in sync. */
+function displayName(id){
+  return id.replace(/[_-]+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ============================================================
+// ERRORS - a raw Python errno is not an explanation
+// ============================================================
+
+/* The API reports the absolute server path, so a failure reads as
+   "Permission denied: 'E:\agentCreator\project_manager\workspace\...'"
+   - a path the user cannot click and does not recognise. Both roots are
+   learned once so the same failure can be shown relative. Best effort:
+   if the lookup fails the original text is still shown. */
+function learnWorkspaceRoot(){
+  if (typeof API.health !== "function") return Promise.resolve();
+  return API.health()
+    .then((data) => {
+      workspaceRoot = (data && data.root) || "";
+      projectRoot = workspaceRoot
+        ? workspaceRoot.replace(/[\\/][^\\/]+[\\/]?$/, "")
+        : "";
+    })
+    .catch(() => {
+      workspaceRoot = "";
+      projectRoot = "";
+    });
+}
+
+function isPermissionError(error){
+  const message = (error && error.message) || String(error);
+  return /permission denied|access is denied|errno 13|winerror 5/i
+    .test(message);
+}
+
+/* Python quotes the offending path: "... denied: 'C:\\...'". */
+function extractFailedPath(message){
+  const quoted = String(message).match(/'([^']+)'/);
+  return quoted ? quoted[1] : "";
+}
+
+function shortenPath(value){
+  let out = String(value || "");
+  for (const root of [workspaceRoot, projectRoot]){
+    if (!root) continue;
+    out = out.split(root).join("");
+  }
+  return out.replace(/^[\\/]+/, "").replace(/\\/g, "/");
+}
+
+/* The remedy is the same for every refused write on the same volume, so
+   it is named from the drive rather than hard-coded. Pass lowercase to
+   embed it inside a sentence. */
+function repairHint(lowercase){
+  const drive = projectRoot.match(/^([A-Za-z]:)/);
+  const target = drive ? drive[1] : "the drive";
+  const text = "Repair the drive in an Administrator prompt: chkdsk "
+    + target + " /f";
+  return lowercase
+    ? text.charAt(0).toLowerCase() + text.slice(1)
+    : text;
+}
+
+function firstUnlockedCategory(){
+  const free = categories.find(cat => !lockedCategories.has(cat.id));
+  return free ? free.id : null;
+}
+
+/* A locked category is disabled in the dropdown rather than hidden, so
+   it stays visible that it exists and is why it cannot be used. */
+function syncCategoryDropdown(){
+  const sel = $("part_category");
+  if (!sel) return;
+  for (const opt of sel.options){
+    opt.disabled = lockedCategories.has(opt.value);
+  }
+  if (lockedCategories.has(sel.value)){
+    const free = firstUnlockedCategory();
+    if (free) sel.value = free;
+  }
+}
+
+function markCategoryLocked(category){
+  if (!category) return;
+  lockedCategories.add(category);
+  syncCategoryDropdown();
+  renderParts();
+}
+
+/* Turns a thrown error into a sentence the user can act on, and records
+   a refused folder so the panel stops offering it. */
+function prettyError(error, category){
+  const raw = (error && error.message) || String(error);
+
+  if (isPermissionError(error)){
+    if (category) markCategoryLocked(category);
+    const where = shortenPath(
+      extractFailedPath(raw) || "that folder"
+    );
+    return "Cannot write " + where
+      + " - Windows reports \"access denied\". Nothing was saved."
+      + " That folder is read-only or damaged: use another category, or "
+      + repairHint(true) + ". Then press 'Refresh Parts'.";
+  }
+
+  return "Error: " + shortenPath(raw);
+}
+
+// ============================================================
+// TREE LOOKUP - the /api/project tree is the listing source
+// ============================================================
+
+function findNode(items, path){
+  for (const item of items || []){
+    if (item.path === path) return item;
+    if (item.children){
+      const hit = findNode(item.children, path);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+function childDir(node, name){
+  for (const child of (node && node.children) || []){
+    if (child.type === "directory" && child.name === name) return child;
+  }
+  return null;
+}
+
+// ============================================================
+// FOLDER
+// ============================================================
+
+/* Only the parts root is created up front. Category folders appear on
+   demand: every file write creates its parent directories, so seeding
+   eight empty folders would just be eight pointless API calls - and a
+   category with no parts does not need a folder to exist. */
+async function ensureStructure(){
+  await API.directoryCreate(PARTS_DIR);
+  $("parts_folder_label").textContent = relativePath(PARTS_DIR);
+  $("categories_file_label").textContent = relativePath(CATEGORIES_FILE);
+}
+
+// ============================================================
+// CATEGORIES - the manifest is the list
+// ============================================================
+
+/* One entry per category, in the order everything else uses. A bad entry
+   is dropped and a repeated id keeps its first position, because the
+   manifest is a plain text file a person is allowed to edit. */
+function normalizeCategories(raw){
+  const list = Array.isArray(raw && raw.categories) ? raw.categories : [];
+  const seen = new Set();
+  const out = [];
+  for (const item of list){
+    if (!item || typeof item.id !== "string") continue;
+    const id = item.id.trim().toLowerCase();
+    if (!id || seen.has(id)) continue;
+    const title = (typeof item.title === "string" && item.title.trim())
+      || titleFor(id);
+    seen.add(id);
+    out.push({ id, title });
+  }
+  return out;
+}
+
+function manifestText(list){
+  return JSON.stringify(
+    { version: CATEGORIES_VERSION, categories: list }, null, 2
+  ) + "\n";
+}
+
+/* Absent means "never set up", so the seed catalogue is written. Present
+   but unreadable is an error and is never overwritten: a hand-edit with
+   a typo in it has to survive until it is fixed. */
+async function readCategories(){
+  let text = null;
+
+  try {
+    text = (await API.fileRead(CATEGORIES_FILE)).content;
+  } catch (error) {
+    if (error.status !== 404) throw error;
+  }
+
+  if (text === null){
+    const seeded = normalizeCategories({ categories: SEED_CATEGORIES });
+    await API.fileWrite(CATEGORIES_FILE, manifestText(seeded));
+    return seeded;
+  }
+
+  try {
+    return normalizeCategories(JSON.parse(text));
+  } catch (error) {
+    throw new Error(relativePath(CATEGORIES_FILE)
+      + " is not valid JSON (" + error.message + ")."
+      + " Fix it in the editor - it has not been changed.");
+  }
+}
+
+/* Every change goes through here, and the in-memory list is rebuilt from
+   the same normalizer the file is written from, so what the page shows
+   is always exactly what is on disk. */
+async function writeCategories(list){
+  const payload = normalizeCategories({ categories: list });
+  await API.fileWrite(CATEGORIES_FILE, manifestText(payload));
+  categories = payload;
+  return payload;
+}
+
+// ============================================================
+// PARTS
+// ============================================================
+
+function populateCategoryDropdown(){
+  const sel = $("part_category");
+  const previous = sel.value;
+  sel.innerHTML = "";
+
+  /* With every category deleted there is nothing to save a part into, and
+     a blank dropdown would read as a bug rather than as that state. */
+  if (!categories.length){
+    const none = document.createElement("option");
+    none.value = "";
+    none.textContent = "(no categories - create one)";
+    sel.appendChild(none);
+  }
+
+  for (const cat of categories){
+    const opt = document.createElement("option");
+    opt.value = cat.id;
+    opt.textContent = cat.title;
+    sel.appendChild(opt);
+  }
+
+  /* A category that was just deleted is no longer an option, so the old
+     value would quietly become the first one instead. */
+  if (categories.some(cat => cat.id === previous)){
+    sel.value = previous;
+  }
+
+  syncCategoryDropdown();
+}
+
+async function readPart(path){
+  if (textCache.has(path)) return textCache.get(path);
+  const data = await API.fileRead(path);
+  const text = data.content || "";
+  textCache.set(path, text);
+  return text;
+}
+
+/* Selection is state, not DOM: the list is rebuilt from the tree on
+   every refresh, so checked boxes are re-applied from `selected`
+   instead of being inherited from the markup that just got replaced. */
+async function refreshParts(){
+  const data = await API.project();
+  const partsNode = findNode(data.filesystem, PARTS_DIR);
+
+  partIndex = {};
+  for (const cat of categories){
+    const catNode = childDir(partsNode, cat.id);
+    const entries = [];
+    for (const child of (catNode && catNode.children) || []){
+      if (child.type !== "file") continue;
+      if (!child.name.endsWith(PART_FILE)) continue;
+      entries.push({ name: child.name.slice(0, -PART_FILE.length), path: child.path });
+    }
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    partIndex[cat.id] = entries;
+  }
+
+  /* Drop selections whose part no longer exists, so a later build can
+     never reference a file that was deleted or renamed. A category that
+     was removed takes its checked parts with it. */
+  const live = new Set();
+  for (const cat of categories){
+    for (const entry of partIndex[cat.id]) live.add(partKey(cat.id, entry.name));
+  }
+  const dropped = [];
+  for (const key of Array.from(selected)){
+    if (!live.has(key)){ selected.delete(key); dropped.push(key); }
+  }
+
+  renderParts();
+  return { total: live.size, dropped };
+}
+
+function isChecked(category, name){
+  return selected.has(partKey(category, name));
+}
+
+function setChecked(category, name, value){
+  const key = partKey(category, name);
+  if (value) selected.add(key); else selected.delete(key);
+}
+
+function markAssembledStale(){
+  if (assembled === null) return;
+  if (assembled === selectionSignature()) return;
+  setStatus("master_status",
+    "The selected parts changed. Click 'Create Master Prompt' to rebuild before saving.", "warn");
+}
+
+function selectionSignature(){
+  return Array.from(selected).sort().join("|");
+}
+
+function renderParts(){
+  const box = $("parts_list");
+  box.innerHTML = "";
+
+  let total = 0;
+
+  for (const cat of categories){
+    const id = cat.id;
+    const entries = partIndex[id] || [];
+    const locked = lockedCategories.has(id);
+    total += entries.length;
+
+    const group = document.createElement("div");
+    group.className = "parts-group";
+
+    const heading = document.createElement("h3");
+    heading.appendChild(document.createTextNode(cat.title));
+    heading.title = relativePath(categoryPath(id));
+
+    const count = document.createElement("span");
+    count.className = "count";
+    count.textContent = "(" + entries.length + ")";
+    heading.appendChild(count);
+
+    /* The category is listed but cannot be used, so the panel says so
+       instead of showing an empty list as if nothing had ever been
+       written there. */
+    if (locked){
+      const badge = document.createElement("span");
+      badge.className = "lockbadge";
+      badge.textContent = "locked";
+      badge.title = "This folder refused a write, so its parts cannot be"
+        + " listed or saved. " + repairHint() + ", then press 'Refresh Parts'.";
+      heading.appendChild(badge);
+    }
+
+    if (entries.length){
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "secondary tiny";
+      toggle.textContent = "all / none";
+      toggle.addEventListener("click", () => toggleCategory(id));
+      heading.appendChild(toggle);
+    }
+
+    group.appendChild(heading);
+
+    if (entries.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = locked
+        ? "Folder is not writable right now."
+        : "No parts yet.";
+      group.appendChild(empty);
+    }
+
+    for (const entry of entries){
+      group.appendChild(buildPartRow(id, entry));
+    }
+
+    box.appendChild(group);
+  }
+
+  if (total === 0){
+    const hint = document.createElement("div");
+    hint.className = "empty";
+    hint.innerHTML =
+      "No parts in the folder yet. Use \"+ New Part\" above, or add a"
+      + " <code>.txt</code> file to <code>"
+      + relativePath(PARTS_DIR) + "/&lt;category&gt;/</code> in the editor."
+      + " A new category is a new folder there, so the editor works"
+      + " without this page too.";
+    box.appendChild(hint);
+  }
+}
+
+function buildPartRow(category, entry){
+  const row = document.createElement("div");
+  row.className = "part-row";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.id = "part_" + category + "_" + entry.name;
+  checkbox.checked = isChecked(category, entry.name);
+  checkbox.addEventListener("change", () => {
+    setChecked(category, entry.name, checkbox.checked);
+    markAssembledStale();
+  });
+
+  const label = document.createElement("label");
+  label.className = "name";
+  label.htmlFor = checkbox.id;
+  label.textContent = entry.name;
+  label.title = entry.path;
+
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "secondary tiny";
+  editBtn.textContent = "Edit";
+  editBtn.addEventListener("click", () => editPart(category, entry));
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "secondary tiny";
+  deleteBtn.textContent = "Delete";
+  deleteBtn.addEventListener("click", () => deletePart(category, entry));
+
+  actions.appendChild(editBtn);
+  actions.appendChild(deleteBtn);
+  row.appendChild(checkbox);
+  row.appendChild(label);
+  row.appendChild(actions);
+  return row;
+}
+
+function toggleCategory(category){
+  const entries = partIndex[category] || [];
+  const allChecked = entries.length > 0
+    && entries.every(entry => isChecked(category, entry.name));
+  for (const entry of entries){
+    setChecked(category, entry.name, !allChecked);
+  }
+  renderParts();
+  markAssembledStale();
+}
+
+/* Clearing the fields and reporting "Ready" are separate: a successful
+   save clears the form but must keep its own confirmation visible. */
+function clearFormFields(){
+  $("part_name").value = "";
+  $("part_text").value = "";
+  $("form_title").textContent = "Create Prompt Part";
+  editingCategory = null;
+}
+
+function resetForm(){
+  clearFormFields();
+  setStatus("part_status", "Ready.");
+}
+
+function editPart(category, entry){
+  setBusy(true);
+  readPart(entry.path)
+    .then((text) => {
+      $("part_category").value = category;
+      $("part_name").value = entry.name;
+      $("part_text").value = text.replace(/\s+$/, "");
+      $("form_title").textContent = "Edit Prompt Part";
+      /* Remembered so deleting this category can say the open part goes
+         with it, and so a cleared form is not mistaken for a live edit. */
+      editingCategory = category;
+      setStatus("part_status",
+        "Editing " + relativePath(entry.path) + ". Save Part to update it.", "ok");
+      $("part_text").focus();
+    })
+    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
+    .finally(() => setBusy(false));
+}
+
+function deletePart(category, entry){
+  if (!confirm("Delete " + relativePath(entry.path) + "?")) return;
+  setBusy(true);
+  API.fileDelete(entry.path)
+    .then(() => {
+      textCache.delete(entry.path);
+      selected.delete(partKey(category, entry.name));
+      return refreshParts();
+    })
+    .then(({ total, dropped }) => {
+      setStatus("part_status",
+        "Deleted " + relativePath(entry.path) + ". " + total + " part(s) left."
+        + droppedNote(dropped), "ok");
+      markAssembledStale();
+    })
+    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
+    .finally(() => setBusy(false));
+}
+
+function droppedNote(dropped){
+  if (!dropped.length) return "";
+  return " Cleared " + dropped.length + " stale selection(s): " + dropped.join(", ") + ".";
+}
+
+// ============================================================
+// CATEGORY ACTIONS
+// ============================================================
+
+/* The name field is hidden until it is asked for, so the form keeps one
+   category selector instead of two near-identical text boxes. */
+function toggleNewCategoryRow(open){
+  const row = $("new_category_row");
+  const show = open === undefined ? row.hidden : open;
+  row.hidden = !show;
+  $("new_category_btn").textContent = show ? "Cancel" : "+ Category";
+  if (show) $("new_category_name").focus();
+  else $("new_category_name").value = "";
+}
+
+/* Adding a category is a manifest write and nothing else: the folder is
+   still created by the first part saved into it, which is the same
+   "on demand" rule every other part follows. */
+async function addCategory(){
+  let id = "";
+  try {
+    id = safeSlug($("new_category_name").value);
+  } catch (error) {
+    setStatus("part_status", "Category " + error.message, "error");
+    return;
+  }
+
+  if (categories.some(cat => cat.id === id)){
+    setStatus("part_status",
+      "The category '" + id + "' already exists.", "error");
+    return;
+  }
+
+  setBusy(true);
+  try {
+    const title = titleFor(id);
+    await writeCategories(categories.concat({ id, title }));
+    toggleNewCategoryRow(false);
+    populateCategoryDropdown();
+    $("part_category").value = id;
+    renderParts();
+    setStatus("part_status", "Added category " + title + " -> "
+      + relativePath(categoryPath(id))
+      + ". Its folder appears with the first part saved into it.", "ok");
+  } catch (error) {
+    setStatus("part_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* Everything the deleted folder was referenced by, so no path is left
+   pointing at a folder that is gone. */
+function forgetCategory(id){
+  const prefix = categoryPath(id) + "/";
+  for (const path of Array.from(textCache.keys())){
+    if (path.startsWith(prefix)) textCache.delete(path);
+  }
+  for (const key of Array.from(selected)){
+    if (key.startsWith(id + "/")) selected.delete(key);
+  }
+  lockedCategories.delete(id);
+}
+
+async function deleteCategory(){
+  const id = $("part_category").value;
+  const entry = categories.find(cat => cat.id === id);
+
+  if (!entry){
+    setStatus("part_status", "There is no category to delete.", "error");
+    return;
+  }
+
+  const parts = partIndex[id] || [];
+  const editing = editingCategory === id;
+
+  /* One confirm says what is destroyed: the folder, every part in it,
+     and an open part that otherwise would look like it survived. */
+  let message = "Delete the category " + entry.title + " ("
+    + relativePath(categoryPath(id)) + ")?";
+  message += parts.length
+    ? "\n\nThis permanently deletes " + parts.length + " part(s): "
+      + parts.map(part => part.name).join(", ") + "."
+    : "\n\nIt holds no parts.";
+  if (editing){
+    message += "\n\nThe part open in the form is one of them.";
+  }
+  if (!confirm(message)) return;
+
+  setBusy(true);
+  try {
+    /* The folder goes first. A refused recursive delete then leaves the
+       manifest untouched, so the list still matches the disk and the
+       delete can simply be tried again - the other order would hide a
+       category whose parts are already gone. A category that never had a
+       part saved into it has no folder to remove, and a stale tree must
+       not be able to skip a folder that does exist, so the answer to
+       "is it there" comes from the delete itself. */
+    try {
+      await API.directoryDelete(categoryPath(id));
+    } catch (error) {
+      if (error.status !== 404) throw error;
+    }
+    forgetCategory(id);
+    await writeCategories(categories.filter(cat => cat.id !== id));
+    populateCategoryDropdown();
+
+    const { total, dropped } = await refreshParts();
+    if (editing) resetForm();
+    setStatus("part_status", "Deleted category " + entry.title + ". "
+      + total + " part(s) left." + droppedNote(dropped), "ok");
+    markAssembledStale();
+  } catch (error) {
+    setStatus("part_status", prettyError(error, id), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* The create button in the panel header hands off to the form rather
+   than duplicating it: two editors for one file is how the two drift
+   apart. The category is moved off a locked folder first, because the
+   first option is otherwise a folder that may refuse the write. */
+function startNewPart(){
+  if (!categories.length){
+    setStatus("part_status",
+      "There are no categories yet - use \"+ Category\" to add one first.", "warn");
+    return;
+  }
+  const sel = $("part_category");
+  if (lockedCategories.has(sel.value)){
+    const free = firstUnlockedCategory();
+    if (free) sel.value = free;
+  }
+  clearFormFields();
+  const title = $("form_title");
+  if (title && typeof title.scrollIntoView === "function"){
+    title.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("part_name").focus();
+  setStatus("part_status", "Fill in the form to create a new part.", "");
+}
+
+async function savePart(){
+  const category = $("part_category").value;
+
+  if (!category){
+    setStatus("part_status",
+      "There are no categories yet - use \"+ Category\" to add one first.", "error");
+    return;
+  }
+
+  /* Refused up front: a locked folder already answered, so sending the
+     write again would only repeat the same error. */
+  if (lockedCategories.has(category)){
+    setStatus("part_status",
+      "Cannot save into " + titleFor(category) + " - that folder refused an"
+      + " earlier write. " + repairHint() + ", then press 'Refresh Parts'.",
+      "error");
+    return;
+  }
+
+  setBusy(true);
+  try {
+    const name = safeSlug($("part_name").value);
+    const text = $("part_text").value.trim();
+    if (!text) throw new Error("Part text cannot be empty.");
+
+    const path = partPath(category, name);
+    /* fileWrite creates or overwrites, so saving an edited part and
+       saving a new one are the same call. */
+    await API.fileWrite(path, text + "\n");
+    textCache.set(path, text + "\n");
+
+    const { total } = await refreshParts();
+    setStatus("part_status", "Saved: " + relativePath(path) + ". " + total + " part(s) total.", "ok");
+    clearFormFields();
+  } catch (error) {
+    setStatus("part_status", prettyError(error, category), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+// ============================================================
+// MASTER PROMPT
+// ============================================================
+
+function collectSelections(){
+  const selections = {};
+  for (const cat of categories){
+    const names = (partIndex[cat.id] || [])
+      .filter(entry => isChecked(cat.id, entry.name))
+      .map(entry => entry.name);
+    if (names.length) selections[cat.id] = names;
+  }
+  return selections;
+}
+
+async function buildMasterPrompt(){
+  const selections = collectSelections();
+
+  if (!Object.keys(selections).length){
+    setStatus("master_status", "No parts are selected.", "warn");
+    return;
+  }
+
+  setBusy(true);
+  const missing = [];
+  try {
+    const lines = ["# Agent Prompt", ""];
+
+    for (const cat of categories){
+      const names = selections[cat.id] || [];
+      const texts = [];
+      for (const name of names){
+        const path = partPath(cat.id, name);
+        let text = "";
+        try {
+          text = (await readPart(path)).trim();
+        } catch (error) {
+          missing.push(partKey(cat.id, name));
+          continue;
+        }
+        if (text) texts.push(text);
+      }
+      if (texts.length){
+        lines.push("## " + cat.title);
+        lines.push("");
+        lines.push(texts.join("\n\n"));
+        lines.push("");
+      }
+    }
+
+    $("master_prompt").value = lines.join("\n").trim() + "\n";
+    assembled = selectionSignature();
+
+    const count = Object.values(selections).reduce((sum, list) => sum + list.length, 0);
+    setStatus("master_status",
+      "Assembled " + count + " part(s). Edit the markdown if needed, then save."
+      + (missing.length ? " Skipped unreadable: " + missing.join(", ") + "." : ""),
+      missing.length ? "warn" : "ok");
+  } catch (error) {
+    setStatus("master_status", "Error: " + error.message, "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+function requireMarkdown(){
+  const markdown = $("master_prompt").value.trim();
+  if (!markdown) throw new Error("The master prompt is empty - nothing to save.");
+  return markdown;
+}
+
+async function saveToDocumentation(){
+  setBusy(true);
+  try {
+    const id = safeSlug($("agent_id").value);
+    const markdown = requireMarkdown();
+    const path = DOC_OUTPUT_DIR + "/" + id + "/agent.md";
+    await API.fileWrite(path, markdown + "\n");
+    setStatus("master_status", "Saved: " + relativePath(path), "ok");
+  } catch (error) {
+    setStatus("master_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* "Publish for testing" makes the prompt a real agent: the engine only
+   lists folders that hold BOTH agent.json and agent.md
+   (engine/agents/registry.py), so the metadata file is created here.
+   An existing agent.json is left alone so hand-edited settings - and
+   any tests stored in it - are never overwritten. */
+async function publishForTesting(){
+  setBusy(true);
+  try {
+    const id = safeSlug($("agent_id").value);
+    const markdown = requireMarkdown();
+    const dir = AGENTS_DIR + "/" + id;
+
+    await API.fileWrite(dir + "/agent.md", markdown + "\n");
+
+    let metaCreated = false;
+    try {
+      await API.fileRead(dir + "/agent.json");
+    } catch {
+      const meta = {
+        id,
+        name: displayName(id),
+        description: "",
+        mode: "chat",
+        model: "",
+        tools: []
+      };
+      await API.fileCreate(dir + "/agent.json", JSON.stringify(meta, null, 2) + "\n");
+      metaCreated = true;
+    }
+
+    setStatus("master_status",
+      "Published: " + dir + "/agent.md"
+      + (metaCreated ? " + agent.json (new)" : " (agent.json kept)")
+      + ".\nReload Home to see the agent; pick it on Chat to run it.", "ok");
+  } catch (error) {
+    setStatus("master_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+async function reloadParts(){
+  setBusy(true);
+  try {
+    /* A lock only records that a write was refused, not that the folder
+       is still broken, so the explicit refresh drops them and lets a
+       repaired folder be used again without reloading the page. */
+    lockedCategories.clear();
+    syncCategoryDropdown();
+
+    /* Read before the tree: the parts are listed per category, so the
+       list has to be known first. A categories.json edited in the
+       editor therefore takes effect on 'Refresh Parts'. */
+    categories = await readCategories();
+    populateCategoryDropdown();
+
+    const { total, dropped } = await refreshParts();
+    setStatus("storage_status",
+      "Parts folder: " + relativePath(PARTS_DIR) + " - " + total + " part(s)."
+      + droppedNote(dropped), "ok");
+    setReady(true);
+  } catch (error) {
+    setReady(false);
+    setStatus("storage_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+function init(){
+  $("save_part_btn").addEventListener("click", savePart);
+  $("clear_form_btn").addEventListener("click", resetForm);
+  $("new_part_btn").addEventListener("click", startNewPart);
+  $("new_category_btn").addEventListener("click", () => toggleNewCategoryRow());
+  $("create_category_btn").addEventListener("click", addCategory);
+  $("delete_category_btn").addEventListener("click", deleteCategory);
+  $("new_category_name").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") addCategory();
+  });
+  $("create_master_btn").addEventListener("click", buildMasterPrompt);
+  $("save_agent_btn").addEventListener("click", saveToDocumentation);
+  $("publish_btn").addEventListener("click", publishForTesting);
+  $("refresh_parts_btn").addEventListener("click", reloadParts);
+
+  /* The dropdown is not built here: it is a view of the manifest, and the
+     manifest is read by the first reload. Every button is disabled until
+     then, so the empty dropdown is never something a user can act on. */
+  learnWorkspaceRoot()
+    .then(() => ensureStructure())
+    .then(() => reloadParts())
+    .catch(error => {
+      setReady(false);
+      setStatus("storage_status", prettyError(error), "error");
+      setStatus("part_status", "The parts folder is unavailable.", "error");
+    });
+}
+
+init();
+</script>
+</body>
+</html>
+```
+
+---
+
+<!-- ==== 57/85 : project_manager/interface/static/chat.html ==== -->
 
 ### project_manager/interface/static/chat.html
 
@@ -11389,7 +12530,7 @@ async def project_manager_socket(
 
 ---
 
-<!-- ==== 57/83 : project_manager/interface/static/editor.html ==== -->
+<!-- ==== 58/85 : project_manager/interface/static/editor.html ==== -->
 
 ### project_manager/interface/static/editor.html
 
@@ -11833,7 +12974,7 @@ async def project_manager_socket(
 
 ---
 
-<!-- ==== 58/83 : project_manager/interface/static/home.html ==== -->
+<!-- ==== 59/85 : project_manager/interface/static/home.html ==== -->
 
 ### project_manager/interface/static/home.html
 
@@ -12215,7 +13356,7 @@ async def project_manager_socket(
 
 ---
 
-<!-- ==== 59/83 : project_manager/interface/static/index.html ==== -->
+<!-- ==== 60/85 : project_manager/interface/static/index.html ==== -->
 
 ### project_manager/interface/static/index.html
 
@@ -12609,7 +13750,7 @@ loadProject();
 
 ---
 
-<!-- ==== 60/83 : project_manager/interface/static/js/agentCards.js ==== -->
+<!-- ==== 61/85 : project_manager/interface/static/js/agentCards.js ==== -->
 
 ### project_manager/interface/static/js/agentCards.js
 
@@ -12715,7 +13856,7 @@ export { initAgentCards, openChatWithAgent };
 
 ---
 
-<!-- ==== 61/83 : project_manager/interface/static/js/agentColors.js ==== -->
+<!-- ==== 62/85 : project_manager/interface/static/js/agentColors.js ==== -->
 
 ### project_manager/interface/static/js/agentColors.js
 
@@ -12793,7 +13934,7 @@ export { AGENT_PALETTE, agentColor, assignAgentColors };
 
 ---
 
-<!-- ==== 62/83 : project_manager/interface/static/js/agents.js ==== -->
+<!-- ==== 63/85 : project_manager/interface/static/js/agents.js ==== -->
 
 ### project_manager/interface/static/js/agents.js
 
@@ -13173,7 +14314,7 @@ export { updateRunTarget };
 
 ---
 
-<!-- ==== 63/83 : project_manager/interface/static/js/api.js ==== -->
+<!-- ==== 64/85 : project_manager/interface/static/js/api.js ==== -->
 
 ### project_manager/interface/static/js/api.js
 
@@ -13195,7 +14336,12 @@ const API = {
       } catch (e) {
         detail = '';
       }
-      throw new Error(detail || `Request failed: ${res.status}`);
+      const error = new Error(detail || `Request failed: ${res.status}`);
+      /* The status rides along on the error so a caller can tell
+         "not there yet" (404) from "refused" (403/500) without having
+         to match on the message text. */
+      error.status = res.status;
+      throw error;
     }
     if (res.status === 204 || !res.headers.get('content-type')?.includes('application/json')) {
       return {};
@@ -13345,7 +14491,7 @@ export default API;
 
 ---
 
-<!-- ==== 64/83 : project_manager/interface/static/js/chat.js ==== -->
+<!-- ==== 65/85 : project_manager/interface/static/js/chat.js ==== -->
 
 ### project_manager/interface/static/js/chat.js
 
@@ -13889,7 +15035,7 @@ window.saveCurrentChat = saveCurrentChat;
 
 ---
 
-<!-- ==== 65/83 : project_manager/interface/static/js/editor.js ==== -->
+<!-- ==== 66/85 : project_manager/interface/static/js/editor.js ==== -->
 
 ### project_manager/interface/static/js/editor.js
 
@@ -13980,7 +15126,7 @@ export default Editor;
 
 ---
 
-<!-- ==== 66/83 : project_manager/interface/static/js/main.js ==== -->
+<!-- ==== 67/85 : project_manager/interface/static/js/main.js ==== -->
 
 ### project_manager/interface/static/js/main.js
 
@@ -14378,7 +15524,7 @@ export { openFile, saveFile, newFile, newFolder, renameSelected, deleteSelected,
 
 ---
 
-<!-- ==== 67/83 : project_manager/interface/static/js/session.js ==== -->
+<!-- ==== 68/85 : project_manager/interface/static/js/session.js ==== -->
 
 ### project_manager/interface/static/js/session.js
 
@@ -14449,7 +15595,7 @@ export default Session;
 
 ---
 
-<!-- ==== 68/83 : project_manager/interface/static/js/topbar.js ==== -->
+<!-- ==== 69/85 : project_manager/interface/static/js/topbar.js ==== -->
 
 ### project_manager/interface/static/js/topbar.js
 
@@ -14464,12 +15610,20 @@ export default Session;
    The links are rendered as anchors, not buttons, on purpose: home
    and editor apply a bare `button { ... }` rule and chat.html styles
    `.btn-header`, so anchors sidestep both stylesheets and come out
-   pixel-identical on all three pages. */
+   pixel-identical on all three pages. An item flagged `popup` is the
+   one exception - it has to be a real button to be operable, so
+   .pmnav-button undoes the host pages' button styling instead. */
 
 const NAV_ITEMS = [
   { page: 'home', label: 'Home', href: '/' },
   { page: 'editor', label: 'Editor', href: '/editor' },
-  { page: 'chat', label: 'Chat', href: '/chat' }
+  { page: 'chat', label: 'Chat', href: '/chat' },
+  {
+    page: 'prompt-builder',
+    label: 'Prompt Builder',
+    href: '/prompt-builder',
+    popup: { name: 'PMPromptBuilder', width: 1100, height: 760 }
+  }
 ];
 
 const STYLE_ID = 'pmnav-style';
@@ -14516,7 +15670,37 @@ const NAV_CSS = `
   outline: 2px solid #4fc3f7;
   outline-offset: 2px;
 }
+
+/* A popup item has to be a <button> to be clickable, which means it
+   inherits whatever bare button rule the host page applies. These
+   declarations put it back in line with the anchors. */
+
+.pmnav-link.pmnav-button {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+}
 `;
+
+/* Tools open in their own centred window. A named target means a
+   second click reuses the window instead of stacking duplicates, the
+   same way the agent cards open chat. */
+function openPopup(url, spec) {
+  const left = Math.max(0, (window.screen.width - spec.width) / 2);
+  const top = Math.max(0, (window.screen.height - spec.height) / 2);
+  const popup = window.open(
+    url,
+    spec.name,
+    `width=${spec.width},height=${spec.height},top=${top},left=${left},` +
+    'resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no'
+  );
+  if (!popup) {
+    window.alert('The popup was blocked. Allow popups for this site and try again.');
+  }
+  return popup;
+}
 
 function ensureStyle() {
   if (document.getElementById(STYLE_ID)) return;
@@ -14546,6 +15730,18 @@ function initTopbar(options = {}) {
   nav.setAttribute('aria-label', 'Main');
 
   for (const item of NAV_ITEMS) {
+
+    if (item.popup) {
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'pmnav-link pmnav-button';
+      trigger.textContent = item.label;
+      trigger.title = 'Opens in a new window';
+      trigger.addEventListener('click', () => openPopup(item.href, item.popup));
+      nav.appendChild(trigger);
+      continue;
+    }
+
     const link = document.createElement('a');
     link.className = 'pmnav-link';
     link.href = item.href;
@@ -14561,12 +15757,12 @@ function initTopbar(options = {}) {
   return nav;
 }
 
-export { initTopbar, NAV_ITEMS };
+export { initTopbar, openPopup, NAV_ITEMS };
 ```
 
 ---
 
-<!-- ==== 69/83 : project_manager/interface/static/js/tree.js ==== -->
+<!-- ==== 70/85 : project_manager/interface/static/js/tree.js ==== -->
 
 ### project_manager/interface/static/js/tree.js
 
@@ -14780,7 +15976,7 @@ export default Tree;
 
 ---
 
-<!-- ==== 70/83 : project_manager/parameters/__init__.py ==== -->
+<!-- ==== 71/85 : project_manager/parameters/__init__.py ==== -->
 
 ### project_manager/parameters/__init__.py
 
@@ -14794,7 +15990,7 @@ the managed workspace, plus the project metadata it manages.
 
 ---
 
-<!-- ==== 71/83 : project_manager/parameters/filesystem.py ==== -->
+<!-- ==== 72/85 : project_manager/parameters/filesystem.py ==== -->
 
 ### project_manager/parameters/filesystem.py
 
@@ -14825,8 +16021,11 @@ server.py calls this module.
 
 from __future__ import annotations
 
+import errno
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 from typing import Any
 
@@ -14853,10 +16052,11 @@ SOURCE_FILES_ROOT = REPO_ROOT.parent / "source_files"
 PROJECT_FOLDERS = [
     "documentation",
     "project_scope",
-    "to_do",
+    "To Do",
     "updates",
     "config",
     "data",
+    "Tests"
 ]
 
 
@@ -15726,7 +16926,9 @@ def delete_path(
     """
     Delete a file or directory.
 
-    Directories are deleted recursively.
+    Directories are deleted recursively through
+    :func:`remove_tree`, which tolerates a tree that is still
+    settling instead of leaving it half-deleted.
 
     The active root itself cannot be deleted.
     """
@@ -15750,11 +16952,174 @@ def delete_path(
 
     if target.is_dir():
 
-        shutil.rmtree(target)
+        remove_tree(target)
 
     else:
 
         target.unlink()
+
+
+# ============================================================
+# RECURSIVE DELETE
+# ============================================================
+
+# Windows reports a directory that is still changing as WinError 5
+# (access denied), 32 (file in use) or 145 (directory not empty).
+# Those mean "not settled yet", not "you may not do this", so they are
+# retried. Anything else is a real refusal and propagates at once.
+
+TRANSIENT_DELETE_WIN_ERRORS = frozenset({5, 32, 145})
+
+TRANSIENT_DELETE_ERRNOS = frozenset({
+    errno.ENOTEMPTY,
+    errno.EACCES,
+    errno.EPERM,
+})
+
+#: Attempts before falling back to a manual bottom-up removal.
+DELETE_ATTEMPTS = 3
+
+#: Backoff between attempts, in seconds.
+DELETE_BACKOFF = 0.05
+
+
+def is_transient_delete_error(
+    error: OSError,
+) -> bool:
+    """
+    Whether a delete failure is worth retrying.
+
+    Args:
+        error:
+            The failure raised by the delete attempt.
+
+    Returns:
+        True when the failure means "the tree has not settled yet".
+    """
+
+    win_error = getattr(
+        error,
+        "winerror",
+        None,
+    )
+
+    if win_error is not None:
+
+        return (
+            win_error
+            in TRANSIENT_DELETE_WIN_ERRORS
+        )
+
+    return (
+        error.errno
+        in TRANSIENT_DELETE_ERRNOS
+    )
+
+
+def remove_tree_manual(
+    target: Path,
+) -> None:
+    """
+    Remove a directory tree bottom-up.
+
+    The last resort for :func:`remove_tree`: ``shutil.rmtree`` has
+    already failed, so every entry is unlinked individually and each
+    directory is then removed empty. Entries that vanished on their own
+    are ignored, since a retry race means the work is already done.
+
+    Raises:
+        OSError:
+            If an entry survives.
+    """
+
+    for parent, directories, files in os.walk(
+        target,
+        topdown=False,
+    ):
+
+        for name in files:
+
+            child = Path(parent) / name
+
+            try:
+
+                # A read-only attribute is the usual reason unlink is
+                # refused, and clearing it is harmless.
+                os.chmod(child, 0o666)
+
+            except OSError:
+                pass
+
+            try:
+
+                child.unlink()
+
+            except FileNotFoundError:
+                pass
+
+        for name in directories:
+
+            try:
+
+                (Path(parent) / name).rmdir()
+
+            except FileNotFoundError:
+                pass
+
+    target.rmdir()
+
+
+def remove_tree(
+    target: Path,
+) -> None:
+    """
+    Delete a directory tree, surviving a tree that is still settling.
+
+    A bare ``shutil.rmtree`` is not enough: on a filesystem without
+    transactional deletes (exFAT, for instance) it can fail partway
+    with "directory not empty" and leave the tree half-deleted, which
+    is how a folder ends up listed but permanently inaccessible. So the
+    tree is removed with retries first, then bottom-up by hand, and the
+    original error is only reported if entries genuinely survive.
+
+    Args:
+        target:
+            The directory to remove.
+
+    Raises:
+        OSError:
+            If the tree could not be fully removed.
+    """
+
+    last_error: OSError | None = None
+
+    for attempt in range(DELETE_ATTEMPTS):
+
+        try:
+
+            shutil.rmtree(target)
+            return
+
+        except FileNotFoundError:
+            return
+
+        except OSError as error:
+
+            if not is_transient_delete_error(error):
+                raise
+
+            last_error = error
+
+            if attempt + 1 < DELETE_ATTEMPTS:
+                time.sleep(
+                    DELETE_BACKOFF * (attempt + 1)
+                )
+
+    remove_tree_manual(target)
+
+    if target.exists():
+
+        raise last_error
 
 
 # ============================================================
@@ -15796,177 +17161,34 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 72/83 : project_manager/README.md ==== -->
+<!-- ==== 73/85 : project_manager/README.md ==== -->
 
 ### project_manager/README.md
 
-````markdown
+```markdown
 # Project Manager
 
-A lightweight FastAPI workspace server. Browse, edit, chat about, and run AI
-agents on your project from a single web dashboard with a Monaco-powered code
-editor. The server embeds the headless agent engine, so agents run in-process
-against the managed workspace (no separate agent process needed).
+The server half of [agentCreator](../README.md): a FastAPI workspace server
+with a Monaco-powered editor, an agent-backed chat page, and the routes that
+run single agents and cascade pipelines. It imports `headless_app/` in-process,
+so agents run against the managed workspace with no second server.
 
-## Layout
+- **What agentCreator is, and how to run it** — the [root README](../README.md)
+- **Every module, class and function in this folder** —
+  [`source_files/project_manager_MASTER_COPY.md`](../source_files/project_manager_MASTER_COPY.md)
+- **The full HTTP route table and the editor's API surface** — the Overview
+  section of that same master copy
+- **The verbatim source of this folder** —
+  [`source_files/APP_CODE_SNAPSHOT.md`](../source_files/APP_CODE_SNAPSHOT.md)
 
-The repository is split into three pillars plus scripts:
-
+Start it with `scripts\run.bat` (Windows) or `scripts/run.sh` (Linux) from this
+directory. Note that `scripts/setup.sh` does not install the engine's `ollama`
+and `pydantic` dependencies, which the server needs to import at all.
 ```
-├── server.py                Application entry point (FastAPI host)
-├── requirements.txt
-│
-├── interface/               EDITOR INTERFACE
-│   ├── static/              Web UI (home.html, chat.html, editor.html, js/)
-│   ├── routers/             HTTP API routers (files, dirs, paths, ws, chat, agents)
-│   ├── core/                Controller layer (sessions, events, operations)
-│   └── clients/             Python client (EditorClient / AsyncEditorClient)
-│
-├── parameters/              PROJECT PARAMETERS
-│   └── filesystem.py        Filesystem owner for the managed workspace
-│
-├── workspace/               THE MANAGED PROJECT
-│   ├── project.json
-│   ├── agents/              User agents: agents/<name>/agent.json + agent.md
-│   ├── documentation/  project_scope/  to_do/  updates/  config/  data/
-│
-└── scripts/                 run.bat / run.sh / setup.sh (uses shared ..\.venv)
-```
-
-The dashboard and editor operate in two scopes:
-
-- **Workspace** — the managed project (`workspace/`). Default.
-- **Dev** — the application's own scripts (`server.py`, `interface/`, …). Reach
-  them via the "Dev scripts" quick links in the sidebar or the Dev scope toggle,
-  so app code only shows up when you need it.
-
-## Features
-
-- Unified home page: project tree + Monaco editor + scope toggle
-- Collapsible folder tree (folders start collapsed, VS Code style)
-- Per-file-type icons (Python, HTML, CSS, JS/TS, Markdown, config, …)
-- Chat (`/chat`) — agent-backed; send a prompt with an optional agent + model
-  selector; replies are logged to `workspace/data/chat.log`
-- Agent panel in the editor: create/run a single agent from the current file,
-  scaffold a new workspace agent, or queue multiple agents as a **pipeline**
-  (cascade) and run them in order
-- Cascade pipelines: each agent sees the previous agents' replies; every step
-  records which tools it used and prints `Agent N (<id>) completed. Tools used: ...`
-  to the terminal, finishing with `PIPELINE COMPLETE (n/n) -> ...`
-- Workspace agents: drop `agents/<name>/agent.json` + `agent.md` into the
-  workspace to register a new agent (library agents like `feature_planner_agent`,
-  `execute_engineer_agent`, and `module_builder_agent` stay available too)
-- JSON REST API for filesystem operations (scope-aware) plus agent registry,
-  run, and pipeline endpoints
-- Python client for AI agents / other programs
-- Works on Windows and (Chromebook) Linux
-
-## Requirements
-
-- Python 3.9+
-- Network access for the code editor CDN (Monaco, loaded from cdnjs)
-
-## Setup
-
-### Windows
-
-```bat
-python -m venv ..\.venv
-..\.venv\Scripts\python -m pip install -r requirements.txt
-scripts\run.bat
-```
-
-The launcher scripts prefer the shared venv (`..\.venv` relative to
-`project_manager/`) and fall back to a local one if it is missing. Helpers for
-creating/activating the venv live in `scripts/venv.ps1` and `scripts/venv.bat`
-(activate with `.venv\Scripts\Activate.ps1`).
-
-### Chromebook (ChromeOS with Linux/Crostini)
-
-Open a Linux terminal and enable the Linux apps if you have not already:
-
-```sh
-sudo apt update
-sudo apt install -y python3 python3-venv python3-pip
-```
-
-Clone the repo, then:
-
-```sh
-cd scripts
-./setup.sh
-./run.sh
-```
-
-Then open `http://127.0.0.1:8000` in the Chrome browser. On ChromeOS the
-browser can reach the Linux container through `127.0.0.1`.
-
-## Configuration
-
-The server binds to `127.0.0.1:8000` by default. Override with environment
-variables:
-
-```sh
-PROJECT_MANAGER_HOST=0.0.0.0 PROJECT_MANAGER_PORT=8080 ./run.sh
-```
-
-## API overview
-
-| Method | Path                          | Description                          |
-| ------ | ----------------------------- | ------------------------------------ |
-| GET    | `/`                           | Unified home UI (tree + editor)      |
-| GET    | `/edit`                       | Editor UI (Monaco + agent panel)     |
-| GET    | `/chat`                       | Chat UI (agent + model selectors)    |
-| GET    | `/api/health`                 | Health + project info                |
-| GET    | `/api/project?scope=`         | Project state + tree (ws/app)        |
-| GET    | `/api/file/read?path=&scope=` | Read a file                          |
-| PUT    | `/api/file/write`             | Write a file                         |
-| POST   | `/api/file/create`            | Create a file                        |
-| POST   | `/api/directory/create`       | Create a directory                   |
-| PUT    | `/api/path/rename`            | Rename/move a path                   |
-| DELETE | `/api/file/delete`            | Delete a file                        |
-| DELETE | `/api/directory/delete`       | Delete a directory                   |
-| GET    | `/api/agents`                 | Agent registry (library + workspace) |
-| GET    | `/api/agents/{agent_id}`      | Agent detail (meta + sections)       |
-| POST   | `/api/agents/run`             | Run a single agent (json_path/md_path)|
-| GET    | `/api/pipeline`               | Pipeline options + default steps     |
-| POST   | `/api/pipeline`               | Run a cascade pipeline (steps queue) |
-| GET    | `/api/models`                 | Available models (config/models.json)|
-| POST   | `/api/chat`                   | Send a chat message (agent-backed)   |
-| GET    | `/api/chat`                   | Chat history                         |
-
-Note: The `workspace/` content folders are empty so git does not track
-them; the server recreates them automatically on startup.
-
-## Agents & pipelines
-
-Agents come from two places:
-
-- **Library** — bundled with the engine (`headless_app/engine/agent_library/`),
-  e.g. `feature_planner_agent`, `execute_engineer_agent`, `module_builder_agent`.
-- **Workspace** — your own, kept as `workspace/agents/<name>/agent.json`
-  (metadata: id, name, description, mode, model, tools) plus `agent.md`
-  (markdown spec with `## role` / `## purpose` sections). Select the *workspace*
-  scope in the editor, drop the two files in, and the agent appears in the
-  registry automatically.
-
-Run options:
-
-- **Single agent** (`POST /api/agents/run`): the agent's tools have the same
-  filesystem authority as the dashboard, so it can read/write files in the
-  workspace. From the editor, open a file and hit "Run Agent" in the panel.
-- **Pipeline / cascade** (`POST /api/pipeline`): ordered list of steps (agent id
-  or `{json_path, md_path}` objects). Each later step receives the earlier
-  replies, so agents can hand off work. Results are stored per step (with
-  `tools_used`) in `headless_app/data/pipeline_runs.jsonl`.
-- **Chat** (`/chat`): pick an agent and model, send a message, and the thread is
-  logged to `workspace/data/chat.log`. With no agent selected, the chat uses its
-  default message-only behavior.
-````
 
 ---
 
-<!-- ==== 73/83 : project_manager/requirements.txt ==== -->
+<!-- ==== 74/85 : project_manager/requirements.txt ==== -->
 
 ### project_manager/requirements.txt
 
@@ -15979,7 +17201,7 @@ websockets==13.1
 
 ---
 
-<!-- ==== 74/83 : project_manager/scripts/run.bat ==== -->
+<!-- ==== 75/85 : project_manager/scripts/run.bat ==== -->
 
 ### project_manager/scripts/run.bat
 
@@ -16003,7 +17225,7 @@ echo.
 
 ---
 
-<!-- ==== 75/83 : project_manager/scripts/run.sh ==== -->
+<!-- ==== 76/85 : project_manager/scripts/run.sh ==== -->
 
 ### project_manager/scripts/run.sh
 
@@ -16034,7 +17256,7 @@ echo
 
 ---
 
-<!-- ==== 76/83 : project_manager/scripts/setup.sh ==== -->
+<!-- ==== 77/85 : project_manager/scripts/setup.sh ==== -->
 
 ### project_manager/scripts/setup.sh
 
@@ -16075,7 +17297,7 @@ echo "Then open:  http://127.0.0.1:8000"
 
 ---
 
-<!-- ==== 77/83 : project_manager/server.py ==== -->
+<!-- ==== 78/85 : project_manager/server.py ==== -->
 
 ### project_manager/server.py
 
@@ -16150,6 +17372,9 @@ HOME_HTML = STATIC_DIR / "home.html"
 EDITOR_HTML = STATIC_DIR / "editor.html"
 
 CHAT_HTML = STATIC_DIR / "chat.html"
+
+#: Standalone tool page, opened in its own window from the topbar.
+PROMPT_BUILDER_HTML = STATIC_DIR / "Agentpromptbuilder.html"
 
 #: Name the engine knows this agent root by. Re-registering the same
 #: name replaces it and promotes it, so restarting the server is safe.
@@ -16282,6 +17507,10 @@ def create_app() -> FastAPI:
     def editor():
         return FileResponse(EDITOR_HTML)
 
+    @app.get("/prompt-builder")
+    def prompt_builder():
+        return FileResponse(PROMPT_BUILDER_HTML)
+
     return app
 
 
@@ -16309,7 +17538,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 78/83 : project_manager/workspace/agents/ProjectManager/agent.json ==== -->
+<!-- ==== 79/85 : project_manager/workspace/agents/ProjectManager/agent.json ==== -->
 
 ### project_manager/workspace/agents/ProjectManager/agent.json
 
@@ -16330,7 +17559,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 79/83 : project_manager/workspace/agents/ProjectManager/agent.md ==== -->
+<!-- ==== 80/85 : project_manager/workspace/agents/ProjectManager/agent.md ==== -->
 
 ### project_manager/workspace/agents/ProjectManager/agent.md
 
@@ -16356,7 +17585,7 @@ Describe the shape of the reply the agent must produce.
 
 ---
 
-<!-- ==== 80/83 : project_manager/workspace/project.json ==== -->
+<!-- ==== 81/85 : project_manager/workspace/project.json ==== -->
 
 ### project_manager/workspace/project.json
 
@@ -16370,7 +17599,222 @@ Describe the shape of the reply the agent must produce.
 
 ---
 
-<!-- ==== 81/83 : scripts/gen_master_copy.py ==== -->
+<!-- ==== 82/85 : README.md ==== -->
+
+### README.md
+
+````markdown
+# agentCreator
+
+A local lab for building and running AI agents. A FastAPI server hosts a
+Monaco-powered code editor, a chat surface, and a pipeline runner; the agent
+engine is imported into that same process, so an agent reads and writes your
+files with the same authority the dashboard has.
+
+Everything runs on your machine against a local [Ollama](https://ollama.com).
+No API keys, no cloud, no build step.
+
+```text
+agentCreator/
+├── headless_app/     the agent engine: think/act/observe, tools, bridge
+├── project_manager/  the server: editor UI, chat, agent + pipeline routes
+├── source_files/     generated documentation (see Documentation)
+└── scripts/          venv setup + the documentation generator
+```
+
+## Quickstart
+
+### Requirements
+
+- **Python 3.10 or newer.** The engine annotates with `str | None` and
+  evaluates those annotations at import time.
+- **Ollama**, running, with at least one model pulled:
+  ```bat
+  ollama serve
+  ollama pull qwen2.5-coder:latest
+  ```
+
+### Windows
+
+```bat
+git clone https://github.com/TheChuey/agentCreator.git
+cd agentCreator
+
+scripts\venv.bat
+project_manager\scripts\run.bat
+```
+
+`scripts\venv.bat` creates the virtual environment at the repository root
+(`.venv`, shared by both halves) and installs the dependencies. Then open
+<http://127.0.0.1:8000>.
+
+### Linux / Chromebook Linux
+
+`project_manager/scripts/setup.sh` does **not** install the engine's
+dependencies, so install them yourself after setup — the server will not start
+without them:
+
+```sh
+git clone https://github.com/TheChuey/agentCreator.git
+cd agentCreator
+
+cd project_manager/scripts
+./setup.sh
+cd ../..
+
+python3 -m venv .venv
+.venv/bin/pip install -r project_manager/requirements.txt
+.venv/bin/pip install "ollama>=0.3" "pydantic>=2"
+
+project_manager/scripts/run.sh
+```
+
+On ChromeOS, enable Linux first, then
+`sudo apt install -y python3 python3-venv python3-pip`. Chrome reaches the
+container through `127.0.0.1`.
+
+### Running without the server
+
+The engine also runs standalone:
+
+```bat
+cd headless_app
+..\.venv\Scripts\python.exe run.py list-agents
+..\.venv\Scripts\python.exe run.py run-agent rag_assistant --message "what date is it today?"
+```
+
+`run.py` also has `refresh-models` and `run-pipeline`, plus `--base-url` to
+point the file tools at a running Project Manager, `--no-bridge` to work
+straight off local disk, and `-m/--model` to override an agent's own model.
+
+### Dependencies
+
+`project_manager/requirements.txt` pins the server stack (`fastapi`,
+`uvicorn`, `httpx`, `websockets`). The engine additionally needs `ollama` and
+`pydantic`, which are **not** in that file — `headless_app/engine/core/llm.py`
+imports `ollama` at module level, so the server cannot import without it.
+`scripts/venv.bat` installs all six; on Linux, install the last two by hand as
+shown above.
+
+The editor loads Monaco from cdnjs, so the first page load needs network
+access. Everything else is local.
+
+## Using it
+
+Three pages are served: `/` (tree + editor), `/editor`, and `/chat` (agent and
+model selectors). The full HTTP contract is in
+[the Project Manager master copy](source_files/project_manager_MASTER_COPY.md).
+
+**Two scopes.** *Workspace* is the managed project in
+`project_manager/workspace/` and is writable. *Dev* is agentCreator's own
+source, so you can read and edit the app that is running you.
+
+**Agents come from two places.** The engine ships a library
+(`headless_app/engine/agent_library/`) and the server registers
+`workspace/agents/` at startup. Both are searched newest-registration-first, so
+a workspace agent shadows a library agent with the same id — there is no
+separate "library mode" and "workspace mode".
+
+An agent is a folder with two files, no Python required:
+
+| File | Holds |
+| ---- | ----- |
+| `agent.json` | `id`, `name`, `description`, `mode`, `model`, `tools` |
+| `agent.md` | the prompt: `## role`, `## purpose`, and the sections the prompt builder folds into the system prompt |
+
+`mode: "agent"` attaches the tools in `agent.json`; `mode: "chat"` attaches
+none, so no tool loop can occur. Bundled agents:
+
+| Folder | id | Mode | Model |
+| ------ | -- | ---- | ----- |
+| `rag_assistant` | `rag_assistant` | agent | `gemma4:e2b` |
+| `Planner` | `feature_planner_agent` | chat | `qwen2.5-coder:latest` |
+| `Enginner` | `execute_engineer_agent` | agent | `qwen2.5-coder:latest` |
+| `Builder` | `module_builder_agent` | agent | `qwen2.5-coder:latest` |
+
+Drop a folder into `workspace/agents/` and it appears in the registry on the
+next request — no restart, no registration call.
+
+**Tools.** `map_files`, `read_file`, `write_text_file`, `delete_files` (behind
+a two-step approval, so an agent must propose a path before it can remove it),
+`get_current_date`, `tell_me_the_date_and_time`, and `search_chat_logs`. Each
+is a plain function whose docstring is what the model sees, and the file tools
+go through one provider so `parameters/filesystem.py` stays the only code that
+touches disk.
+
+**Pipelines.** A cascade is an ordered list of agents where each step receives
+the original message plus every earlier reply. The default
+(`headless_app/config/pipeline.json`) is one idea → working module:
+`feature_planner_agent` → `execute_engineer_agent` → `module_builder_agent`.
+Runs append to `headless_app/data/pipeline_runs.jsonl`, and the editor sidebar
+lets you reorder the queue and watch each step's reply and tool use.
+
+**The loop is bounded.** An agent gets at most 6 tool rounds, and three
+order-independent repeats of the same round trip a guard that tells it to stop
+calling tools and answer in prose. A blank final reply falls back to a fixed
+message rather than returning nothing.
+
+## Configuration
+
+| Variable | Default | Effect |
+| -------- | ------- | ------ |
+| `PROJECT_MANAGER_HOST` | `127.0.0.1` | Server bind address |
+| `PROJECT_MANAGER_PORT` | `8000` | Server port |
+| `PROJECT_MANAGER_BASE_URL` | `http://127.0.0.1:8000` | Where the standalone engine sends file operations |
+
+`headless_app/config/models.json` is the model picker; `refresh_models`
+rebuilds it from the local Ollama install. Agent models come from each
+`agent.json`, and `MAX_NUM_CTX = 32768` in `engine/core/llm.py` bounds context.
+
+Runtime output goes to `headless_app/data/` (chat log, tool log, pipeline
+records) and `project_manager/workspace/data/` (the workspace's own chat log
+and saved sessions). Both are gitignored and recreated on demand. The empty
+`workspace/` content folders are untracked for the same reason.
+
+## Layout requirement
+
+`headless_app/` and `project_manager/` **must be siblings.** The server puts
+`<repo>/headless_app` on `sys.path`, and the chat router reaches it by walking
+up three parent directories from `interface/routers/`. Move one and the agent
+engine silently stops loading.
+
+## Documentation
+
+`source_files/` holds three generated documents, and they answer different
+questions — read the map first, then the code:
+
+| Document | Answers | Size |
+| -------- | ------- | ---- |
+| [`APP_CODE_SNAPSHOT.md`](source_files/APP_CODE_SNAPSHOT.md) | *What does the code say?* Every source file verbatim, one file structure, plus a file index and a boot sequence. No prose about behavior. | ~550 KB |
+| [`headless_app_MASTER_COPY.md`](source_files/headless_app_MASTER_COPY.md) | *What does the engine do?* File structure, then every module, class and function with signatures and the first line of each docstring. | ~55 KB |
+| [`project_manager_MASTER_COPY.md`](source_files/project_manager_MASTER_COPY.md) | *What does the server do?* The same format for the server half. | ~55 KB |
+
+All three come from one generator, so they cannot drift from the tree or from
+each other. After changing any source file:
+
+```bat
+.venv\Scripts\python -m scripts.gen_master_copy
+```
+
+The generator also reports the project's retired names on stderr if they
+reappear anywhere in the tree, so the codebase keeps exactly one name for
+itself. It will not embed a document inside another, and it skips
+`__pycache__`, virtualenvs, editor caches and runtime output.
+
+`project_manager/README.md` documents the server half on its own; this file is
+the map for the whole repository.
+
+## Requirements at a glance
+
+Python 3.10+, a local Ollama with at least one model, and a browser. Windows
+and Linux are both supported; the interface is static HTML, CSS and vanilla
+JavaScript with no bundler, so there is nothing to compile and nothing to
+install in `node_modules`.
+````
+
+---
+
+<!-- ==== 83/85 : scripts/gen_master_copy.py ==== -->
 
 ### scripts/gen_master_copy.py
 
@@ -17181,6 +18625,27 @@ BANNER_RE = re.compile(
 )
 
 
+def clip_words(
+    text: str,
+    limit: int,
+) -> str:
+    """
+    Clip to limit characters on a word boundary, marking the cut.
+    """
+
+    flat = flatten(text)
+
+    if len(flat) <= limit:
+        return flat
+
+    head = flat[: limit - 1]
+
+    if " " not in head:
+        return head.rstrip() + "…"
+
+    return head[: head.rfind(" ")].rstrip(" ,;:.—-") + "…"
+
+
 def summarize(
     docstring: str | None,
     limit: int = SUMMARY_LIMIT,
@@ -17883,12 +19348,38 @@ def describe_markdown(
     path: Path,
 ) -> list[str]:
     """
-    The heading outline of a Markdown document.
+    The opening paragraph and heading outline of a Markdown document.
     """
 
     text = path.read_text(encoding="utf-8", errors="replace")
 
     lines: list[str] = []
+
+    # ---- opening prose, which is the document's purpose
+
+    body: list[str] = []
+
+    for line in text.splitlines():
+
+        stripped = line.strip()
+
+        if stripped.startswith("#"):
+            continue
+
+        if not stripped and not body:
+            continue
+
+        if not stripped and body:
+            break
+
+        if stripped.startswith(("```", "|", ">", "-", "*")):
+            break
+
+        body.append(stripped)
+
+    if body:
+        purpose = clip_words(" ".join(body[:6]), 240)
+        lines.append(f"**Purpose.** {purpose}")
 
     headings = [
         (len(match.group(1)), flatten(match.group(2)))
@@ -17900,7 +19391,7 @@ def describe_markdown(
     ]
 
     if not headings:
-        return ["*(no headings)*"]
+        return lines or ["*(no headings)*"]
 
     for level, title in headings[:40]:
         lines.append(f"{'#' * level} {title}")
@@ -18455,7 +19946,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 82/83 : scripts/venv.bat ==== -->
+<!-- ==== 84/85 : scripts/venv.bat ==== -->
 
 ### scripts/venv.bat
 
@@ -18499,7 +19990,7 @@ exit /b 1
 
 ---
 
-<!-- ==== 83/83 : scripts/venv.ps1 ==== -->
+<!-- ==== 85/85 : scripts/venv.ps1 ==== -->
 
 ### scripts/venv.ps1
 
@@ -18548,7 +20039,7 @@ Write-Host "Venv active. Python: $($python)" -ForegroundColor Green
 
 ---
 
-> Generated by `scripts/gen_master_copy.py` on 2026-09-26. Do not edit by hand; regenerate with:
+> Generated by `scripts/gen_master_copy.py` on 2026-09-28. Do not edit by hand; regenerate with:
 >
 > ```bat
 > .venv/Scripts/python -m scripts.gen_master_copy
