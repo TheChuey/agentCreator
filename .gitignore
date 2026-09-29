@@ -29,5 +29,9 @@ htmlcov/
 project_manager/workspace/ws_evt_probe.txt
 project_manager/workspace/data/
 
+# Test environment runtime output
+test_environment/output/
+test_environment/test_data/
+
 # Local working notes
 planSave.txt

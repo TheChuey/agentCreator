@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "role",
+      "title": "Role"
+    },
+    {
+      "id": "hallucinations",
+      "title": "Hallucination Rules"
+    },
+    {
+      "id": "tools",
+      "title": "Tools"
+    },
+    {
+      "id": "skills",
+      "title": "Skills"
+    },
+    {
+      "id": "user",
+      "title": "User"
+    }
+  ]
+}

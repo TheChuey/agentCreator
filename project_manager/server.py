@@ -17,6 +17,7 @@ turning Project Manager operations into HTTP contracts.
     interface/routers/paths.py        Rename / move
     interface/routers/ws.py           Real-time WebSocket interface
     interface/routers/chat.py         Chat log (stub) interface
+    interface/routers/testing.py      Agent header tests (test_environment)
 """
 
 from __future__ import annotations
@@ -39,6 +40,7 @@ from interface.routers.paths import router as paths_router
 from interface.routers.ws import router as ws_router
 from interface.routers.chat import router as chat_router
 from interface.routers.agents import router as agents_router
+from interface.routers.testing import router as testing_router
 
 from interface.core.defaults import get_interface, get_events, get_sessions
 
@@ -68,6 +70,13 @@ HOME_HTML = STATIC_DIR / "home.html"
 EDITOR_HTML = STATIC_DIR / "editor.html"
 
 CHAT_HTML = STATIC_DIR / "chat.html"
+
+#: Standalone tool page, opened in its own window from the topbar.
+PROMPT_BUILDER_HTML = STATIC_DIR / "Agentpromptbuilder.html"
+
+#: Evidence dashboard for the four agent header tests. Self-contained:
+#: it carries its own styles and script and imports nothing.
+TEST_HTML = STATIC_DIR / "test.html"
 
 #: Name the engine knows this agent root by. Re-registering the same
 #: name replaces it and promotes it, so restarting the server is safe.
@@ -175,6 +184,7 @@ def create_app() -> FastAPI:
     app.include_router(ws_router)
     app.include_router(chat_router)
     app.include_router(agents_router)
+    app.include_router(testing_router)
 
     # --------------------------------------------------------
     # Static workspace
@@ -199,6 +209,14 @@ def create_app() -> FastAPI:
     @app.get("/editor")
     def editor():
         return FileResponse(EDITOR_HTML)
+
+    @app.get("/prompt-builder")
+    def prompt_builder():
+        return FileResponse(PROMPT_BUILDER_HTML)
+
+    @app.get("/test")
+    def test_dashboard():
+        return FileResponse(TEST_HTML)
 
     return app
 

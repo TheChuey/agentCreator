@@ -56,7 +56,7 @@ button:hover:not(:disabled){opacity:.92}
 <body>
 <header>
 <h1>Agent Prompt Builder</h1>
-<p>Create reusable prompt parts in categories you can add or remove, select them, and assemble an editable agent.md — written straight into the managed workspace.</p>
+<p>Create reusable prompt parts in categories you can add or remove, select them, and assemble an editable agent.md — published straight into the isolated test environment, never into the managed workspace.</p>
 </header>
 
 <main>
@@ -122,13 +122,15 @@ button:hover:not(:disabled){opacity:.92}
 <label>Markdown (editable before saving)</label>
 <textarea id="master_prompt" placeholder="Select parts and click 'Create Master Prompt'."></textarea>
 
-<div class="row">
-<button id="save_agent_btn" type="button" disabled>Save to documentation</button>
-<button id="publish_btn" type="button" disabled>Publish for testing</button>
-</div>
+    <div class="row">
+    <button id="save_agent_btn" type="button" disabled>Save draft</button>
+    <button id="publish_btn" type="button" disabled>Publish for testing</button>
+    <button id="test_btn" type="button" disabled title="Publish for testing first.">Run header tests</button>
+    <button id="open_test_btn" class="secondary" type="button" disabled title="Open the evidence dashboard in its own window.">Test dashboard</button>
+    </div>
 
-<div id="master_status" class="status">Ready.</div>
-</div>
+    <div id="master_status" class="status">Ready.</div>
+    </div>
 
 </main>
 
@@ -139,15 +141,17 @@ import API from '/static/js/api.js';
 // CONFIG - the storage locations are fixed, not user-selected.
 // ============================================================
 
-/* Every path is browser-root-qualified (workspace/...), which is what
-   the file API resolves back to a root. The workspace root is the only
-   writable one, so the builder can only ever write inside it - it can
-   no longer be pointed at an arbitrary folder on the user's disk. */
+/* Every path is browser-root-qualified (workspace/..., test_environment/...),
+   which is what the file API resolves back to a root. The prompt parts and the
+   published test agents live in the isolated test environment, and the
+   workspace root is the only other writable one, so the builder can only ever
+   write inside those two - it can no longer be pointed at an arbitrary folder
+   on the user's disk. */
 
-const DOC_ROOT = 'workspace/documentation/PromptBuilderFiles';
+const DOC_ROOT = 'test_environment/PromptBuilderFiles';
 const PARTS_DIR = DOC_ROOT + '/prompt_parts';
 const DOC_OUTPUT_DIR = DOC_ROOT + '/output/agents';
-const AGENTS_DIR = 'workspace/agents';
+const AGENTS_DIR = 'test_environment/test_agents';
 
 /* The category list is data, not code. It lives in this file next to the
    parts folders so it can be added to and subtracted from in the browser
@@ -194,7 +198,13 @@ let assembled = null;          // selection signature of the last build
 const BUTTONS = ["save_part_btn","clear_form_btn","create_master_btn",
                   "save_agent_btn","publish_btn","refresh_parts_btn",
                   "new_part_btn","new_category_btn","create_category_btn",
-                  "delete_category_btn"];
+                  "delete_category_btn","test_btn","open_test_btn"];
+
+/* Buttons that additionally need something published in this session,
+   not just a live parts folder. */
+const PUBLISH_GATED = new Set(["test_btn"]);
+
+let busy = false;
 
 function $(id){ return document.getElementById(id); }
 
@@ -204,20 +214,28 @@ function setStatus(id, message, kind){
   el.className = "status" + (kind ? " " + kind : "");
 }
 
+/* One place decides every button's state, because three different
+   things can disable one: the parts folder is unreachable, an operation
+   is in flight, or there is nothing published to test. Deriving it in
+   one pass is what keeps a later setReady() from quietly re-enabling a
+   button whose own condition is gone. */
+function syncButtons(){
+  for (const id of BUTTONS){
+    const gated = PUBLISH_GATED.has(id) && !publishedAgentId;
+    $(id).disabled = busy || !ready || gated;
+  }
+}
+
 function setReady(value){
   ready = value;
-  for (const id of BUTTONS){
-    $(id).disabled = !value;
-  }
+  syncButtons();
 }
 
 /* Buttons stay disabled for the duration of an operation so a double
    click cannot fire two writes at the same file. */
-function setBusy(busy){
-  if (busy && !ready) return;
-  for (const id of BUTTONS){
-    $(id).disabled = busy ? true : !ready;
-  }
+function setBusy(value){
+  busy = value;
+  syncButtons();
 }
 
 function partKey(category, name){ return category + "/" + name; }
@@ -1018,13 +1036,20 @@ async function saveToDocumentation(){
   }
 }
 
-/* "Publish for testing" makes the prompt a real agent: the engine only
-   lists folders that hold BOTH agent.json and agent.md
-   (engine/agents/registry.py), so the metadata file is created here.
-   An existing agent.json is left alone so hand-edited settings - and
-   any tests stored in it - are never overwritten. */
+/* "Publish for testing" makes the prompt a real agent inside the isolated
+   test environment: the engine only lists folders that hold BOTH agent.json
+   and agent.md (engine/agents/registry.py), so the metadata file is created
+   here. An existing agent.json is left alone so hand-edited settings - and
+   any tests stored in it - are never overwritten.
+
+   Nothing is written to workspace/agents/. A published agent is a test
+   fixture: it is not registered as an agent root, so it never appears in
+   the live agent picker, and the four header tests drive it by path. */
+let publishedAgentId = null;
+
 async function publishForTesting(){
   setBusy(true);
+  setTestButtonState(false);
   try {
     const id = safeSlug($("agent_id").value);
     const markdown = requireMarkdown();
@@ -1048,15 +1073,68 @@ async function publishForTesting(){
       metaCreated = true;
     }
 
-    setStatus("master_status",
-      "Published: " + dir + "/agent.md"
+    publishedAgentId = id;
+    setTestButtonState(true);    setStatus("master_status",
+      "Published to the test environment: " + dir + "/agent.md"
       + (metaCreated ? " + agent.json (new)" : " (agent.json kept)")
-      + ".\nReload Home to see the agent; pick it on Chat to run it.", "ok");
+      + ".\nPress 'Run header tests' to ask it the four questions.", "ok");
   } catch (error) {
     setStatus("master_status", prettyError(error), "error");
   } finally {
     setBusy(false);
   }
+}
+
+/* The run is four model turns, so it is its own button rather than
+   something the publish press chains into: a slow model must not look
+   like a failed publish. The dashboard is opened afterwards because
+   that is where the evidence is read. */
+async function runHeaderTests(){
+  const id = publishedAgentId || safeSlug($("agent_id").value);
+
+  setBusy(true);
+  setStatus("master_status",
+    "Asking '" + id + "' the four header questions. Each one is a full "
+    + "model turn - a minute or two on a local model.", "");
+
+  try {
+    const report = await API.request("POST", "/api/test/run_header_tests", {
+      agent_id: id,
+      model: null
+    });
+    const summary = report.summary || {};
+    const failed = (summary.failed || 0);
+    setStatus("master_status",
+      (summary.passed || 0) + " of " + (summary.total || 0)
+      + " header tests passed for '" + id + "'."
+      + (failed ? "\n" + failed + " failed - the evidence says why on the "
+                    + "test dashboard." : ""), failed ? "warn" : "ok");
+  } catch (error) {
+    setStatus("master_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* The test button is only live for something that has actually been
+   published in this session. Reloading the page forgets it, which is
+   the honest state: a hand-edited agent.json may no longer match the
+   markdown above, and the dashboard is where you find out. */
+function setTestButtonState(isPublished){
+  publishedAgentId = isPublished ? publishedAgentId : null;
+  $("test_btn").title = publishedAgentId
+    ? "Run the four header tests against " + publishedAgentId + "."
+    : "Publish for testing first.";
+  syncButtons();
+}
+
+function openTestDashboard(){
+  const id = publishedAgentId || "";
+  window.open(
+    "/test" + (id ? "?agent=" + encodeURIComponent(id) : ""),
+    "PMHeaderTestDashboard",
+    "width=1100,height=820,resizable=yes,scrollbars=yes"
+  );
 }
 
 // ============================================================
@@ -1092,6 +1170,9 @@ async function reloadParts(){
 }
 
 function init(){
+  /* The two test buttons start disabled; the publish press is what
+     makes them live, and that is the only thing that should. */
+  setTestButtonState(false);
   $("save_part_btn").addEventListener("click", savePart);
   $("clear_form_btn").addEventListener("click", resetForm);
   $("new_part_btn").addEventListener("click", startNewPart);
@@ -1104,6 +1185,8 @@ function init(){
   $("create_master_btn").addEventListener("click", buildMasterPrompt);
   $("save_agent_btn").addEventListener("click", saveToDocumentation);
   $("publish_btn").addEventListener("click", publishForTesting);
+  $("test_btn").addEventListener("click", runHeaderTests);
+  $("open_test_btn").addEventListener("click", openTestDashboard);
   $("refresh_parts_btn").addEventListener("click", reloadParts);
 
   /* The dropdown is not built here: it is a view of the manifest, and the

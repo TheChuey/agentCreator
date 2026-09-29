@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Header Test Dashboard</title>
+
+<!-- One file, on purpose. The evidence log is read by a person looking
+     at a verdict, and a page that has to be reassembled from a
+     stylesheet, a script and a module to show four PASS/FAIL rows is a
+     page that breaks in the one moment it is needed. Everything below -
+     the styles, the fetch calls, the nav - is inline. -->
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2}
+header{padding:18px 24px;background:#181d24;border-bottom:1px solid #303741;display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap}
+header h1{margin:0 0 5px;font-size:22px}
+header p{margin:0;color:#9ca8b5;font-size:13px;max-width:70ch;line-height:1.5}
+nav{display:flex;gap:6px;margin-left:auto;flex-shrink:0;align-self:center;flex-wrap:wrap}
+nav a{display:inline-flex;align-items:center;padding:6px 12px;border-radius:6px;border:1px solid #45474d;background:#2f3136;color:#e5e7eb;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap}
+nav a:hover{background:#3a3d44;border-color:#565a61;color:#fff}
+nav a[aria-current=page]{background:#0e639c;border-color:#1177bb;color:#fff}
+main{max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:20px}
+.card{background:#151a20;border:1px solid #303741;border-radius:8px;padding:16px}
+h2{margin:0 0 12px;font-size:16px;color:#dfe6ee;border-bottom:1px solid #303741;padding-bottom:8px;display:flex;align-items:center;gap:10px}
+h2 .spacer{flex:1}
+button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:#4c8bf5;color:#fff;font-size:14px;font-family:inherit}
+button.secondary{background:#303944}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:hover:not(:disabled){opacity:.92}
+select,input{background:#0d1116;color:#edf2f7;border:1px solid #39424d;border-radius:6px;padding:9px;font-family:inherit;font-size:14px;min-width:0}
+.toolbar{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:5px;min-width:180px}
+.field span{font-size:12px;color:#8fa0b3;letter-spacing:.04em}
+.status{margin-top:14px;padding:10px;border-radius:6px;background:#1a2129;color:#aeb9c5;font-size:13px;white-space:pre-wrap;line-height:1.5}
+.status.error{color:#ff9b9b}
+.status.ok{color:#8fe3a6}
+.status.warn{color:#f5c96b}
+.status[hidden]{display:none}
+
+/* Summary bar: the one-glance answer before any reading. */
+.summary{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.summary .counts{font-size:26px;font-weight:600}
+.summary .meta{color:#9ca8b5;font-size:13px;line-height:1.6}
+.badge{display:inline-block;padding:3px 11px;border-radius:9px;font-size:12px;font-weight:600;letter-spacing:.04em}
+.badge.pass{background:#123a24;color:#8fe3a6;border:1px solid #2a6b45}
+.badge.fail{background:#3a1620;color:#ff9b9b;border:1px solid #6b3341}
+.badge.idle{background:#1f252d;color:#8fa0b3;border:1px solid #39424d}
+
+/* One card per header test. The verdict is the heading, the reason is
+   the summary line, and the transcript is below it - a PASS with no
+   transcript in reach is a claim, not a result. */
+.result{border-left:3px solid #39424d}
+.result.pass{border-left-color:#2a6b45}
+.result.fail{border-left-color:#6b3341}
+.result h3{margin:0;font-size:15px;color:#dfe6ee;text-transform:capitalize}
+.result .reason{margin:6px 0 12px;color:#aeb9c5;font-size:13px;line-height:1.5}
+.turn{margin:0 0 10px}
+.turn:last-child{margin-bottom:0}
+.turn .label{font-size:11px;color:#6f7d8c;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.turn pre{margin:0;padding:10px;background:#0d1116;border:1px solid #262d36;border-radius:6px;color:#cbd5e1;font-family:Consolas,Menlo,monospace;font-size:12.5px;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+.turn.prompt pre{color:#9fb3c8}
+details{margin-top:10px}
+summary{cursor:pointer;font-size:12.5px;color:#8fa0b3;padding:4px 0}
+summary:hover{color:#cbd5e1}
+.empty{color:#5c6774;font-size:13px;font-style:italic;line-height:1.6}
+.empty code{font-style:normal;background:#0d1116;padding:2px 6px;border-radius:5px;border:1px solid #39424d}
+.results{display:grid;gap:12px}
+</style>
+</head>
+
+<body>
+<header>
+  <div>
+    <h1>&#129514; Agent Header Test Dashboard</h1>
+    <p>Four questions, one per header of an agent's markdown, asked of the running
+       agent. The verdict comes from its own reply, so this shows what the model
+       received - not what the file says.</p>
+  </div>
+  <nav aria-label="Main">
+    <a href="/">Home</a>
+    <a href="/editor">Editor</a>
+    <a href="/chat">Chat</a>
+    <a href="/prompt-builder" target="_blank" rel="noopener">Prompt Builder</a>
+    <a href="/test" aria-current="page">Test</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Run the header tests</h2>
+    <div class="toolbar">
+      <label class="field">
+        <span>Test agent</span>
+        <select id="agent_select" disabled></select>
+      </label>
+      <label class="field">
+        <span>Model</span>
+        <select id="model_select" disabled>
+          <option value="">(the agent's own model)</option>
+        </select>
+      </label>
+      <button id="run_btn" type="button" disabled>Run tests</button>
+      <button id="refresh_btn" class="secondary" type="button">Refresh</button>
+    </div>
+    <div id="run_status" class="status" hidden></div>
+  </div>
+
+  <div class="card">
+    <h2>Last run</h2>
+    <div id="summary" class="summary">
+      <span class="badge idle">NO RESULTS</span>
+      <span class="empty">Loading evidence log&hellip;</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Evidence</h2>
+    <div id="results" class="results">
+      <div class="empty">Loading evidence log&hellip;</div>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+// ============================================================
+// HTTP
+// ============================================================
+
+/* The API client module is deliberately not imported: this page has to
+   keep working if api.js changes shape, and it makes three calls. The
+   status code rides along on the error so "nothing published yet"
+   (404) can be told from "the server is down" (0) without matching on
+   message text. */
+async function api(path, options = {}) {
+  const res = await fetch(path, options);
+  if (!res.ok) {
+    let detail = '';
+    try {
+      detail = (await res.json()).detail || '';
+    } catch (e) {
+      detail = '';
+    }
+    const error = new Error(detail || `Request failed: ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
+  return res.json();
+}
+
+const $ = (id) => document.getElementById(id);
+
+function setStatus(message, kind) {
+  const el = $("run_status");
+  if (!message) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  el.textContent = message;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+
+const HEADERS = ["role", "user", "purpose", "hallucinations"];
+
+function badge(passed) {
+  const el = document.createElement("span");
+  el.className = "badge " + (passed ? "pass" : "fail");
+  el.textContent = passed ? "PASS" : "FAIL";
+  return el;
+}
+
+function turn(label, text, extraClass) {
+  const box = document.createElement("div");
+  box.className = "turn" + (extraClass ? " " + extraClass : "");
+
+  const caption = document.createElement("div");
+  caption.className = "label";
+  caption.textContent = label;
+
+  const body = document.createElement("pre");
+  body.textContent = (text || "").trim() || "(empty)";
+
+  box.append(caption, body);
+  return box;
+}
+
+function renderRow(row) {
+  const card = document.createElement("div");
+  card.className = "card result " + (row.status === "PASS" ? "pass" : "fail");
+
+  const head = document.createElement("h3");
+  head.textContent = row.section || "unknown";
+  head.append(badge(row.status === "PASS"));
+
+  const reason = document.createElement("p");
+  reason.className = "reason";
+  reason.textContent = row.reason || "";
+
+  card.append(head, reason, turn("Prompt sent", row.prompt, "prompt"));
+
+  /* A model reply is a few hundred characters normally and a few
+     thousand when it narrates a tool loop, so the transcript starts
+     collapsed and is there for anyone who needs to check the verdict
+     against what was actually said. */
+  const details = document.createElement("details");
+  const summary = document.createElement("summary");
+  summary.textContent = "Agent reply (" + (row.response || "").length + " characters)";
+  details.append(summary, turn("Reply", row.response, "reply"));
+  card.appendChild(details);
+
+  return card;
+}
+
+function renderSummary(summary) {
+  const box = $("summary");
+  box.innerHTML = "";
+
+  if (!summary || typeof summary.total !== "number") {
+    const idle = document.createElement("span");
+    idle.className = "badge idle";
+    idle.textContent = "NO RESULTS";
+    const note = document.createElement("span");
+    note.className = "empty";
+    note.textContent = "Run the suite, or publish an agent first.";
+    box.append(idle, note);
+    return;
+  }
+
+  const overall = document.createElement("span");
+  overall.className = "badge " + (summary.failed ? "fail" : "pass");
+  overall.textContent = summary.failed ? "FAIL" : "PASS";
+
+  const counts = document.createElement("span");
+  counts.className = "counts";
+  counts.textContent = summary.passed + " / " + summary.total + " passed";
+
+  const meta = document.createElement("span");
+  meta.className = "meta";
+  const when = summary.ran_at ? new Date(summary.ran_at) : null;
+  meta.textContent = [
+    summary.agent_id ? "agent: " + summary.agent_id : null,
+    summary.model ? "model: " + summary.model : null,
+    when && !isNaN(when) ? "ran: " + when.toLocaleString() : null,
+  ].filter(Boolean).join("  ·  ");
+
+  box.append(overall, counts, meta);
+}
+
+function renderReport(report) {
+  renderSummary(report && report.summary);
+
+  const host = $("results");
+  host.innerHTML = "";
+
+  const rows = (report && report.results) || [];
+  if (!rows.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No evidence yet. Publish an agent from the Prompt "
+      + "Builder, then press Run tests.";
+    host.appendChild(empty);
+    return;
+  }
+
+  /* The report is ordered by the runner; the four headers are rendered
+     in suite order regardless, so a partial report still reads as the
+     four known questions. */
+  for (const name of HEADERS) {
+    const row = rows.find((r) => r.section === name);
+    if (row) host.appendChild(renderRow(row));
+  }
+  for (const row of rows) {
+    if (!HEADERS.includes(row.section)) host.appendChild(renderRow(row));
+  }
+}
+
+function fillSelect(select, items, value, keepFirst) {
+  select.innerHTML = "";
+  if (keepFirst) {
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = keepFirst;
+    select.appendChild(first);
+  }
+  for (const item of items) {
+    const option = document.createElement("option");
+    option.value = item.value;
+    option.textContent = item.label;
+    select.appendChild(option);
+  }
+  if (value) select.value = value;
+}
+
+// ============================================================
+// DATA
+// ============================================================
+
+async function loadAgents() {
+  const data = await api("/api/test/agents");
+  const agents = data.agents || [];
+  const wanted = new URLSearchParams(location.search).get("agent");
+
+  fillSelect(
+    $("agent_select"),
+    agents.map((a) => ({ value: a.id, label: a.name + "  (" + a.id + ")" })),
+    wanted && agents.some((a) => a.id === wanted) ? wanted : null,
+    agents.length ? null : "no published test agents"
+  );
+  $("agent_select").disabled = !agents.length;
+  $("run_btn").disabled = !agents.length;
+  return agents;
+}
+
+async function loadModels() {
+  const data = await api("/api/models");
+  fillSelect(
+    $("model_select"),
+    (data.models || []).map((m) => ({ value: m.id, label: m.name || m.id })),
+    null,
+    "(the agent's own model)"
+  );
+  $("model_select").disabled = false;
+}
+
+async function loadResults() {
+  try {
+    renderReport(await api("/api/test/results"));
+  } catch (error) {
+    /* 404 is the ordinary first visit: no run has happened in this
+       checkout yet, which is an empty dashboard rather than an error. */
+    if (error.status === 404) {
+      renderReport(null);
+      return;
+    }
+    renderReport(null);
+    setStatus("Cannot read the evidence log: " + error.message, "error");
+  }
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+
+let running = false;
+
+async function runTests() {
+  if (running) return;
+
+  const agentId = $("agent_select").value;
+  if (!agentId) {
+    setStatus("Pick a test agent first.", "warn");
+    return;
+  }
+
+  running = true;
+  $("run_btn").disabled = true;
+  $("run_btn").textContent = "Running…";
+  $("agent_select").disabled = true;
+  setStatus(
+    "Asking the agent four questions. Each one is a full model turn, so "
+    + "this takes a moment - a minute or two on a local model.",
+    ""
+  );
+
+  try {
+    const model = $("model_select").value || null;
+    const report = await api("/api/test/run_header_tests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ agent_id: agentId, model })
+    });
+    renderReport(report);
+    const summary = report.summary || {};
+    setStatus(
+      (summary.passed || 0) + " of " + (summary.total || 0)
+      + " header tests passed.",
+      summary.failed ? "warn" : "ok"
+    );
+  } catch (error) {
+    setStatus("The run failed: " + error.message, "error");
+  } finally {
+    running = false;
+    $("run_btn").textContent = "Run tests";
+    $("run_btn").disabled = !$("agent_select").value;
+    $("agent_select").disabled = false;
+  }
+}
+
+async function refresh() {
+  try {
+    await loadAgents();
+    await loadResults();
+    setStatus("Refreshed from the test environment.", "ok");
+  } catch (error) {
+    setStatus("Cannot reach the Project Manager: " + error.message, "error");
+  }
+}
+
+$("run_btn").addEventListener("click", runTests);
+$("refresh_btn").addEventListener("click", refresh);
+
+/* The agents and the models are independent of the evidence, so a
+   failure in one does not blank the other two. */
+(async function init() {
+  try {
+    await loadModels();
+  } catch (error) {
+    /* The model list is a convenience; the suite resolves a model on
+       its own, so this is not worth an error banner. */
+  }
+  await refresh();
+})();
+</script>
+</body>
+</html>

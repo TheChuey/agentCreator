@@ -11,15 +11,44 @@ has a single file to read. Two stores live here:
     data/chatlog/chat.log            - every user turn + agent reply (JSON lines)
     data/toollog/tool_usage.jsonl    - every tool execution event (JSON lines)
 
+The data root is ``headless_app/data`` unless ``AGENT_DATA_DIR`` names
+another one, and :func:`use_data_dir` points it somewhere else for the
+duration of a block. That is how the test environment keeps its runs out
+of the real chat history: a header test prompts an agent four times, and
+those four turns are evidence, not conversation with a user.
+
+Both stores are read through the module-level path constants at call time,
+so rebinding them with :func:`use_data_dir` redirects every caller at once -
+the chat log this module writes, the ``search_chat_logs`` tool that reads
+it, and the tool log - with no thread or agent to keep in step.
+
 Nothing in this module requires a server. Writes are fail-safe: a broken
 data path or disk error never breaks the agent call that produced the event.
 """
 
 import json
+import os
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+#: Environment variable naming an alternative data root.
+DATA_DIR_ENV = "AGENT_DATA_DIR"
+
+
+def default_data_dir() -> Path:
+    """The data root this process writes to.
+
+    ``AGENT_DATA_DIR`` when it is set to an existing path, otherwise the
+    engine's own ``data`` folder beside this package.
+    """
+    override = os.environ.get(DATA_DIR_ENV, "").strip()
+    if override:
+        return Path(override).expanduser().resolve()
+    return Path(__file__).resolve().parent.parent / "data"
+
+
+DATA_DIR = default_data_dir()
 
 CHATLOG_DIR = DATA_DIR / "chatlog"
 CHATLOG_FILE = CHATLOG_DIR / "chat.log"
@@ -30,6 +59,31 @@ TOOLLOG_FILE = TOOLLOG_DIR / "tool_usage.jsonl"
 MAX_MESSAGE_LENGTH = 2000
 DEFAULT_HISTORY_LIMIT = 50
 MAX_HISTORY_LIMIT = 500
+
+
+@contextmanager
+def use_data_dir(path: str | Path):
+    """Write both logs under ``path`` for the duration of the block.
+
+    The path constants are rebound on entry and restored on exit, so a
+    test run cannot leave the real chat log pointing at a test folder
+    and a failure inside the block cannot leave it rebound at all.
+    """
+    global DATA_DIR, CHATLOG_DIR, CHATLOG_FILE, TOOLLOG_DIR, TOOLLOG_FILE
+
+    previous = (DATA_DIR, CHATLOG_DIR, CHATLOG_FILE, TOOLLOG_DIR, TOOLLOG_FILE)
+    target = Path(path).expanduser().resolve()
+
+    DATA_DIR = target
+    CHATLOG_DIR = target / "chatlog"
+    CHATLOG_FILE = CHATLOG_DIR / "chat.log"
+    TOOLLOG_DIR = target / "toollog"
+    TOOLLOG_FILE = TOOLLOG_DIR / "tool_usage.jsonl"
+
+    try:
+        yield target
+    finally:
+        (DATA_DIR, CHATLOG_DIR, CHATLOG_FILE, TOOLLOG_DIR, TOOLLOG_FILE) = previous
 
 
 def _iso_ts() -> str:

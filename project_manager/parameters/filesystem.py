@@ -24,8 +24,11 @@ server.py calls this module.
 
 from __future__ import annotations
 
+import errno
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 from typing import Any
 
@@ -44,6 +47,12 @@ PROJECT_JSON = PROJECT_ROOT / "project.json"
 
 SOURCE_FILES_ROOT = REPO_ROOT.parent / "source_files"
 
+#: The isolated test environment. It is a repository sibling of the
+#: application, not part of the managed workspace, but the prompt
+#: builder reads its parts from there and publishes agents into it,
+#: so it is browsable and writable in its own right.
+TEST_ENVIRONMENT_ROOT = REPO_ROOT.parent / "test_environment"
+
 
 # ============================================================
 # STANDARD PROJECT FOLDERS
@@ -52,10 +61,11 @@ SOURCE_FILES_ROOT = REPO_ROOT.parent / "source_files"
 PROJECT_FOLDERS = [
     "documentation",
     "project_scope",
-    "to_do",
+    "To Do",
     "updates",
     "config",
     "data",
+    "Tests"
 ]
 
 
@@ -63,15 +73,20 @@ PROJECT_FOLDERS = [
 # BROWSER ROOTS
 # ============================================================
 
-# The two folders the file browser shows. Add a folder here to
+# The folders the file browser shows. Add a folder here to
 # make it appear in the tree; set ``writable`` to False to make it
 # browse-only. Keys are the path prefixes the API understands, so
-# ``source_files/APP_CODE_SNAPSHOT.md`` and ``workspace/project.json`` resolve
-# inside their own root.
+# ``source_files/APP_CODE_SNAPSHOT.md``, ``workspace/project.json`` and
+# ``test_environment/test_agents/demo_agent/agent.md`` each resolve inside
+# their own root.
 
 BROWSE_ROOTS: dict[str, dict[str, Any]] = {
     "workspace": {
         "path": PROJECT_ROOT,
+        "writable": True,
+    },
+    "test_environment": {
+        "path": TEST_ENVIRONMENT_ROOT,
         "writable": True,
     },
     "source_files": {
@@ -925,7 +940,9 @@ def delete_path(
     """
     Delete a file or directory.
 
-    Directories are deleted recursively.
+    Directories are deleted recursively through
+    :func:`remove_tree`, which tolerates a tree that is still
+    settling instead of leaving it half-deleted.
 
     The active root itself cannot be deleted.
     """
@@ -949,11 +966,174 @@ def delete_path(
 
     if target.is_dir():
 
-        shutil.rmtree(target)
+        remove_tree(target)
 
     else:
 
         target.unlink()
+
+
+# ============================================================
+# RECURSIVE DELETE
+# ============================================================
+
+# Windows reports a directory that is still changing as WinError 5
+# (access denied), 32 (file in use) or 145 (directory not empty).
+# Those mean "not settled yet", not "you may not do this", so they are
+# retried. Anything else is a real refusal and propagates at once.
+
+TRANSIENT_DELETE_WIN_ERRORS = frozenset({5, 32, 145})
+
+TRANSIENT_DELETE_ERRNOS = frozenset({
+    errno.ENOTEMPTY,
+    errno.EACCES,
+    errno.EPERM,
+})
+
+#: Attempts before falling back to a manual bottom-up removal.
+DELETE_ATTEMPTS = 3
+
+#: Backoff between attempts, in seconds.
+DELETE_BACKOFF = 0.05
+
+
+def is_transient_delete_error(
+    error: OSError,
+) -> bool:
+    """
+    Whether a delete failure is worth retrying.
+
+    Args:
+        error:
+            The failure raised by the delete attempt.
+
+    Returns:
+        True when the failure means "the tree has not settled yet".
+    """
+
+    win_error = getattr(
+        error,
+        "winerror",
+        None,
+    )
+
+    if win_error is not None:
+
+        return (
+            win_error
+            in TRANSIENT_DELETE_WIN_ERRORS
+        )
+
+    return (
+        error.errno
+        in TRANSIENT_DELETE_ERRNOS
+    )
+
+
+def remove_tree_manual(
+    target: Path,
+) -> None:
+    """
+    Remove a directory tree bottom-up.
+
+    The last resort for :func:`remove_tree`: ``shutil.rmtree`` has
+    already failed, so every entry is unlinked individually and each
+    directory is then removed empty. Entries that vanished on their own
+    are ignored, since a retry race means the work is already done.
+
+    Raises:
+        OSError:
+            If an entry survives.
+    """
+
+    for parent, directories, files in os.walk(
+        target,
+        topdown=False,
+    ):
+
+        for name in files:
+
+            child = Path(parent) / name
+
+            try:
+
+                # A read-only attribute is the usual reason unlink is
+                # refused, and clearing it is harmless.
+                os.chmod(child, 0o666)
+
+            except OSError:
+                pass
+
+            try:
+
+                child.unlink()
+
+            except FileNotFoundError:
+                pass
+
+        for name in directories:
+
+            try:
+
+                (Path(parent) / name).rmdir()
+
+            except FileNotFoundError:
+                pass
+
+    target.rmdir()
+
+
+def remove_tree(
+    target: Path,
+) -> None:
+    """
+    Delete a directory tree, surviving a tree that is still settling.
+
+    A bare ``shutil.rmtree`` is not enough: on a filesystem without
+    transactional deletes (exFAT, for instance) it can fail partway
+    with "directory not empty" and leave the tree half-deleted, which
+    is how a folder ends up listed but permanently inaccessible. So the
+    tree is removed with retries first, then bottom-up by hand, and the
+    original error is only reported if entries genuinely survive.
+
+    Args:
+        target:
+            The directory to remove.
+
+    Raises:
+        OSError:
+            If the tree could not be fully removed.
+    """
+
+    last_error: OSError | None = None
+
+    for attempt in range(DELETE_ATTEMPTS):
+
+        try:
+
+            shutil.rmtree(target)
+            return
+
+        except FileNotFoundError:
+            return
+
+        except OSError as error:
+
+            if not is_transient_delete_error(error):
+                raise
+
+            last_error = error
+
+            if attempt + 1 < DELETE_ATTEMPTS:
+                time.sleep(
+                    DELETE_BACKOFF * (attempt + 1)
+                )
+
+    remove_tree_manual(target)
+
+    if target.exists():
+
+        raise last_error
 
 
 # ============================================================

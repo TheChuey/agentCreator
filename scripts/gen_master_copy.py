@@ -189,6 +189,12 @@ TARGETS: dict[str, dict[str, Any]] = {
             "project_manager/workspace/data": (
                 "runtime output: chat log and saved chat sessions"
             ),
+            "test_environment/output": (
+                "runtime output: header test results"
+            ),
+            "test_environment/test_data": (
+                "runtime output: chat log and tool log of test runs"
+            ),
         },
     },
     "headless_app": {
@@ -802,6 +808,27 @@ def truncate(
 BANNER_RE = re.compile(
     r"^(?:[\w.-]+/)*[\w.-]+\.[A-Za-z0-9]+$|^[=\-*#~^+_\s]+$"
 )
+
+
+def clip_words(
+    text: str,
+    limit: int,
+) -> str:
+    """
+    Clip to limit characters on a word boundary, marking the cut.
+    """
+
+    flat = flatten(text)
+
+    if len(flat) <= limit:
+        return flat
+
+    head = flat[: limit - 1]
+
+    if " " not in head:
+        return head.rstrip() + "…"
+
+    return head[: head.rfind(" ")].rstrip(" ,;:.—-") + "…"
 
 
 def summarize(
@@ -1506,12 +1533,38 @@ def describe_markdown(
     path: Path,
 ) -> list[str]:
     """
-    The heading outline of a Markdown document.
+    The opening paragraph and heading outline of a Markdown document.
     """
 
     text = path.read_text(encoding="utf-8", errors="replace")
 
     lines: list[str] = []
+
+    # ---- opening prose, which is the document's purpose
+
+    body: list[str] = []
+
+    for line in text.splitlines():
+
+        stripped = line.strip()
+
+        if stripped.startswith("#"):
+            continue
+
+        if not stripped and not body:
+            continue
+
+        if not stripped and body:
+            break
+
+        if stripped.startswith(("```", "|", ">", "-", "*")):
+            break
+
+        body.append(stripped)
+
+    if body:
+        purpose = clip_words(" ".join(body[:6]), 240)
+        lines.append(f"**Purpose.** {purpose}")
 
     headings = [
         (len(match.group(1)), flatten(match.group(2)))
@@ -1523,7 +1576,7 @@ def describe_markdown(
     ]
 
     if not headings:
-        return ["*(no headings)*"]
+        return lines or ["*(no headings)*"]
 
     for level, title in headings[:40]:
         lines.append(f"{'#' * level} {title}")

@@ -6,8 +6,8 @@ The `project_manager/` half of agentCreator: the FastAPI workspace server, its e
 | ----- | ----- |
 | Scope | `project_manager/` |
 | Contains | structure + module reference, no code |
-| Files | 44 |
-| Generated | 2026-09-28 |
+| Files | 48 |
+| Generated | 2026-09-29 |
 | Generator | `scripts/gen_master_copy.py` |
 | Regenerate | `.venv/Scripts/python -m scripts.gen_master_copy` |
 | Companions | [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) — the whole repository, verbatim, [`headless_app_MASTER_COPY.md`](headless_app_MASTER_COPY.md) — `headless_app/` |
@@ -171,6 +171,7 @@ project_manager/
 │   │   ├── files.py
 │   │   ├── paths.py
 │   │   ├── project.py
+│   │   ├── testing.py
 │   │   └── ws.py
 │   └── static/
 │       ├── js/
@@ -188,7 +189,8 @@ project_manager/
 │       ├── chat.html
 │       ├── editor.html
 │       ├── home.html
-│       └── index.html
+│       ├── index.html
+│       └── test.html
 ├── parameters/
 │   ├── __init__.py
 │   └── filesystem.py
@@ -204,13 +206,11 @@ project_manager/
 │   ├── config/
 │   ├── data/   # not embedded: runtime output: chat log and saved chat sessions
 │   ├── documentation/
-│   │   └── PromptBuilderFiles/
-│   │       ├── output/
-│   │       └── prompt_parts/
-│   │           └── rules/
 │   ├── project_scope/
 │   ├── Tests/
 │   ├── To Do/
+│   │   ├── list.txt
+│   │   └── todolistPrompt
 │   ├── Tools/
 │   ├── updates/
 │   └── project.json
@@ -223,7 +223,7 @@ project_manager/
 
 ## Scope
 
-This document covers every source file under `project_manager/`, **44 files** in total, in case-insensitive path order, and describes each one in the Module Reference below. No file bodies are embedded: a master copy is a map, and the code is in [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md).
+This document covers every source file under `project_manager/`, **48 files** in total, in case-insensitive path order, and describes each one in the Module Reference below. No file bodies are embedded: a master copy is a map, and the code is in [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md).
 
 The following are listed in the structure above but deliberately **not** covered:
 
@@ -369,7 +369,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `import uuid`
 - `from typing import Any, Callable`
 **Constants**
-- `EVENT_TYPES` = `{'renamed', 'tree_changed', 'created', 'saved', 'deleted'}`
+- `EVENT_TYPES` = `{'saved', 'tree_changed', 'renamed', 'deleted', 'created'}`
 **Classes**
 - **`EventBus`** *(class)* — Simple in-memory publish/subscribe event bus.
   - **`__init__(self)`** *method*
@@ -646,6 +646,36 @@ One entry per file, in the same order as the file structure above. Each entry li
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/routers/project.py`*
 
+### `interface/routers/testing.py`
+
+**Purpose.** Agent header test endpoints for the Project Manager.
+**Imports**
+- `from __future__ import annotations`
+- `import importlib.util`
+- `import sys`
+- `from pathlib import Path`
+- `from types import ModuleType`
+- `from typing import Any`
+- `from fastapi import APIRouter, Request`
+- `from pydantic import BaseModel`
+- `from .errors import project_manager_error`
+**Constants**
+- `_REPO_ROOT`
+- `_HEADLESS_APP`
+- `_TEST_ENVIRONMENT`
+**Classes**
+- **`HeaderTestRequest`** *(class, BaseModel)*
+**Functions**
+- **`_agent_test()`** *function* — Import test_environment/agent_test.py once per process.
+- **`list_test_agents(request: Request)`** *function* — Return every published test agent.
+  - *decorator:* `@router.get('/api/test/agents')`
+- **`run_header_tests(request: Request, payload: HeaderTestRequest)`** *function* — Test one published agent against its four headers.
+  - *decorator:* `@router.post('/api/test/run_header_tests')`
+- **`read_results(request: Request)`** *function* — Return the last header test report, or 404 when there is none.
+  - *decorator:* `@router.get('/api/test/results')`
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/routers/testing.py`*
+
 ### `interface/routers/ws.py`
 
 **Purpose.** Project Manager WebSocket router. =================================
@@ -664,7 +694,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 ### `interface/static/Agentpromptbuilder.html`
 
 **Title.** Agent Prompt Builder
-**Element ids (24).** `parts_folder_label`, `refresh_parts_btn`, `storage_status`, `form_title`, `part_category`, `new_category_btn`, `delete_category_btn`, `new_category_row`, `new_category_name`, `create_category_btn`, `categories_file_label`, `part_name`, `part_text`, `save_part_btn`, `clear_form_btn`, `part_status`, `new_part_btn`, `parts_list`, `create_master_btn`, `agent_id`, `master_prompt`, `save_agent_btn`, `publish_btn`, `master_status`
+**Element ids (26).** `parts_folder_label`, `refresh_parts_btn`, `storage_status`, `form_title`, `part_category`, `new_category_btn`, `delete_category_btn`, `new_category_row`, `new_category_name`, `create_category_btn`, `categories_file_label`, `part_name`, `part_text`, `save_part_btn`, `clear_form_btn`, `part_status`, `new_part_btn`, `parts_list`, `create_master_btn`, `agent_id`, `master_prompt`, `save_agent_btn`, `publish_btn`, `test_btn`, `open_test_btn`, `master_status`
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/Agentpromptbuilder.html`*
 
@@ -938,6 +968,13 @@ One entry per file, in the same order as the file structure above. Each entry li
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/tree.js`*
 
+### `interface/static/test.html`
+
+**Title.** Agent Header Test Dashboard
+**Element ids (7).** `agent_select`, `model_select`, `run_btn`, `refresh_btn`, `run_status`, `summary`, `results`
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/test.html`*
+
 ### `parameters/__init__.py`
 
 **Purpose.** Project parameters package.
@@ -962,11 +999,12 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `PROJECT_ROOT`
 - `PROJECT_JSON`
 - `SOURCE_FILES_ROOT`
+- `TEST_ENVIRONMENT_ROOT`
 - `PROJECT_FOLDERS` = `['documentation', 'project_scope', 'To Do', 'updates', 'config', 'data', 'Tests']`
 - `BROWSE_ROOTS`
 - `MAX_EDITABLE_BYTES`
-- `TEXT_EXTENSIONS` = `{'.js', '.cfg', '.css', '.yaml', '.py', '.md', '.ini', '.htm', '.ts', '.toml', '.xml', '.…`
-- `IGNORED_DIRECTORIES` = `{'.git', '.pytest_cache', '.vscode', 'venv', '.venv', '.mypy_cache', '__pycache__', '.ide…`
+- `TEXT_EXTENSIONS` = `{'.tsx', '.ts', '.html', '.sql', '.css', '.htm', '.yaml', '.toml', '.xml', '.cfg', '.json…`
+- `IGNORED_DIRECTORIES` = `{'.idea', '.pytest_cache', '.vscode', '__pycache__', '.mypy_cache', 'venv', '.venv', '.gi…`
 - `DEFAULT_PROJECT`
 - `TRANSIENT_DELETE_WIN_ERRORS`
 - `TRANSIENT_DELETE_ERRNOS`
@@ -1050,6 +1088,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `from interface.routers.ws import router as ws_router`
 - `from interface.routers.chat import router as chat_router`
 - `from interface.routers.agents import router as agents_router`
+- `from interface.routers.testing import router as testing_router`
 - `from interface.core.defaults import get_interface, get_events, get_sessions`
 **Constants**
 - `HOST`
@@ -1060,6 +1099,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `EDITOR_HTML`
 - `CHAT_HTML`
 - `PROMPT_BUILDER_HTML`
+- `TEST_HTML`
 - `WORKSPACE_AGENT_ROOT` = `'workspace'`
 **Functions**
 - **`_ensure_headless_on_path()`** *function* — Put headless_app/ on sys.path so the engine can be imported.
@@ -1103,10 +1143,22 @@ One entry per file, in the same order as the file structure above. Each entry li
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/project.json`*
 
+### `workspace/To Do/list.txt`
+
+*(no symbols extracted)*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/To Do/list.txt`*
+
+### `workspace/To Do/todolistPrompt`
+
+*(no structured reference for this file type)*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/To Do/todolistPrompt`*
+
 
 ---
 
-> Generated by `scripts/gen_master_copy.py` on 2026-09-28. Do not edit by hand; regenerate with:
+> Generated by `scripts/gen_master_copy.py` on 2026-09-29. Do not edit by hand; regenerate with:
 >
 > ```bat
 > .venv/Scripts/python -m scripts.gen_master_copy
