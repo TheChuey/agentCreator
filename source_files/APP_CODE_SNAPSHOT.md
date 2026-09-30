@@ -6,8 +6,8 @@ Verbatim copy of every source file in the agentCreator repository, in one docume
 | ----- | ----- |
 | Scope | `agentCreator/` |
 | Contains | file contents, verbatim |
-| Files | 98 |
-| Generated | 2026-09-29 |
+| Files | 105 |
+| Generated | 2026-09-30 |
 | Generator | `scripts/gen_master_copy.py` |
 | Regenerate | `.venv/Scripts/python -m scripts.gen_master_copy` |
 | Companions | [`headless_app_MASTER_COPY.md`](headless_app_MASTER_COPY.md) — `headless_app/`, [`project_manager_MASTER_COPY.md`](project_manager_MASTER_COPY.md) — `project_manager/` |
@@ -82,12 +82,12 @@ server running without the agent engine.
 
 ## File Index
 
-All 98 embedded files, with their size, so a reader can decide what to open. The contents are further down, in this same order, each under a `### path` heading and an `<!-- ==== n/total : path ==== -->` marker.
+All 105 embedded files, with their size, so a reader can decide what to open. The contents are further down, in this same order, each under a `### path` heading and an `<!-- ==== n/total : path ==== -->` marker.
 
 | # | File | Lines | Bytes |
 | - | ---- | ----- | ----- |
 | 1 | `.gitattributes` | 14 | 254 |
-| 2 | `.gitignore` | 38 | 509 |
+| 2 | `.gitignore` | 39 | 543 |
 | 3 | `headless_app/bridge/__init__.py` | 11 | 236 |
 | 4 | `headless_app/bridge/client.py` | 910 | 24184 |
 | 5 | `headless_app/bridge/providers.py` | 115 | 3584 |
@@ -130,61 +130,68 @@ All 98 embedded files, with their size, so a reader can decide what to open. The
 | 42 | `project_manager/interface/core/__init__.py` | 22 | 572 |
 | 43 | `project_manager/interface/core/defaults.py` | 109 | 2437 |
 | 44 | `project_manager/interface/core/events.py` | 104 | 2439 |
-| 45 | `project_manager/interface/core/operations.py` | 461 | 11873 |
+| 45 | `project_manager/interface/core/operations.py` | 486 | 12762 |
 | 46 | `project_manager/interface/core/session.py` | 130 | 3121 |
-| 47 | `project_manager/interface/routers/__init__.py` | 59 | 1422 |
+| 47 | `project_manager/interface/routers/__init__.py` | 103 | 2471 |
 | 48 | `project_manager/interface/routers/agents.py` | 558 | 16657 |
 | 49 | `project_manager/interface/routers/chat.py` | 787 | 21506 |
 | 50 | `project_manager/interface/routers/directories.py` | 86 | 2024 |
 | 51 | `project_manager/interface/routers/errors.py` | 73 | 1475 |
 | 52 | `project_manager/interface/routers/files.py` | 172 | 3725 |
 | 53 | `project_manager/interface/routers/paths.py` | 58 | 1272 |
-| 54 | `project_manager/interface/routers/project.py` | 99 | 2082 |
+| 54 | `project_manager/interface/routers/project.py` | 107 | 2491 |
 | 55 | `project_manager/interface/routers/testing.py` | 215 | 6699 |
 | 56 | `project_manager/interface/routers/ws.py` | 225 | 5759 |
-| 57 | `project_manager/interface/static/Agentpromptbuilder.html` | 1209 | 43016 |
-| 58 | `project_manager/interface/static/chat.html` | 1044 | 33333 |
-| 59 | `project_manager/interface/static/editor.html` | 436 | 11855 |
-| 60 | `project_manager/interface/static/home.html` | 374 | 9197 |
-| 61 | `project_manager/interface/static/index.html` | 386 | 10707 |
-| 62 | `project_manager/interface/static/js/agentCards.js` | 98 | 3009 |
-| 63 | `project_manager/interface/static/js/agentColors.js` | 70 | 2178 |
-| 64 | `project_manager/interface/static/js/agents.js` | 371 | 11495 |
-| 65 | `project_manager/interface/static/js/api.js` | 169 | 5499 |
-| 66 | `project_manager/interface/static/js/chat.js` | 536 | 18689 |
-| 67 | `project_manager/interface/static/js/editor.js` | 83 | 1899 |
-| 68 | `project_manager/interface/static/js/main.js` | 390 | 11758 |
-| 69 | `project_manager/interface/static/js/session.js` | 63 | 1448 |
-| 70 | `project_manager/interface/static/js/topbar.js` | 160 | 4401 |
-| 71 | `project_manager/interface/static/js/tree.js` | 206 | 6627 |
-| 72 | `project_manager/interface/static/test.html` | 424 | 14874 |
-| 73 | `project_manager/parameters/__init__.py` | 6 | 171 |
-| 74 | `project_manager/parameters/filesystem.py` | 1174 | 26387 |
-| 75 | `project_manager/README.md` | 19 | 1024 |
-| 76 | `project_manager/requirements.txt` | 5 | 78 |
-| 77 | `project_manager/scripts/run.bat` | 16 | 445 |
-| 78 | `project_manager/scripts/run.sh` | 23 | 513 |
-| 79 | `project_manager/scripts/setup.sh` | 33 | 882 |
-| 80 | `project_manager/server.py` | 244 | 7393 |
-| 81 | `project_manager/workspace/agents/ProjectManager/agent.json` | 12 | 235 |
-| 82 | `project_manager/workspace/agents/ProjectManager/agent.md` | 18 | 307 |
-| 83 | `project_manager/workspace/project.json` | 6 | 95 |
-| 84 | `project_manager/workspace/To Do/list.txt` | 9 | 703 |
-| 85 | `project_manager/workspace/To Do/todolistPrompt` | 177 | 8441 |
-| 86 | `README.md` | 249 | 10370 |
-| 87 | `scripts/gen_master_copy.py` | 2130 | 64450 |
-| 88 | `scripts/venv.bat` | 35 | 1136 |
-| 89 | `scripts/venv.ps1` | 40 | 1691 |
-| 90 | `test_environment/agent_test.py` | 1009 | 34338 |
-| 91 | `test_environment/PromptBuilderFiles/categories.json` | 26 | 372 |
-| 92 | `test_environment/PromptBuilderFiles/prompt_parts/hallucinations/rule_set_one_by_gemni.txt` | 10 | 1368 |
-| 93 | `test_environment/PromptBuilderFiles/prompt_parts/role/problem_anallyser.txt` | 2 | 214 |
-| 94 | `test_environment/PromptBuilderFiles/prompt_parts/tools/resoources.txt` | 2 | 125 |
-| 95 | `test_environment/PromptBuilderFiles/prompt_parts/user/greating.txt` | 2 | 87 |
-| 96 | `test_environment/test_agent_test.py` | 155 | 4791 |
-| 97 | `test_environment/test_agents/demo_agent/agent.json` | 12 | 199 |
-| 98 | `test_environment/test_agents/demo_agent/agent.md` | 26 | 836 |
-| | **98 files** | **21285** | **663255** |
+| 57 | `project_manager/interface/static/Agentpromptbuilder.html` | 43 | 1648 |
+| 58 | `project_manager/interface/static/builder.css` | 181 | 5290 |
+| 59 | `project_manager/interface/static/chat.html` | 1044 | 33333 |
+| 60 | `project_manager/interface/static/editor.html` | 436 | 11855 |
+| 61 | `project_manager/interface/static/home.html` | 374 | 9197 |
+| 62 | `project_manager/interface/static/index.html` | 386 | 10707 |
+| 63 | `project_manager/interface/static/js/agentCards.js` | 98 | 3009 |
+| 64 | `project_manager/interface/static/js/agentColors.js` | 70 | 2178 |
+| 65 | `project_manager/interface/static/js/agents.js` | 371 | 11495 |
+| 66 | `project_manager/interface/static/js/api.js` | 173 | 5757 |
+| 67 | `project_manager/interface/static/js/builder.js` | 1176 | 42453 |
+| 68 | `project_manager/interface/static/js/chat.js` | 536 | 18689 |
+| 69 | `project_manager/interface/static/js/editor.js` | 83 | 1899 |
+| 70 | `project_manager/interface/static/js/main.js` | 400 | 12309 |
+| 71 | `project_manager/interface/static/js/panels.js` | 356 | 12326 |
+| 72 | `project_manager/interface/static/js/report.js` | 186 | 6965 |
+| 73 | `project_manager/interface/static/js/session.js` | 63 | 1448 |
+| 74 | `project_manager/interface/static/js/topbar.js` | 160 | 4401 |
+| 75 | `project_manager/interface/static/js/tree.js` | 213 | 7031 |
+| 76 | `project_manager/interface/static/test.html` | 766 | 29765 |
+| 77 | `project_manager/parameters/__init__.py` | 6 | 171 |
+| 78 | `project_manager/parameters/filesystem.py` | 1194 | 27052 |
+| 79 | `project_manager/README.md` | 24 | 1320 |
+| 80 | `project_manager/requirements.txt` | 5 | 78 |
+| 81 | `project_manager/scripts/run.bat` | 16 | 445 |
+| 82 | `project_manager/scripts/run.sh` | 23 | 513 |
+| 83 | `project_manager/scripts/setup.sh` | 33 | 882 |
+| 84 | `project_manager/server.py` | 246 | 7491 |
+| 85 | `project_manager/workspace/agents/ProjectManager/agent.json` | 12 | 235 |
+| 86 | `project_manager/workspace/agents/ProjectManager/agent.md` | 18 | 307 |
+| 87 | `project_manager/workspace/project.json` | 6 | 95 |
+| 88 | `README.md` | 273 | 11839 |
+| 89 | `scripts/check_builder_css.py` | 175 | 4942 |
+| 90 | `scripts/gen_master_copy.py` | 2168 | 66631 |
+| 91 | `scripts/venv.bat` | 35 | 1136 |
+| 92 | `scripts/venv.ps1` | 40 | 1691 |
+| 93 | `test_environment/agent_test.py` | 1009 | 34338 |
+| 94 | `test_environment/PromptBuilderFiles/categories.json` | 26 | 372 |
+| 95 | `test_environment/PromptBuilderFiles/prompt_parts/hallucinations/rule_set_one_by_gemni.txt` | 10 | 1368 |
+| 96 | `test_environment/PromptBuilderFiles/prompt_parts/role/planner.txt` | 2 | 104 |
+| 97 | `test_environment/PromptBuilderFiles/prompt_parts/role/problem_anallyser.txt` | 2 | 214 |
+| 98 | `test_environment/PromptBuilderFiles/prompt_parts/tools/resoources.txt` | 2 | 125 |
+| 99 | `test_environment/PromptBuilderFiles/prompt_parts/user/greating.txt` | 2 | 87 |
+| 100 | `test_environment/PromptBuilderFiles/prompt_parts/user/name.txt` | 2 | 7 |
+| 101 | `test_environment/test_agent_test.py` | 155 | 4791 |
+| 102 | `test_environment/test_agents/demo_agent/agent.json` | 12 | 199 |
+| 103 | `test_environment/test_agents/demo_agent/agent.md` | 26 | 836 |
+| 104 | `test_environment/test_agents/new_agent/agent.json` | 9 | 124 |
+| 105 | `test_environment/test_agents/new_agent/agent.md` | 22 | 1549 |
+| | **105 files** | **22572** | **709697** |
 
 ## File Structure
 
@@ -267,13 +274,17 @@ agentCreator/
 │   │       │   ├── agentColors.js
 │   │       │   ├── agents.js
 │   │       │   ├── api.js
+│   │       │   ├── builder.js
 │   │       │   ├── chat.js
 │   │       │   ├── editor.js
 │   │       │   ├── main.js
+│   │       │   ├── panels.js
+│   │       │   ├── report.js
 │   │       │   ├── session.js
 │   │       │   ├── topbar.js
 │   │       │   └── tree.js
 │   │       ├── Agentpromptbuilder.html
+│   │       ├── builder.css
 │   │       ├── chat.html
 │   │       ├── editor.html
 │   │       ├── home.html
@@ -296,9 +307,7 @@ agentCreator/
 │   │   ├── documentation/
 │   │   ├── project_scope/
 │   │   ├── Tests/
-│   │   ├── To Do/
-│   │   │   ├── list.txt
-│   │   │   └── todolistPrompt
+│   │   ├── To Do/   # not embedded: personal working notes, gitignored and not part of the project
 │   │   ├── Tools/
 │   │   ├── updates/
 │   │   └── project.json
@@ -308,6 +317,7 @@ agentCreator/
 │   ├── requirements.txt
 │   └── server.py
 ├── scripts/
+│   ├── check_builder_css.py
 │   ├── gen_master_copy.py
 │   ├── venv.bat
 │   └── venv.ps1
@@ -321,14 +331,19 @@ agentCreator/
 │   │   │   ├── hallucinations/
 │   │   │   │   └── rule_set_one_by_gemni.txt
 │   │   │   ├── role/
+│   │   │   │   ├── planner.txt
 │   │   │   │   └── problem_anallyser.txt
 │   │   │   ├── tools/
 │   │   │   │   └── resoources.txt
 │   │   │   └── user/
-│   │   │       └── greating.txt
+│   │   │       ├── greating.txt
+│   │   │       └── name.txt
 │   │   └── categories.json
 │   ├── test_agents/
-│   │   └── demo_agent/
+│   │   ├── demo_agent/
+│   │   │   ├── agent.json
+│   │   │   └── agent.md
+│   │   └── new_agent/
 │   │       ├── agent.json
 │   │       └── agent.md
 │   ├── test_data/   # not embedded: runtime output: chat log and tool log of test runs
@@ -341,13 +356,14 @@ agentCreator/
 
 ## Scope
 
-This document embeds every source file under `agentCreator/`, **98 files** in total, in case-insensitive path order, verbatim and unmodified.
+This document embeds every source file under `agentCreator/`, **105 files** in total, in case-insensitive path order, verbatim and unmodified.
 
 The following are listed in the structure above but deliberately **not** covered:
 
 | Path | Reason |
 | ---- | ------ |
 | `headless_app/data` | runtime output: chat log, tool log, pipeline run records |
+| `project_manager/workspace/To Do` | personal working notes, gitignored and not part of the project |
 | `project_manager/workspace/data` | runtime output: chat log and saved chat sessions |
 | `test_environment/output` | runtime output: header test results |
 | `test_environment/test_data` | runtime output: chat log and tool log of test runs |
@@ -368,7 +384,7 @@ Or just this one:
 .venv/Scripts/python -m scripts.gen_master_copy --only agentCreator
 ```
 
-<!-- ==== 1/98 : .gitattributes ==== -->
+<!-- ==== 1/105 : .gitattributes ==== -->
 
 ### .gitattributes
 
@@ -390,7 +406,7 @@ Or just this one:
 
 ---
 
-<!-- ==== 2/98 : .gitignore ==== -->
+<!-- ==== 2/105 : .gitignore ==== -->
 
 ### .gitignore
 
@@ -432,11 +448,12 @@ test_environment/test_data/
 
 # Local working notes
 planSave.txt
+project_manager/workspace/To Do/
 ```
 
 ---
 
-<!-- ==== 3/98 : headless_app/bridge/__init__.py ==== -->
+<!-- ==== 3/105 : headless_app/bridge/__init__.py ==== -->
 
 ### headless_app/bridge/__init__.py
 
@@ -456,7 +473,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 4/98 : headless_app/bridge/client.py ==== -->
+<!-- ==== 4/105 : headless_app/bridge/client.py ==== -->
 
 ### headless_app/bridge/client.py
 
@@ -1375,7 +1392,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 5/98 : headless_app/bridge/providers.py ==== -->
+<!-- ==== 5/105 : headless_app/bridge/providers.py ==== -->
 
 ### headless_app/bridge/providers.py
 
@@ -1499,7 +1516,7 @@ __all__ = ["DirectProjectIO"]
 
 ---
 
-<!-- ==== 6/98 : headless_app/bridge/routers/__init__.py ==== -->
+<!-- ==== 6/105 : headless_app/bridge/routers/__init__.py ==== -->
 
 ### headless_app/bridge/routers/__init__.py
 
@@ -1509,7 +1526,7 @@ __all__ = ["DirectProjectIO"]
 
 ---
 
-<!-- ==== 7/98 : headless_app/bridge/routers/agents.py ==== -->
+<!-- ==== 7/105 : headless_app/bridge/routers/agents.py ==== -->
 
 ### headless_app/bridge/routers/agents.py
 
@@ -2076,7 +2093,7 @@ def list_models(
 
 ---
 
-<!-- ==== 8/98 : headless_app/bridge/routers/chat.py ==== -->
+<!-- ==== 8/105 : headless_app/bridge/routers/chat.py ==== -->
 
 ### headless_app/bridge/routers/chat.py
 
@@ -2344,7 +2361,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 9/98 : headless_app/bridge/tools_adapter.py ==== -->
+<!-- ==== 9/105 : headless_app/bridge/tools_adapter.py ==== -->
 
 ### headless_app/bridge/tools_adapter.py
 
@@ -2421,7 +2438,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 10/98 : headless_app/config/models.json ==== -->
+<!-- ==== 10/105 : headless_app/config/models.json ==== -->
 
 ### headless_app/config/models.json
 
@@ -2458,7 +2475,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 11/98 : headless_app/config/pipeline.json ==== -->
+<!-- ==== 11/105 : headless_app/config/pipeline.json ==== -->
 
 ### headless_app/config/pipeline.json
 
@@ -2476,7 +2493,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 12/98 : headless_app/engine/__init__.py ==== -->
+<!-- ==== 12/105 : headless_app/engine/__init__.py ==== -->
 
 ### headless_app/engine/__init__.py
 
@@ -2486,7 +2503,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 13/98 : headless_app/engine/agent_library/Builder/agent.json ==== -->
+<!-- ==== 13/105 : headless_app/engine/agent_library/Builder/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Builder/agent.json
 
@@ -2507,7 +2524,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 14/98 : headless_app/engine/agent_library/Builder/agent.md ==== -->
+<!-- ==== 14/105 : headless_app/engine/agent_library/Builder/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Builder/agent.md
 
@@ -2656,7 +2673,7 @@ def _extension_post_process_hook(record_path: Path, result: dict) -> None:
 
 ---
 
-<!-- ==== 15/98 : headless_app/engine/agent_library/Enginner/agent.json ==== -->
+<!-- ==== 15/105 : headless_app/engine/agent_library/Enginner/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Enginner/agent.json
 
@@ -2675,7 +2692,7 @@ def _extension_post_process_hook(record_path: Path, result: dict) -> None:
 
 ---
 
-<!-- ==== 16/98 : headless_app/engine/agent_library/Enginner/agent.md ==== -->
+<!-- ==== 16/105 : headless_app/engine/agent_library/Enginner/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Enginner/agent.md
 
@@ -2742,7 +2759,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 17/98 : headless_app/engine/agent_library/Planner/agent.json ==== -->
+<!-- ==== 17/105 : headless_app/engine/agent_library/Planner/agent.json ==== -->
 
 ### headless_app/engine/agent_library/Planner/agent.json
 
@@ -2759,7 +2776,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 18/98 : headless_app/engine/agent_library/Planner/agent.md ==== -->
+<!-- ==== 18/105 : headless_app/engine/agent_library/Planner/agent.md ==== -->
 
 ### headless_app/engine/agent_library/Planner/agent.md
 
@@ -2769,7 +2786,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 19/98 : headless_app/engine/agent_library/rag_assistant/agent.json ==== -->
+<!-- ==== 19/105 : headless_app/engine/agent_library/rag_assistant/agent.json ==== -->
 
 ### headless_app/engine/agent_library/rag_assistant/agent.json
 
@@ -2813,7 +2830,7 @@ def register_routes(app: FastAPI):
 
 ---
 
-<!-- ==== 20/98 : headless_app/engine/agent_library/rag_assistant/agent.md ==== -->
+<!-- ==== 20/105 : headless_app/engine/agent_library/rag_assistant/agent.md ==== -->
 
 ### headless_app/engine/agent_library/rag_assistant/agent.md
 
@@ -2865,7 +2882,7 @@ To ensure no files are deleted accidentally, you must strictly follow this two-s
 
 ---
 
-<!-- ==== 21/98 : headless_app/engine/agents/__init__.py ==== -->
+<!-- ==== 21/105 : headless_app/engine/agents/__init__.py ==== -->
 
 ### headless_app/engine/agents/__init__.py
 
@@ -2875,7 +2892,7 @@ To ensure no files are deleted accidentally, you must strictly follow this two-s
 
 ---
 
-<!-- ==== 22/98 : headless_app/engine/agents/factory.py ==== -->
+<!-- ==== 22/105 : headless_app/engine/agents/factory.py ==== -->
 
 ### headless_app/engine/agents/factory.py
 
@@ -3185,7 +3202,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 23/98 : headless_app/engine/agents/loader.py ==== -->
+<!-- ==== 23/105 : headless_app/engine/agents/loader.py ==== -->
 
 ### headless_app/engine/agents/loader.py
 
@@ -3430,7 +3447,7 @@ def load_definition_from_paths(
 
 ---
 
-<!-- ==== 24/98 : headless_app/engine/agents/registry.py ==== -->
+<!-- ==== 24/105 : headless_app/engine/agents/registry.py ==== -->
 
 ### headless_app/engine/agents/registry.py
 
@@ -3533,7 +3550,7 @@ __all__ = ["list_agents", "get_agent_meta", "AGENT_LIBRARY_DIR"]
 
 ---
 
-<!-- ==== 25/98 : headless_app/engine/agents/roots.py ==== -->
+<!-- ==== 25/105 : headless_app/engine/agents/roots.py ==== -->
 
 ### headless_app/engine/agents/roots.py
 
@@ -3745,7 +3762,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 26/98 : headless_app/engine/core/__init__.py ==== -->
+<!-- ==== 26/105 : headless_app/engine/core/__init__.py ==== -->
 
 ### headless_app/engine/core/__init__.py
 
@@ -3755,7 +3772,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 27/98 : headless_app/engine/core/agent.py ==== -->
+<!-- ==== 27/105 : headless_app/engine/core/agent.py ==== -->
 
 ### headless_app/engine/core/agent.py
 
@@ -4254,7 +4271,7 @@ class Agent:
 
 ---
 
-<!-- ==== 28/98 : headless_app/engine/core/llm.py ==== -->
+<!-- ==== 28/105 : headless_app/engine/core/llm.py ==== -->
 
 ### headless_app/engine/core/llm.py
 
@@ -4526,7 +4543,7 @@ def refresh_models() -> list:
 
 ---
 
-<!-- ==== 29/98 : headless_app/engine/core/prompt.py ==== -->
+<!-- ==== 29/105 : headless_app/engine/core/prompt.py ==== -->
 
 ### headless_app/engine/core/prompt.py
 
@@ -4659,7 +4676,7 @@ class PromptManager:
 
 ---
 
-<!-- ==== 30/98 : headless_app/engine/pipeline.py ==== -->
+<!-- ==== 30/105 : headless_app/engine/pipeline.py ==== -->
 
 ### headless_app/engine/pipeline.py
 
@@ -4857,7 +4874,7 @@ def run_pipeline(user_message: str, model: str | None = None,
 
 ---
 
-<!-- ==== 31/98 : headless_app/interface_runner.py ==== -->
+<!-- ==== 31/105 : headless_app/interface_runner.py ==== -->
 
 ### headless_app/interface_runner.py
 
@@ -5182,7 +5199,7 @@ __all__ = ["AgentInterface", "DEFAULT_HISTORY_LIMIT"]
 
 ---
 
-<!-- ==== 32/98 : headless_app/run.py ==== -->
+<!-- ==== 32/105 : headless_app/run.py ==== -->
 
 ### headless_app/run.py
 
@@ -5391,7 +5408,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 33/98 : headless_app/tools/__init__.py ==== -->
+<!-- ==== 33/105 : headless_app/tools/__init__.py ==== -->
 
 ### headless_app/tools/__init__.py
 
@@ -5401,7 +5418,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 34/98 : headless_app/tools/chatlog.py ==== -->
+<!-- ==== 34/105 : headless_app/tools/chatlog.py ==== -->
 
 ### headless_app/tools/chatlog.py
 
@@ -5631,7 +5648,7 @@ def append_tool_event(event: dict) -> None:
 
 ---
 
-<!-- ==== 35/98 : headless_app/tools/project_tools.py ==== -->
+<!-- ==== 35/105 : headless_app/tools/project_tools.py ==== -->
 
 ### headless_app/tools/project_tools.py
 
@@ -6345,7 +6362,7 @@ if str(ROOT_DIR) not in sys.path:
 
 ---
 
-<!-- ==== 36/98 : headless_app/tools/registry.py ==== -->
+<!-- ==== 36/105 : headless_app/tools/registry.py ==== -->
 
 ### headless_app/tools/registry.py
 
@@ -6508,7 +6525,7 @@ def get_session() -> FileSession:
 
 ---
 
-<!-- ==== 37/98 : headless_app/tools/state.py ==== -->
+<!-- ==== 37/105 : headless_app/tools/state.py ==== -->
 
 ### headless_app/tools/state.py
 
@@ -6589,7 +6606,7 @@ class FileSession:
 
 ---
 
-<!-- ==== 38/98 : project_manager/.gitattributes ==== -->
+<!-- ==== 38/105 : project_manager/.gitattributes ==== -->
 
 ### project_manager/.gitattributes
 
@@ -6611,7 +6628,7 @@ class FileSession:
 
 ---
 
-<!-- ==== 39/98 : project_manager/.gitignore ==== -->
+<!-- ==== 39/105 : project_manager/.gitignore ==== -->
 
 ### project_manager/.gitignore
 
@@ -6647,7 +6664,7 @@ htmlcov/
 
 ---
 
-<!-- ==== 40/98 : project_manager/interface/clients/__init__.py ==== -->
+<!-- ==== 40/105 : project_manager/interface/clients/__init__.py ==== -->
 
 ### project_manager/interface/clients/__init__.py
 
@@ -6677,7 +6694,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 41/98 : project_manager/interface/clients/editor_client.py ==== -->
+<!-- ==== 41/105 : project_manager/interface/clients/editor_client.py ==== -->
 
 ### project_manager/interface/clients/editor_client.py
 
@@ -7381,7 +7398,7 @@ class AsyncEditorClient:
 
 ---
 
-<!-- ==== 42/98 : project_manager/interface/core/__init__.py ==== -->
+<!-- ==== 42/105 : project_manager/interface/core/__init__.py ==== -->
 
 ### project_manager/interface/core/__init__.py
 
@@ -7411,7 +7428,7 @@ __all__ = [
 
 ---
 
-<!-- ==== 43/98 : project_manager/interface/core/defaults.py ==== -->
+<!-- ==== 43/105 : project_manager/interface/core/defaults.py ==== -->
 
 ### project_manager/interface/core/defaults.py
 
@@ -7528,7 +7545,7 @@ def reset_for_tests() -> None:
 
 ---
 
-<!-- ==== 44/98 : project_manager/interface/core/events.py ==== -->
+<!-- ==== 44/105 : project_manager/interface/core/events.py ==== -->
 
 ### project_manager/interface/core/events.py
 
@@ -7640,7 +7657,7 @@ class EventBus:
 
 ---
 
-<!-- ==== 45/98 : project_manager/interface/core/operations.py ==== -->
+<!-- ==== 45/105 : project_manager/interface/core/operations.py ==== -->
 
 ### project_manager/interface/core/operations.py
 
@@ -7783,6 +7800,7 @@ class EditorInterface:
     def tree(
         self,
         scope: str | None = None,
+        roots: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Project state: project info, active root and filesystem tree.
@@ -7793,11 +7811,31 @@ class EditorInterface:
                 level is the configured ``BROWSE_ROOTS`` folders.
                 ``"workspace"`` or ``"app"`` return the legacy
                 single-root tree for that scope.
+            roots:
+                Browser roots to include, or None for all of them.
+                Ignored when ``scope`` is set: the legacy view is
+                already a single root, so there is nothing to
+                choose between. This filters the listing only --
+                the returned roots stay resolvable everywhere.
         """
 
         try:
 
             if not scope:
+
+                browse_roots = (
+                    self.filesystem.BROWSE_ROOTS
+                )
+
+                if roots is not None:
+
+                    wanted = set(roots)
+
+                    browse_roots = {
+                        name: config
+                        for name, config in browse_roots.items()
+                        if name in wanted
+                    }
 
                 return {
                     "scope": None,
@@ -7813,12 +7851,16 @@ class EditorInterface:
                             ),
                         }
                         for name, config
-                        in self.filesystem.BROWSE_ROOTS.items()
+                        in browse_roots.items()
                     ],
                     "root": str(
                         self.filesystem.PROJECT_ROOT
                     ),
-                    "filesystem": self.filesystem.read_browse_filesystem(),
+                    "filesystem": (
+                        self.filesystem.read_browse_filesystem(
+                            roots=roots
+                        )
+                    ),
                 }
 
             root = _root_for(scope)
@@ -8109,7 +8151,7 @@ class EditorInterface:
 
 ---
 
-<!-- ==== 46/98 : project_manager/interface/core/session.py ==== -->
+<!-- ==== 46/105 : project_manager/interface/core/session.py ==== -->
 
 ### project_manager/interface/core/session.py
 
@@ -8247,7 +8289,7 @@ class EditorManager:
 
 ---
 
-<!-- ==== 47/98 : project_manager/interface/routers/__init__.py ==== -->
+<!-- ==== 47/105 : project_manager/interface/routers/__init__.py ==== -->
 
 ### project_manager/interface/routers/__init__.py
 
@@ -8310,11 +8352,55 @@ def normalize_scope(scope: str | None) -> str | None:
         )
 
     return scope
+
+
+def normalize_roots(
+    roots: str | None,
+) -> list[str] | None:
+    """
+    Validate and normalize the ``roots`` query parameter.
+
+    A comma-separated list of browser-root names. Empty entries are
+    dropped and order is preserved; None means "no filter", which is
+    the whole browser tree.
+
+    Raises:
+        HTTPException (422):
+            If a name is not a configured browser root. An unknown
+            root is refused rather than dropped, because a typo
+            that returned a smaller tree would read as a page that
+            legitimately has less in it.
+    """
+
+    if roots is None:
+
+        return None
+
+    names = [
+        name.strip()
+        for name in roots.split(",")
+        if name.strip()
+    ]
+
+    if not names:
+
+        return None
+
+    for name in names:
+
+        if name not in filesystem.BROWSE_ROOTS:
+
+            raise HTTPException(
+                status_code=422,
+                detail=f"Unknown browser root: {name}",
+            )
+
+    return names
 ```
 
 ---
 
-<!-- ==== 48/98 : project_manager/interface/routers/agents.py ==== -->
+<!-- ==== 48/105 : project_manager/interface/routers/agents.py ==== -->
 
 ### project_manager/interface/routers/agents.py
 
@@ -8881,7 +8967,7 @@ def list_models(
 
 ---
 
-<!-- ==== 49/98 : project_manager/interface/routers/chat.py ==== -->
+<!-- ==== 49/105 : project_manager/interface/routers/chat.py ==== -->
 
 ### project_manager/interface/routers/chat.py
 
@@ -9677,7 +9763,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 50/98 : project_manager/interface/routers/directories.py ==== -->
+<!-- ==== 50/105 : project_manager/interface/routers/directories.py ==== -->
 
 ### project_manager/interface/routers/directories.py
 
@@ -9771,7 +9857,7 @@ def delete_directory(
 
 ---
 
-<!-- ==== 51/98 : project_manager/interface/routers/errors.py ==== -->
+<!-- ==== 51/105 : project_manager/interface/routers/errors.py ==== -->
 
 ### project_manager/interface/routers/errors.py
 
@@ -9852,7 +9938,7 @@ def project_manager_error(
 
 ---
 
-<!-- ==== 52/98 : project_manager/interface/routers/files.py ==== -->
+<!-- ==== 52/105 : project_manager/interface/routers/files.py ==== -->
 
 ### project_manager/interface/routers/files.py
 
@@ -10032,7 +10118,7 @@ def delete_file(
 
 ---
 
-<!-- ==== 53/98 : project_manager/interface/routers/paths.py ==== -->
+<!-- ==== 53/105 : project_manager/interface/routers/paths.py ==== -->
 
 ### project_manager/interface/routers/paths.py
 
@@ -10098,7 +10184,7 @@ def rename_path(
 
 ---
 
-<!-- ==== 54/98 : project_manager/interface/routers/project.py ==== -->
+<!-- ==== 54/105 : project_manager/interface/routers/project.py ==== -->
 
 ### project_manager/interface/routers/project.py
 
@@ -10114,7 +10200,7 @@ from typing import Any
 
 from fastapi import APIRouter, Request
 
-from . import normalize_scope
+from . import normalize_roots, normalize_scope
 from .errors import project_manager_error
 
 
@@ -10156,6 +10242,7 @@ def health(
 def get_project(
     request: Request,
     scope: str | None = None,
+    roots: str | None = None,
 ):
     """
     Project information and filesystem tree.
@@ -10165,12 +10252,19 @@ def get_project(
             Omit for the browser tree, whose top level is the
             configured browser roots. ``"workspace"`` or ``"app"``
             return the legacy single-root tree.
+        roots:
+            Comma-separated browser roots to include in the browser
+            tree, e.g. ``?roots=test_environment``. Omit for all of
+            them. This decides what a page is shown, not what it may
+            read or write: an omitted root still resolves for file
+            operations.
     """
 
     try:
 
         return request.app.state.editor.tree(
-            scope=normalize_scope(scope)
+            scope=normalize_scope(scope),
+            roots=normalize_roots(roots),
         )
 
     except Exception as error:
@@ -10205,7 +10299,7 @@ def get_sessions(
 
 ---
 
-<!-- ==== 55/98 : project_manager/interface/routers/testing.py ==== -->
+<!-- ==== 55/105 : project_manager/interface/routers/testing.py ==== -->
 
 ### project_manager/interface/routers/testing.py
 
@@ -10428,7 +10522,7 @@ def read_results(
 
 ---
 
-<!-- ==== 56/98 : project_manager/interface/routers/ws.py ==== -->
+<!-- ==== 56/105 : project_manager/interface/routers/ws.py ==== -->
 
 ### project_manager/interface/routers/ws.py
 
@@ -10661,7 +10755,7 @@ async def project_manager_socket(
 
 ---
 
-<!-- ==== 57/98 : project_manager/interface/static/Agentpromptbuilder.html ==== -->
+<!-- ==== 57/105 : project_manager/interface/static/Agentpromptbuilder.html ==== -->
 
 ### project_manager/interface/static/Agentpromptbuilder.html
 
@@ -10672,1205 +10766,40 @@ async def project_manager_socket(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Prompt Builder</title>
+<link rel="stylesheet" href="/static/builder.css">
+
+<!-- Page furniture only. Everything the builder itself draws is scoped
+     under .pb in builder.css, so none of these can leak into /test. -->
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#101318;color:#e8edf2}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2}
 header{padding:18px 24px;background:#181d24;border-bottom:1px solid #303741}
-h1{margin:0 0 5px;font-size:22px}
-header p{margin:0;color:#9ca8b5}
-main{max-width:1200px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.card{background:#151a20;border:1px solid #303741;border-radius:8px;padding:16px}
-.full{grid-column:1 / -1}
-h2{margin:0 0 12px;font-size:16px;color:#dfe6ee;border-bottom:1px solid #303741;padding-bottom:8px}
-label{display:block;margin:10px 0 6px;font-size:13px;color:#aeb9c5}
-.microlabel{display:block;margin:14px 0 5px;font-size:12px;color:#8fa0b3;letter-spacing:.04em}
-.catrow{display:flex;align-items:center;gap:8px;margin-top:6px}
-.catrow select,.catrow input{flex:1;min-width:0}
-.catrow button{flex-shrink:0}
-.catrow[hidden]{display:none}
-input,textarea,select{width:100%;background:#0d1116;color:#edf2f7;border:1px solid #39424d;border-radius:6px;padding:9px;font-family:inherit}
-textarea{min-height:110px;resize:vertical}
-#master_prompt{min-height:320px;font-family:Consolas,Menlo,monospace;font-size:13px}
-button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:#4c8bf5;color:white;font-size:14px}
-button.secondary{background:#303944}
-button.danger{background:#7a2f3c}
-button.tiny{padding:3px 9px;font-size:12px}
-button:disabled{opacity:.45;cursor:not-allowed}
-button:hover:not(:disabled){opacity:.92}
-.row{display:flex;gap:8px;margin-top:14px}
-.row button{flex:1}
-.parts-group{margin-bottom:14px}
-.parts-group h3{margin:0 0 6px;font-size:13px;color:#8fa0b3;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
-.parts-group h3 .count{color:#5c6774;text-transform:none;letter-spacing:0}
-.part-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:14px}
-.part-row input[type=checkbox]{width:auto}
-.part-row .name{margin:0;flex:1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.part-row .actions{display:flex;gap:6px;flex-shrink:0}
-.empty{color:#5c6774;font-size:13px;font-style:italic}
-.empty code{font-style:normal;background:#0d1116;padding:2px 6px;border-radius:5px;border:1px solid #39424d}
-.status{margin-top:14px;padding:10px;border-radius:6px;background:#1a2129;color:#aeb9c5;font-size:13px;white-space:pre-wrap}
-.status.error{color:#ff9b9b}
-.status.ok{color:#8fe3a6}
-.status.warn{color:#f5c96b}
-.folderbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#aeb9c5}
-.folderbar code{background:#0d1116;padding:3px 7px;border-radius:5px;border:1px solid #39424d}
-.folderbar button{margin-left:auto}
-.headrow{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.headrow h2{margin:0;flex:1}
-.parts-group h3 .lockbadge{background:#4a2530;color:#ff9b9b;border:1px solid #6b3341;padding:1px 7px;border-radius:9px;font-size:11px;letter-spacing:.02em;cursor:help}
-@media(max-width:900px){main{grid-template-columns:1fr}}
+header h1{margin:0 0 5px;font-size:22px}
+header p{margin:0;color:#9ca8b5;max-width:90ch}
+#pbHost{padding:20px 16px 48px}
 </style>
 </head>
+
+<!-- This page used to be self-contained: inline CSS, inline markup, an
+     inline script. It is now a shell around static/js/builder.js, because
+     the same builder runs as the right-hand panel on /test and a second
+     copy of the markup, the styles and 1000 lines of logic would be two
+     copies to keep in step. The header below is all that is genuinely
+     page-specific. -->
+
 <body>
 <header>
 <h1>Agent Prompt Builder</h1>
 <p>Create reusable prompt parts in categories you can add or remove, select them, and assemble an editable agent.md — published straight into the isolated test environment, never into the managed workspace.</p>
 </header>
 
-<main>
-
-<div class="card full">
-<h2>Parts Folder</h2>
-<div class="folderbar">
-<span>Parts:</span>
-<code id="parts_folder_label">…</code>
-<button id="refresh_parts_btn" class="secondary tiny" type="button" disabled title="Re-read the parts folder. Also clears any folder marked as locked after a failed write.">Refresh Parts</button>
-</div>
-<div id="storage_status" class="status">Connecting to the Project Manager…</div>
-</div>
-
-<div class="card">
-<h2 id="form_title">Create Prompt Part</h2>
-
-<label>Category</label>
-<div class="catrow">
-<select id="part_category"></select>
-<button id="new_category_btn" class="secondary tiny" type="button" disabled title="Add a category of your own. It becomes a new folder under prompt_parts.">+ Category</button>
-<button id="delete_category_btn" class="secondary tiny danger" type="button" disabled title="Delete the selected category and every part inside it.">Delete</button>
-</div>
-
-<div class="catrow" id="new_category_row" hidden>
-<input id="new_category_name" placeholder="new category name (e.g. memory)" maxlength="40" autocomplete="off">
-<button id="create_category_btn" class="secondary tiny" type="button" disabled>Create</button>
-</div>
-<div class="microlabel">the category list is stored in <code id="categories_file_label">categories.json</code> and is read on every refresh</div>
-
-<label>Name</label>
-<input id="part_name" placeholder="e.g. planner">
-
-<label>Text</label>
-<textarea id="part_text" placeholder="You are a planning agent..."></textarea>
-
-<div class="row">
-<button id="save_part_btn" type="button" disabled>Save Part</button>
-<button id="clear_form_btn" class="secondary" type="button" disabled>Clear</button>
-</div>
-
-<div id="part_status" class="status">Waiting for the Project Manager…</div>
-</div>
-
-<div class="card">
-<div class="headrow">
-<h2>Available Parts</h2>
-<button id="new_part_btn" class="secondary tiny" type="button" disabled>+ New Part</button>
-</div>
-<div id="parts_list"><div class="empty">Loading parts…</div></div>
-
-<div class="row">
-<button id="create_master_btn" type="button" disabled>Create Master Prompt</button>
-</div>
-</div>
-
-<div class="card full">
-<h2>Master Prompt</h2>
-
-<label>Agent ID (folder name for saving)</label>
-<input id="agent_id" value="new_agent" style="max-width:320px">
-
-<label>Markdown (editable before saving)</label>
-<textarea id="master_prompt" placeholder="Select parts and click 'Create Master Prompt'."></textarea>
-
-    <div class="row">
-    <button id="save_agent_btn" type="button" disabled>Save draft</button>
-    <button id="publish_btn" type="button" disabled>Publish for testing</button>
-    <button id="test_btn" type="button" disabled title="Publish for testing first.">Run header tests</button>
-    <button id="open_test_btn" class="secondary" type="button" disabled title="Open the evidence dashboard in its own window.">Test dashboard</button>
-    </div>
-
-    <div id="master_status" class="status">Ready.</div>
-    </div>
-
-</main>
+<div class="pb" id="pbHost"></div>
 
 <script type="module">
-import API from '/static/js/api.js';
-
-// ============================================================
-// CONFIG - the storage locations are fixed, not user-selected.
-// ============================================================
-
-/* Every path is browser-root-qualified (workspace/..., test_environment/...),
-   which is what the file API resolves back to a root. The prompt parts and the
-   published test agents live in the isolated test environment, and the
-   workspace root is the only other writable one, so the builder can only ever
-   write inside those two - it can no longer be pointed at an arbitrary folder
-   on the user's disk. */
-
-const DOC_ROOT = 'test_environment/PromptBuilderFiles';
-const PARTS_DIR = DOC_ROOT + '/prompt_parts';
-const DOC_OUTPUT_DIR = DOC_ROOT + '/output/agents';
-const AGENTS_DIR = 'test_environment/test_agents';
-
-/* The category list is data, not code. It lives in this file next to the
-   parts folders so it can be added to and subtracted from in the browser
-   - and hand-edited - without touching this script. Array order is the
-   order the dropdown, the parts list and the master prompt sections use,
-   so there is no separate sort key to keep in sync. It sits outside
-   prompt_parts/ so that folder holds nothing but category folders. */
-const CATEGORIES_FILE = DOC_ROOT + '/categories.json';
-const CATEGORIES_VERSION = 1;
-
-const PART_FILE = '.txt';
-
-/* The starting catalogue, written on the first run only. It is also the
-   title lookup: a category typed as "hallucinations" gets the readable
-   title from here rather than the id with a capital letter. */
-const SEED_CATEGORIES = [
-  { id: "role", title: "Role" },
-  { id: "rules", title: "Rules" },
-  { id: "hallucinations", title: "Hallucination Rules" },
-  { id: "tools", title: "Tools" },
-  { id: "skills", title: "Skills" },
-  { id: "input", title: "Input" },
-  { id: "reasoning", title: "Reasoning" },
-  { id: "logic", title: "Logic" }
-];
-
-// ============================================================
-// STATE
-// ============================================================
-
-let categories = [];           // [{id, title}] from the manifest, in order
-let partIndex = {};            // {category: [{name, path}]}
-let textCache = new Map();     // part path -> text
-let selected = new Set();      // "category/name" keys that are checked
-let lockedCategories = new Set(); // categories that refused a write
-let editingCategory = null;    // category the part open in the form belongs to
-let workspaceRoot = "";        // absolute, from /api/health
-let projectRoot = "";          // the parent of workspaceRoot
-let ready = false;             // the parts folder answered at least once
-let assembled = null;          // selection signature of the last build
-
-/* The two buttons the panel and the form can reach, so their disabled
-   state is always derived from one place. */
-const BUTTONS = ["save_part_btn","clear_form_btn","create_master_btn",
-                  "save_agent_btn","publish_btn","refresh_parts_btn",
-                  "new_part_btn","new_category_btn","create_category_btn",
-                  "delete_category_btn","test_btn","open_test_btn"];
-
-/* Buttons that additionally need something published in this session,
-   not just a live parts folder. */
-const PUBLISH_GATED = new Set(["test_btn"]);
-
-let busy = false;
-
-function $(id){ return document.getElementById(id); }
-
-function setStatus(id, message, kind){
-  const el = $(id);
-  el.textContent = message;
-  el.className = "status" + (kind ? " " + kind : "");
-}
-
-/* One place decides every button's state, because three different
-   things can disable one: the parts folder is unreachable, an operation
-   is in flight, or there is nothing published to test. Deriving it in
-   one pass is what keeps a later setReady() from quietly re-enabling a
-   button whose own condition is gone. */
-function syncButtons(){
-  for (const id of BUTTONS){
-    const gated = PUBLISH_GATED.has(id) && !publishedAgentId;
-    $(id).disabled = busy || !ready || gated;
-  }
-}
-
-function setReady(value){
-  ready = value;
-  syncButtons();
-}
-
-/* Buttons stay disabled for the duration of an operation so a double
-   click cannot fire two writes at the same file. */
-function setBusy(value){
-  busy = value;
-  syncButtons();
-}
-
-function partKey(category, name){ return category + "/" + name; }
-
-function categoryPath(id){
-  return PARTS_DIR + "/" + id;
-}
-
-function partPath(category, name){
-  return categoryPath(category) + "/" + name + PART_FILE;
-}
-
-function relativePath(path){
-  return path.startsWith(DOC_ROOT + "/")
-    ? path.slice(DOC_ROOT.length + 1)
-    : path;
-}
-
-function safeSlug(value){
-  value = (value || "").trim().toLowerCase();
-  value = value.replace(/[^a-z0-9_-]+/g, "_");
-  value = value.replace(/_+/g, "_").replace(/^_|_$/g, "");
-  if (!value) throw new Error("Name cannot be empty.");
-  return value;
-}
-
-/* A category added in the browser has no entry in the seed, so its id is
-   the title unless it is one of the seeded ones. */
-function titleFor(id){
-  const seeded = SEED_CATEGORIES.find(cat => cat.id === id);
-  if (seeded) return seeded.title;
-  return id.replace(/[_-]+/g, " ")
-           .replace(/\b\w/g, c => c.toUpperCase());
-}
-
-/* agent.json needs a human label; derive one from the id rather than
-   adding a field the builder would then have to keep in sync. */
-function displayName(id){
-  return id.replace(/[_-]+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-}
-
-// ============================================================
-// ERRORS - a raw Python errno is not an explanation
-// ============================================================
-
-/* The API reports the absolute server path, so a failure reads as
-   "Permission denied: 'E:\agentCreator\project_manager\workspace\...'"
-   - a path the user cannot click and does not recognise. Both roots are
-   learned once so the same failure can be shown relative. Best effort:
-   if the lookup fails the original text is still shown. */
-function learnWorkspaceRoot(){
-  if (typeof API.health !== "function") return Promise.resolve();
-  return API.health()
-    .then((data) => {
-      workspaceRoot = (data && data.root) || "";
-      projectRoot = workspaceRoot
-        ? workspaceRoot.replace(/[\\/][^\\/]+[\\/]?$/, "")
-        : "";
-    })
-    .catch(() => {
-      workspaceRoot = "";
-      projectRoot = "";
-    });
-}
-
-function isPermissionError(error){
-  const message = (error && error.message) || String(error);
-  return /permission denied|access is denied|errno 13|winerror 5/i
-    .test(message);
-}
-
-/* Python quotes the offending path: "... denied: 'C:\\...'". */
-function extractFailedPath(message){
-  const quoted = String(message).match(/'([^']+)'/);
-  return quoted ? quoted[1] : "";
-}
-
-function shortenPath(value){
-  let out = String(value || "");
-  for (const root of [workspaceRoot, projectRoot]){
-    if (!root) continue;
-    out = out.split(root).join("");
-  }
-  return out.replace(/^[\\/]+/, "").replace(/\\/g, "/");
-}
-
-/* The remedy is the same for every refused write on the same volume, so
-   it is named from the drive rather than hard-coded. Pass lowercase to
-   embed it inside a sentence. */
-function repairHint(lowercase){
-  const drive = projectRoot.match(/^([A-Za-z]:)/);
-  const target = drive ? drive[1] : "the drive";
-  const text = "Repair the drive in an Administrator prompt: chkdsk "
-    + target + " /f";
-  return lowercase
-    ? text.charAt(0).toLowerCase() + text.slice(1)
-    : text;
-}
-
-function firstUnlockedCategory(){
-  const free = categories.find(cat => !lockedCategories.has(cat.id));
-  return free ? free.id : null;
-}
-
-/* A locked category is disabled in the dropdown rather than hidden, so
-   it stays visible that it exists and is why it cannot be used. */
-function syncCategoryDropdown(){
-  const sel = $("part_category");
-  if (!sel) return;
-  for (const opt of sel.options){
-    opt.disabled = lockedCategories.has(opt.value);
-  }
-  if (lockedCategories.has(sel.value)){
-    const free = firstUnlockedCategory();
-    if (free) sel.value = free;
-  }
-}
-
-function markCategoryLocked(category){
-  if (!category) return;
-  lockedCategories.add(category);
-  syncCategoryDropdown();
-  renderParts();
-}
-
-/* Turns a thrown error into a sentence the user can act on, and records
-   a refused folder so the panel stops offering it. */
-function prettyError(error, category){
-  const raw = (error && error.message) || String(error);
-
-  if (isPermissionError(error)){
-    if (category) markCategoryLocked(category);
-    const where = shortenPath(
-      extractFailedPath(raw) || "that folder"
-    );
-    return "Cannot write " + where
-      + " - Windows reports \"access denied\". Nothing was saved."
-      + " That folder is read-only or damaged: use another category, or "
-      + repairHint(true) + ". Then press 'Refresh Parts'.";
-  }
-
-  return "Error: " + shortenPath(raw);
-}
-
-// ============================================================
-// TREE LOOKUP - the /api/project tree is the listing source
-// ============================================================
-
-function findNode(items, path){
-  for (const item of items || []){
-    if (item.path === path) return item;
-    if (item.children){
-      const hit = findNode(item.children, path);
-      if (hit) return hit;
-    }
-  }
-  return null;
-}
-
-function childDir(node, name){
-  for (const child of (node && node.children) || []){
-    if (child.type === "directory" && child.name === name) return child;
-  }
-  return null;
-}
-
-// ============================================================
-// FOLDER
-// ============================================================
-
-/* Only the parts root is created up front. Category folders appear on
-   demand: every file write creates its parent directories, so seeding
-   eight empty folders would just be eight pointless API calls - and a
-   category with no parts does not need a folder to exist. */
-async function ensureStructure(){
-  await API.directoryCreate(PARTS_DIR);
-  $("parts_folder_label").textContent = relativePath(PARTS_DIR);
-  $("categories_file_label").textContent = relativePath(CATEGORIES_FILE);
-}
-
-// ============================================================
-// CATEGORIES - the manifest is the list
-// ============================================================
-
-/* One entry per category, in the order everything else uses. A bad entry
-   is dropped and a repeated id keeps its first position, because the
-   manifest is a plain text file a person is allowed to edit. */
-function normalizeCategories(raw){
-  const list = Array.isArray(raw && raw.categories) ? raw.categories : [];
-  const seen = new Set();
-  const out = [];
-  for (const item of list){
-    if (!item || typeof item.id !== "string") continue;
-    const id = item.id.trim().toLowerCase();
-    if (!id || seen.has(id)) continue;
-    const title = (typeof item.title === "string" && item.title.trim())
-      || titleFor(id);
-    seen.add(id);
-    out.push({ id, title });
-  }
-  return out;
-}
-
-function manifestText(list){
-  return JSON.stringify(
-    { version: CATEGORIES_VERSION, categories: list }, null, 2
-  ) + "\n";
-}
-
-/* Absent means "never set up", so the seed catalogue is written. Present
-   but unreadable is an error and is never overwritten: a hand-edit with
-   a typo in it has to survive until it is fixed. */
-async function readCategories(){
-  let text = null;
-
-  try {
-    text = (await API.fileRead(CATEGORIES_FILE)).content;
-  } catch (error) {
-    if (error.status !== 404) throw error;
-  }
-
-  if (text === null){
-    const seeded = normalizeCategories({ categories: SEED_CATEGORIES });
-    await API.fileWrite(CATEGORIES_FILE, manifestText(seeded));
-    return seeded;
-  }
-
-  try {
-    return normalizeCategories(JSON.parse(text));
-  } catch (error) {
-    throw new Error(relativePath(CATEGORIES_FILE)
-      + " is not valid JSON (" + error.message + ")."
-      + " Fix it in the editor - it has not been changed.");
-  }
-}
-
-/* Every change goes through here, and the in-memory list is rebuilt from
-   the same normalizer the file is written from, so what the page shows
-   is always exactly what is on disk. */
-async function writeCategories(list){
-  const payload = normalizeCategories({ categories: list });
-  await API.fileWrite(CATEGORIES_FILE, manifestText(payload));
-  categories = payload;
-  return payload;
-}
-
-// ============================================================
-// PARTS
-// ============================================================
-
-function populateCategoryDropdown(){
-  const sel = $("part_category");
-  const previous = sel.value;
-  sel.innerHTML = "";
-
-  /* With every category deleted there is nothing to save a part into, and
-     a blank dropdown would read as a bug rather than as that state. */
-  if (!categories.length){
-    const none = document.createElement("option");
-    none.value = "";
-    none.textContent = "(no categories - create one)";
-    sel.appendChild(none);
-  }
-
-  for (const cat of categories){
-    const opt = document.createElement("option");
-    opt.value = cat.id;
-    opt.textContent = cat.title;
-    sel.appendChild(opt);
-  }
-
-  /* A category that was just deleted is no longer an option, so the old
-     value would quietly become the first one instead. */
-  if (categories.some(cat => cat.id === previous)){
-    sel.value = previous;
-  }
-
-  syncCategoryDropdown();
-}
-
-async function readPart(path){
-  if (textCache.has(path)) return textCache.get(path);
-  const data = await API.fileRead(path);
-  const text = data.content || "";
-  textCache.set(path, text);
-  return text;
-}
-
-/* Selection is state, not DOM: the list is rebuilt from the tree on
-   every refresh, so checked boxes are re-applied from `selected`
-   instead of being inherited from the markup that just got replaced. */
-async function refreshParts(){
-  const data = await API.project();
-  const partsNode = findNode(data.filesystem, PARTS_DIR);
-
-  partIndex = {};
-  for (const cat of categories){
-    const catNode = childDir(partsNode, cat.id);
-    const entries = [];
-    for (const child of (catNode && catNode.children) || []){
-      if (child.type !== "file") continue;
-      if (!child.name.endsWith(PART_FILE)) continue;
-      entries.push({ name: child.name.slice(0, -PART_FILE.length), path: child.path });
-    }
-    entries.sort((a, b) => a.name.localeCompare(b.name));
-    partIndex[cat.id] = entries;
-  }
-
-  /* Drop selections whose part no longer exists, so a later build can
-     never reference a file that was deleted or renamed. A category that
-     was removed takes its checked parts with it. */
-  const live = new Set();
-  for (const cat of categories){
-    for (const entry of partIndex[cat.id]) live.add(partKey(cat.id, entry.name));
-  }
-  const dropped = [];
-  for (const key of Array.from(selected)){
-    if (!live.has(key)){ selected.delete(key); dropped.push(key); }
-  }
-
-  renderParts();
-  return { total: live.size, dropped };
-}
-
-function isChecked(category, name){
-  return selected.has(partKey(category, name));
-}
-
-function setChecked(category, name, value){
-  const key = partKey(category, name);
-  if (value) selected.add(key); else selected.delete(key);
-}
-
-function markAssembledStale(){
-  if (assembled === null) return;
-  if (assembled === selectionSignature()) return;
-  setStatus("master_status",
-    "The selected parts changed. Click 'Create Master Prompt' to rebuild before saving.", "warn");
-}
-
-function selectionSignature(){
-  return Array.from(selected).sort().join("|");
-}
-
-function renderParts(){
-  const box = $("parts_list");
-  box.innerHTML = "";
-
-  let total = 0;
-
-  for (const cat of categories){
-    const id = cat.id;
-    const entries = partIndex[id] || [];
-    const locked = lockedCategories.has(id);
-    total += entries.length;
-
-    const group = document.createElement("div");
-    group.className = "parts-group";
-
-    const heading = document.createElement("h3");
-    heading.appendChild(document.createTextNode(cat.title));
-    heading.title = relativePath(categoryPath(id));
-
-    const count = document.createElement("span");
-    count.className = "count";
-    count.textContent = "(" + entries.length + ")";
-    heading.appendChild(count);
-
-    /* The category is listed but cannot be used, so the panel says so
-       instead of showing an empty list as if nothing had ever been
-       written there. */
-    if (locked){
-      const badge = document.createElement("span");
-      badge.className = "lockbadge";
-      badge.textContent = "locked";
-      badge.title = "This folder refused a write, so its parts cannot be"
-        + " listed or saved. " + repairHint() + ", then press 'Refresh Parts'.";
-      heading.appendChild(badge);
-    }
-
-    if (entries.length){
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "secondary tiny";
-      toggle.textContent = "all / none";
-      toggle.addEventListener("click", () => toggleCategory(id));
-      heading.appendChild(toggle);
-    }
-
-    group.appendChild(heading);
-
-    if (entries.length === 0){
-      const empty = document.createElement("div");
-      empty.className = "empty";
-      empty.textContent = locked
-        ? "Folder is not writable right now."
-        : "No parts yet.";
-      group.appendChild(empty);
-    }
-
-    for (const entry of entries){
-      group.appendChild(buildPartRow(id, entry));
-    }
-
-    box.appendChild(group);
-  }
-
-  if (total === 0){
-    const hint = document.createElement("div");
-    hint.className = "empty";
-    hint.innerHTML =
-      "No parts in the folder yet. Use \"+ New Part\" above, or add a"
-      + " <code>.txt</code> file to <code>"
-      + relativePath(PARTS_DIR) + "/&lt;category&gt;/</code> in the editor."
-      + " A new category is a new folder there, so the editor works"
-      + " without this page too.";
-    box.appendChild(hint);
-  }
-}
-
-function buildPartRow(category, entry){
-  const row = document.createElement("div");
-  row.className = "part-row";
-
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.id = "part_" + category + "_" + entry.name;
-  checkbox.checked = isChecked(category, entry.name);
-  checkbox.addEventListener("change", () => {
-    setChecked(category, entry.name, checkbox.checked);
-    markAssembledStale();
-  });
-
-  const label = document.createElement("label");
-  label.className = "name";
-  label.htmlFor = checkbox.id;
-  label.textContent = entry.name;
-  label.title = entry.path;
-
-  const actions = document.createElement("div");
-  actions.className = "actions";
-
-  const editBtn = document.createElement("button");
-  editBtn.type = "button";
-  editBtn.className = "secondary tiny";
-  editBtn.textContent = "Edit";
-  editBtn.addEventListener("click", () => editPart(category, entry));
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.type = "button";
-  deleteBtn.className = "secondary tiny";
-  deleteBtn.textContent = "Delete";
-  deleteBtn.addEventListener("click", () => deletePart(category, entry));
-
-  actions.appendChild(editBtn);
-  actions.appendChild(deleteBtn);
-  row.appendChild(checkbox);
-  row.appendChild(label);
-  row.appendChild(actions);
-  return row;
-}
-
-function toggleCategory(category){
-  const entries = partIndex[category] || [];
-  const allChecked = entries.length > 0
-    && entries.every(entry => isChecked(category, entry.name));
-  for (const entry of entries){
-    setChecked(category, entry.name, !allChecked);
-  }
-  renderParts();
-  markAssembledStale();
-}
-
-/* Clearing the fields and reporting "Ready" are separate: a successful
-   save clears the form but must keep its own confirmation visible. */
-function clearFormFields(){
-  $("part_name").value = "";
-  $("part_text").value = "";
-  $("form_title").textContent = "Create Prompt Part";
-  editingCategory = null;
-}
-
-function resetForm(){
-  clearFormFields();
-  setStatus("part_status", "Ready.");
-}
-
-function editPart(category, entry){
-  setBusy(true);
-  readPart(entry.path)
-    .then((text) => {
-      $("part_category").value = category;
-      $("part_name").value = entry.name;
-      $("part_text").value = text.replace(/\s+$/, "");
-      $("form_title").textContent = "Edit Prompt Part";
-      /* Remembered so deleting this category can say the open part goes
-         with it, and so a cleared form is not mistaken for a live edit. */
-      editingCategory = category;
-      setStatus("part_status",
-        "Editing " + relativePath(entry.path) + ". Save Part to update it.", "ok");
-      $("part_text").focus();
-    })
-    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
-    .finally(() => setBusy(false));
-}
-
-function deletePart(category, entry){
-  if (!confirm("Delete " + relativePath(entry.path) + "?")) return;
-  setBusy(true);
-  API.fileDelete(entry.path)
-    .then(() => {
-      textCache.delete(entry.path);
-      selected.delete(partKey(category, entry.name));
-      return refreshParts();
-    })
-    .then(({ total, dropped }) => {
-      setStatus("part_status",
-        "Deleted " + relativePath(entry.path) + ". " + total + " part(s) left."
-        + droppedNote(dropped), "ok");
-      markAssembledStale();
-    })
-    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
-    .finally(() => setBusy(false));
-}
-
-function droppedNote(dropped){
-  if (!dropped.length) return "";
-  return " Cleared " + dropped.length + " stale selection(s): " + dropped.join(", ") + ".";
-}
-
-// ============================================================
-// CATEGORY ACTIONS
-// ============================================================
-
-/* The name field is hidden until it is asked for, so the form keeps one
-   category selector instead of two near-identical text boxes. */
-function toggleNewCategoryRow(open){
-  const row = $("new_category_row");
-  const show = open === undefined ? row.hidden : open;
-  row.hidden = !show;
-  $("new_category_btn").textContent = show ? "Cancel" : "+ Category";
-  if (show) $("new_category_name").focus();
-  else $("new_category_name").value = "";
-}
-
-/* Adding a category is a manifest write and nothing else: the folder is
-   still created by the first part saved into it, which is the same
-   "on demand" rule every other part follows. */
-async function addCategory(){
-  let id = "";
-  try {
-    id = safeSlug($("new_category_name").value);
-  } catch (error) {
-    setStatus("part_status", "Category " + error.message, "error");
-    return;
-  }
-
-  if (categories.some(cat => cat.id === id)){
-    setStatus("part_status",
-      "The category '" + id + "' already exists.", "error");
-    return;
-  }
-
-  setBusy(true);
-  try {
-    const title = titleFor(id);
-    await writeCategories(categories.concat({ id, title }));
-    toggleNewCategoryRow(false);
-    populateCategoryDropdown();
-    $("part_category").value = id;
-    renderParts();
-    setStatus("part_status", "Added category " + title + " -> "
-      + relativePath(categoryPath(id))
-      + ". Its folder appears with the first part saved into it.", "ok");
-  } catch (error) {
-    setStatus("part_status", prettyError(error), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-/* Everything the deleted folder was referenced by, so no path is left
-   pointing at a folder that is gone. */
-function forgetCategory(id){
-  const prefix = categoryPath(id) + "/";
-  for (const path of Array.from(textCache.keys())){
-    if (path.startsWith(prefix)) textCache.delete(path);
-  }
-  for (const key of Array.from(selected)){
-    if (key.startsWith(id + "/")) selected.delete(key);
-  }
-  lockedCategories.delete(id);
-}
-
-async function deleteCategory(){
-  const id = $("part_category").value;
-  const entry = categories.find(cat => cat.id === id);
-
-  if (!entry){
-    setStatus("part_status", "There is no category to delete.", "error");
-    return;
-  }
-
-  const parts = partIndex[id] || [];
-  const editing = editingCategory === id;
-
-  /* One confirm says what is destroyed: the folder, every part in it,
-     and an open part that otherwise would look like it survived. */
-  let message = "Delete the category " + entry.title + " ("
-    + relativePath(categoryPath(id)) + ")?";
-  message += parts.length
-    ? "\n\nThis permanently deletes " + parts.length + " part(s): "
-      + parts.map(part => part.name).join(", ") + "."
-    : "\n\nIt holds no parts.";
-  if (editing){
-    message += "\n\nThe part open in the form is one of them.";
-  }
-  if (!confirm(message)) return;
-
-  setBusy(true);
-  try {
-    /* The folder goes first. A refused recursive delete then leaves the
-       manifest untouched, so the list still matches the disk and the
-       delete can simply be tried again - the other order would hide a
-       category whose parts are already gone. A category that never had a
-       part saved into it has no folder to remove, and a stale tree must
-       not be able to skip a folder that does exist, so the answer to
-       "is it there" comes from the delete itself. */
-    try {
-      await API.directoryDelete(categoryPath(id));
-    } catch (error) {
-      if (error.status !== 404) throw error;
-    }
-    forgetCategory(id);
-    await writeCategories(categories.filter(cat => cat.id !== id));
-    populateCategoryDropdown();
-
-    const { total, dropped } = await refreshParts();
-    if (editing) resetForm();
-    setStatus("part_status", "Deleted category " + entry.title + ". "
-      + total + " part(s) left." + droppedNote(dropped), "ok");
-    markAssembledStale();
-  } catch (error) {
-    setStatus("part_status", prettyError(error, id), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-/* The create button in the panel header hands off to the form rather
-   than duplicating it: two editors for one file is how the two drift
-   apart. The category is moved off a locked folder first, because the
-   first option is otherwise a folder that may refuse the write. */
-function startNewPart(){
-  if (!categories.length){
-    setStatus("part_status",
-      "There are no categories yet - use \"+ Category\" to add one first.", "warn");
-    return;
-  }
-  const sel = $("part_category");
-  if (lockedCategories.has(sel.value)){
-    const free = firstUnlockedCategory();
-    if (free) sel.value = free;
-  }
-  clearFormFields();
-  const title = $("form_title");
-  if (title && typeof title.scrollIntoView === "function"){
-    title.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-  $("part_name").focus();
-  setStatus("part_status", "Fill in the form to create a new part.", "");
-}
-
-async function savePart(){
-  const category = $("part_category").value;
-
-  if (!category){
-    setStatus("part_status",
-      "There are no categories yet - use \"+ Category\" to add one first.", "error");
-    return;
-  }
-
-  /* Refused up front: a locked folder already answered, so sending the
-     write again would only repeat the same error. */
-  if (lockedCategories.has(category)){
-    setStatus("part_status",
-      "Cannot save into " + titleFor(category) + " - that folder refused an"
-      + " earlier write. " + repairHint() + ", then press 'Refresh Parts'.",
-      "error");
-    return;
-  }
-
-  setBusy(true);
-  try {
-    const name = safeSlug($("part_name").value);
-    const text = $("part_text").value.trim();
-    if (!text) throw new Error("Part text cannot be empty.");
-
-    const path = partPath(category, name);
-    /* fileWrite creates or overwrites, so saving an edited part and
-       saving a new one are the same call. */
-    await API.fileWrite(path, text + "\n");
-    textCache.set(path, text + "\n");
-
-    const { total } = await refreshParts();
-    setStatus("part_status", "Saved: " + relativePath(path) + ". " + total + " part(s) total.", "ok");
-    clearFormFields();
-  } catch (error) {
-    setStatus("part_status", prettyError(error, category), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-// ============================================================
-// MASTER PROMPT
-// ============================================================
-
-function collectSelections(){
-  const selections = {};
-  for (const cat of categories){
-    const names = (partIndex[cat.id] || [])
-      .filter(entry => isChecked(cat.id, entry.name))
-      .map(entry => entry.name);
-    if (names.length) selections[cat.id] = names;
-  }
-  return selections;
-}
-
-async function buildMasterPrompt(){
-  const selections = collectSelections();
-
-  if (!Object.keys(selections).length){
-    setStatus("master_status", "No parts are selected.", "warn");
-    return;
-  }
-
-  setBusy(true);
-  const missing = [];
-  try {
-    const lines = ["# Agent Prompt", ""];
-
-    for (const cat of categories){
-      const names = selections[cat.id] || [];
-      const texts = [];
-      for (const name of names){
-        const path = partPath(cat.id, name);
-        let text = "";
-        try {
-          text = (await readPart(path)).trim();
-        } catch (error) {
-          missing.push(partKey(cat.id, name));
-          continue;
-        }
-        if (text) texts.push(text);
-      }
-      if (texts.length){
-        lines.push("## " + cat.title);
-        lines.push("");
-        lines.push(texts.join("\n\n"));
-        lines.push("");
-      }
-    }
-
-    $("master_prompt").value = lines.join("\n").trim() + "\n";
-    assembled = selectionSignature();
-
-    const count = Object.values(selections).reduce((sum, list) => sum + list.length, 0);
-    setStatus("master_status",
-      "Assembled " + count + " part(s). Edit the markdown if needed, then save."
-      + (missing.length ? " Skipped unreadable: " + missing.join(", ") + "." : ""),
-      missing.length ? "warn" : "ok");
-  } catch (error) {
-    setStatus("master_status", "Error: " + error.message, "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-function requireMarkdown(){
-  const markdown = $("master_prompt").value.trim();
-  if (!markdown) throw new Error("The master prompt is empty - nothing to save.");
-  return markdown;
-}
-
-async function saveToDocumentation(){
-  setBusy(true);
-  try {
-    const id = safeSlug($("agent_id").value);
-    const markdown = requireMarkdown();
-    const path = DOC_OUTPUT_DIR + "/" + id + "/agent.md";
-    await API.fileWrite(path, markdown + "\n");
-    setStatus("master_status", "Saved: " + relativePath(path), "ok");
-  } catch (error) {
-    setStatus("master_status", prettyError(error), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-/* "Publish for testing" makes the prompt a real agent inside the isolated
-   test environment: the engine only lists folders that hold BOTH agent.json
-   and agent.md (engine/agents/registry.py), so the metadata file is created
-   here. An existing agent.json is left alone so hand-edited settings - and
-   any tests stored in it - are never overwritten.
-
-   Nothing is written to workspace/agents/. A published agent is a test
-   fixture: it is not registered as an agent root, so it never appears in
-   the live agent picker, and the four header tests drive it by path. */
-let publishedAgentId = null;
-
-async function publishForTesting(){
-  setBusy(true);
-  setTestButtonState(false);
-  try {
-    const id = safeSlug($("agent_id").value);
-    const markdown = requireMarkdown();
-    const dir = AGENTS_DIR + "/" + id;
-
-    await API.fileWrite(dir + "/agent.md", markdown + "\n");
-
-    let metaCreated = false;
-    try {
-      await API.fileRead(dir + "/agent.json");
-    } catch {
-      const meta = {
-        id,
-        name: displayName(id),
-        description: "",
-        mode: "chat",
-        model: "",
-        tools: []
-      };
-      await API.fileCreate(dir + "/agent.json", JSON.stringify(meta, null, 2) + "\n");
-      metaCreated = true;
-    }
-
-    publishedAgentId = id;
-    setTestButtonState(true);    setStatus("master_status",
-      "Published to the test environment: " + dir + "/agent.md"
-      + (metaCreated ? " + agent.json (new)" : " (agent.json kept)")
-      + ".\nPress 'Run header tests' to ask it the four questions.", "ok");
-  } catch (error) {
-    setStatus("master_status", prettyError(error), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-/* The run is four model turns, so it is its own button rather than
-   something the publish press chains into: a slow model must not look
-   like a failed publish. The dashboard is opened afterwards because
-   that is where the evidence is read. */
-async function runHeaderTests(){
-  const id = publishedAgentId || safeSlug($("agent_id").value);
-
-  setBusy(true);
-  setStatus("master_status",
-    "Asking '" + id + "' the four header questions. Each one is a full "
-    + "model turn - a minute or two on a local model.", "");
-
-  try {
-    const report = await API.request("POST", "/api/test/run_header_tests", {
-      agent_id: id,
-      model: null
-    });
-    const summary = report.summary || {};
-    const failed = (summary.failed || 0);
-    setStatus("master_status",
-      (summary.passed || 0) + " of " + (summary.total || 0)
-      + " header tests passed for '" + id + "'."
-      + (failed ? "\n" + failed + " failed - the evidence says why on the "
-                    + "test dashboard." : ""), failed ? "warn" : "ok");
-  } catch (error) {
-    setStatus("master_status", prettyError(error), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-/* The test button is only live for something that has actually been
-   published in this session. Reloading the page forgets it, which is
-   the honest state: a hand-edited agent.json may no longer match the
-   markdown above, and the dashboard is where you find out. */
-function setTestButtonState(isPublished){
-  publishedAgentId = isPublished ? publishedAgentId : null;
-  $("test_btn").title = publishedAgentId
-    ? "Run the four header tests against " + publishedAgentId + "."
-    : "Publish for testing first.";
-  syncButtons();
-}
-
-function openTestDashboard(){
-  const id = publishedAgentId || "";
-  window.open(
-    "/test" + (id ? "?agent=" + encodeURIComponent(id) : ""),
-    "PMHeaderTestDashboard",
-    "width=1100,height=820,resizable=yes,scrollbars=yes"
-  );
-}
-
-// ============================================================
-// INIT
-// ============================================================
-
-async function reloadParts(){
-  setBusy(true);
-  try {
-    /* A lock only records that a write was refused, not that the folder
-       is still broken, so the explicit refresh drops them and lets a
-       repaired folder be used again without reloading the page. */
-    lockedCategories.clear();
-    syncCategoryDropdown();
-
-    /* Read before the tree: the parts are listed per category, so the
-       list has to be known first. A categories.json edited in the
-       editor therefore takes effect on 'Refresh Parts'. */
-    categories = await readCategories();
-    populateCategoryDropdown();
-
-    const { total, dropped } = await refreshParts();
-    setStatus("storage_status",
-      "Parts folder: " + relativePath(PARTS_DIR) + " - " + total + " part(s)."
-      + droppedNote(dropped), "ok");
-    setReady(true);
-  } catch (error) {
-    setReady(false);
-    setStatus("storage_status", prettyError(error), "error");
-  } finally {
-    setBusy(false);
-  }
-}
-
-function init(){
-  /* The two test buttons start disabled; the publish press is what
-     makes them live, and that is the only thing that should. */
-  setTestButtonState(false);
-  $("save_part_btn").addEventListener("click", savePart);
-  $("clear_form_btn").addEventListener("click", resetForm);
-  $("new_part_btn").addEventListener("click", startNewPart);
-  $("new_category_btn").addEventListener("click", () => toggleNewCategoryRow());
-  $("create_category_btn").addEventListener("click", addCategory);
-  $("delete_category_btn").addEventListener("click", deleteCategory);
-  $("new_category_name").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") addCategory();
-  });
-  $("create_master_btn").addEventListener("click", buildMasterPrompt);
-  $("save_agent_btn").addEventListener("click", saveToDocumentation);
-  $("publish_btn").addEventListener("click", publishForTesting);
-  $("test_btn").addEventListener("click", runHeaderTests);
-  $("open_test_btn").addEventListener("click", openTestDashboard);
-  $("refresh_parts_btn").addEventListener("click", reloadParts);
-
-  /* The dropdown is not built here: it is a view of the manifest, and the
-     manifest is read by the first reload. Every button is disabled until
-     then, so the empty dropdown is never something a user can act on. */
-  learnWorkspaceRoot()
-    .then(() => ensureStructure())
-    .then(() => reloadParts())
-    .catch(error => {
-      setReady(false);
-      setStatus("storage_status", prettyError(error), "error");
-      setStatus("part_status", "The parts folder is unavailable.", "error");
-    });
-}
-
-init();
+import Builder from '/static/js/builder.js';
+
+/* No onShowEvidence here: there is no dashboard on this page, so the
+   button would have nothing to point at. It stays disabled. */
+Builder.mount(document.getElementById('pbHost'));
 </script>
 </body>
 </html>
@@ -11878,7 +10807,197 @@ init();
 
 ---
 
-<!-- ==== 58/98 : project_manager/interface/static/chat.html ==== -->
+<!-- ==== 58/105 : project_manager/interface/static/builder.css ==== -->
+
+### project_manager/interface/static/builder.css
+
+```css
+/* ============================================================
+   Agent Prompt Builder - panel styles
+   ============================================================
+
+   Shared by two hosts: /prompt-builder (standalone) and /test (the
+   right-hand panel). Loaded by both rather than inlined, because the
+   builder is no longer one page.
+
+   Every rule is scoped under .pb, and the three rules that cannot be
+   scoped are gone rather than prefixed:
+
+     body  - the host owns it. In /test it is a flex column pinned to
+             the viewport; a nested body cannot be reached from here at
+             all, and in the standalone shell it is already correct.
+     header / h1 / header p - page furniture, not builder furniture.
+             Both hosts carry their own.
+     main - the builder's own layout is .pb-cards below. A prefixing
+             `main` selector would either miss the panel (the panel is
+             an aside in /test) or hit the host's main and give it the
+             builder's 1fr 1fr columns.
+
+   Anything added here without the .pb prefix silently becomes a global
+   rule and will hit whichever page embeds this. scripts/check_builder_css.py
+   asserts that. */
+
+.pb-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Caps and centres the cards on the standalone page, where there is
+       no panel to bound them. Inside the /test panel it never binds:
+       the panel's own max is narrower than this. */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pb .card { background: #151a20; border: 1px solid #303741; border-radius: 8px; padding: 16px; }
+
+/* The 2-column grid the standalone page used is dropped rather than
+   narrowed: at panel width every card would be an unreadable column. */
+.pb h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #dfe6ee;
+    border-bottom: 1px solid #303741;
+    padding-bottom: 8px;
+}
+
+.pb label {
+    display: block;
+    margin: 10px 0 6px;
+    font-size: 13px;
+    color: #aeb9c5;
+}
+
+.pb .microlabel {
+    display: block;
+    margin: 14px 0 5px;
+    font-size: 12px;
+    color: #8fa0b3;
+    letter-spacing: .04em;
+}
+
+.pb .catrow { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.pb .catrow select, .pb .catrow input { flex: 1; min-width: 0; }
+.pb .catrow button { flex-shrink: 0; }
+.pb .catrow[hidden] { display: none; }
+
+.pb input, .pb textarea, .pb select {
+    width: 100%;
+    background: #0d1116;
+    color: #edf2f7;
+    border: 1px solid #39424d;
+    border-radius: 6px;
+    padding: 9px;
+    font-family: inherit;
+}
+
+.pb textarea { min-height: 110px; resize: vertical; }
+.pb #master_prompt { min-height: 320px; font-family: Consolas, Menlo, monospace; font-size: 13px; }
+
+.pb button {
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    cursor: pointer;
+    background: #4c8bf5;
+    color: white;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.pb button.secondary { background: #303944; }
+.pb button.danger { background: #7a2f3c; }
+.pb button.tiny { padding: 3px 9px; font-size: 12px; }
+.pb button:disabled { opacity: .45; cursor: not-allowed; }
+.pb button:hover:not(:disabled) { opacity: .92; }
+
+.pb .row { display: flex; gap: 8px; margin-top: 14px; }
+.pb .row button { flex: 1; }
+
+.pb .parts-group { margin-bottom: 14px; }
+.pb .parts-group h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #8fa0b3;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pb .parts-group h3 .count { color: #5c6774; text-transform: none; letter-spacing: 0; }
+
+.pb .part-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 14px; }
+.pb .part-row input[type=checkbox] { width: auto; }
+.pb .part-row .name {
+    margin: 0;
+    flex: 1;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pb .part-row .actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.pb .empty { color: #5c6774; font-size: 13px; font-style: italic; }
+.pb .empty code {
+    font-style: normal;
+    background: #0d1116;
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid #39424d;
+}
+
+/* The dashboard's own .status rules carry line-height and the [hidden]
+   guard; repeated here so the two pages cannot drift apart. */
+.pb .status {
+    margin-top: 14px;
+    padding: 10px;
+    border-radius: 6px;
+    background: #1a2129;
+    color: #aeb9c5;
+    font-size: 13px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+.pb .status[hidden] { display: none; }
+.pb .status.error { color: #ff9b9b; }
+.pb .status.ok { color: #8fe3a6; }
+.pb .status.warn { color: #f5c96b; }
+
+.pb .folderbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #aeb9c5;
+}
+.pb .folderbar code {
+    background: #0d1116;
+    padding: 3px 7px;
+    border-radius: 5px;
+    border: 1px solid #39424d;
+}
+.pb .folderbar button { margin-left: auto; }
+
+.pb .headrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.pb .headrow h2 { margin: 0; flex: 1; }
+
+.pb .parts-group h3 .lockbadge {
+    background: #4a2530;
+    color: #ff9b9b;
+    border: 1px solid #6b3341;
+    padding: 1px 7px;
+    border-radius: 9px;
+    font-size: 11px;
+    letter-spacing: .02em;
+    cursor: help;
+}
+```
+
+---
+
+<!-- ==== 59/105 : project_manager/interface/static/chat.html ==== -->
 
 ### project_manager/interface/static/chat.html
 
@@ -12931,7 +12050,7 @@ init();
 
 ---
 
-<!-- ==== 59/98 : project_manager/interface/static/editor.html ==== -->
+<!-- ==== 60/105 : project_manager/interface/static/editor.html ==== -->
 
 ### project_manager/interface/static/editor.html
 
@@ -13375,7 +12494,7 @@ init();
 
 ---
 
-<!-- ==== 60/98 : project_manager/interface/static/home.html ==== -->
+<!-- ==== 61/105 : project_manager/interface/static/home.html ==== -->
 
 ### project_manager/interface/static/home.html
 
@@ -13757,7 +12876,7 @@ init();
 
 ---
 
-<!-- ==== 61/98 : project_manager/interface/static/index.html ==== -->
+<!-- ==== 62/105 : project_manager/interface/static/index.html ==== -->
 
 ### project_manager/interface/static/index.html
 
@@ -14151,7 +13270,7 @@ loadProject();
 
 ---
 
-<!-- ==== 62/98 : project_manager/interface/static/js/agentCards.js ==== -->
+<!-- ==== 63/105 : project_manager/interface/static/js/agentCards.js ==== -->
 
 ### project_manager/interface/static/js/agentCards.js
 
@@ -14257,7 +13376,7 @@ export { initAgentCards, openChatWithAgent };
 
 ---
 
-<!-- ==== 63/98 : project_manager/interface/static/js/agentColors.js ==== -->
+<!-- ==== 64/105 : project_manager/interface/static/js/agentColors.js ==== -->
 
 ### project_manager/interface/static/js/agentColors.js
 
@@ -14335,7 +13454,7 @@ export { AGENT_PALETTE, agentColor, assignAgentColors };
 
 ---
 
-<!-- ==== 64/98 : project_manager/interface/static/js/agents.js ==== -->
+<!-- ==== 65/105 : project_manager/interface/static/js/agents.js ==== -->
 
 ### project_manager/interface/static/js/agents.js
 
@@ -14715,7 +13834,7 @@ export { updateRunTarget };
 
 ---
 
-<!-- ==== 65/98 : project_manager/interface/static/js/api.js ==== -->
+<!-- ==== 66/105 : project_manager/interface/static/js/api.js ==== -->
 
 ### project_manager/interface/static/js/api.js
 
@@ -14772,9 +13891,13 @@ const API = {
     return { ...body, scope };
   },
 
-  project(scope = null) {
+  /* ``roots`` is a list of browser-root names the caller wants shown.
+     Omitted (the default) means all of them, so every existing caller
+     keeps the full tree. */
+  project(scope = null, roots = null) {
     const params = new URLSearchParams();
     if (scope) params.set('scope', scope);
+    if (roots && roots.length) params.set('roots', roots.join(','));
     const query = params.toString();
     return this.request('GET', '/api/project' + (query ? `?${query}` : ''));
   },
@@ -14892,7 +14015,1190 @@ export default API;
 
 ---
 
-<!-- ==== 66/98 : project_manager/interface/static/js/chat.js ==== -->
+<!-- ==== 67/105 : project_manager/interface/static/js/builder.js ==== -->
+
+### project_manager/interface/static/js/builder.js
+
+```javascript
+﻿
+/* ============================================================
+   Agent Prompt Builder
+   ============================================================
+
+   Moved out of Agentpromptbuilder.html so two hosts can run it: the
+   standalone /prompt-builder page, and the right-hand panel on /test.
+   The behaviour is the one the page always had - nothing below was
+   rewritten for the move. What changed is the seam:
+
+     - the four cards live here as MARKUP rather than in the page, so
+       they are defined once instead of twice;
+     - mount(host) replaces the init() that ran at parse, so importing
+       this module has no side effects and the host decides when to
+       start;
+     - styles are builder.css, scoped under .pb.
+
+   $() stays document.getElementById. That is only safe because the 26
+   ids in MARKUP are unique against every host page's own ids; one
+   builder instance per document. A second mount would share this
+   module's state (categories, textCache, selection), so it is not
+   supported. */
+
+import API from '/static/js/api.js';
+
+// ============================================================
+// MARKUP
+// ============================================================
+
+const MARKUP = `
+<div class="pb-cards">
+
+  <div class="card">
+    <h2>Parts Folder</h2>
+    <div class="folderbar">
+      <span>Parts:</span>
+      <code id="parts_folder_label">…</code>
+      <button id="refresh_parts_btn" class="secondary tiny" type="button" disabled title="Re-read the parts folder. Also clears any folder marked as locked after a failed write.">Refresh Parts</button>
+    </div>
+    <div id="storage_status" class="status">Connecting to the Project Manager…</div>
+  </div>
+
+  <div class="card">
+    <h2 id="form_title">Create Prompt Part</h2>
+
+    <label>Category</label>
+    <div class="catrow">
+      <select id="part_category"></select>
+      <button id="new_category_btn" class="secondary tiny" type="button" disabled title="Add a category of your own. It becomes a new folder under prompt_parts.">+ Category</button>
+      <button id="delete_category_btn" class="secondary tiny danger" type="button" disabled title="Delete the selected category and every part inside it.">Delete</button>
+    </div>
+
+    <div class="catrow" id="new_category_row" hidden>
+      <input id="new_category_name" placeholder="new category name (e.g. memory)" maxlength="40" autocomplete="off">
+      <button id="create_category_btn" class="secondary tiny" type="button" disabled>Create</button>
+    </div>
+    <div class="microlabel">the category list is stored in <code id="categories_file_label">categories.json</code> and is read on every refresh</div>
+
+    <label>Name</label>
+    <input id="part_name" placeholder="e.g. planner">
+
+    <label>Text</label>
+    <textarea id="part_text" placeholder="You are a planning agent..."></textarea>
+
+    <div class="row">
+      <button id="save_part_btn" type="button" disabled>Save Part</button>
+      <button id="clear_form_btn" class="secondary" type="button" disabled>Clear</button>
+    </div>
+
+    <div id="part_status" class="status">Waiting for the Project Manager…</div>
+  </div>
+
+  <div class="card">
+    <div class="headrow">
+      <h2>Available Parts</h2>
+      <button id="new_part_btn" class="secondary tiny" type="button" disabled>+ New Part</button>
+    </div>
+    <div id="parts_list"><div class="empty">Loading parts…</div></div>
+
+    <div class="row">
+      <button id="create_master_btn" type="button" disabled>Create Master Prompt</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Master Prompt</h2>
+
+    <label>Agent ID (folder name for saving)</label>
+    <input id="agent_id" value="new_agent">
+
+    <label>Markdown (editable before saving)</label>
+    <textarea id="master_prompt" placeholder="Select parts and click 'Create Master Prompt'."></textarea>
+
+    <div class="row">
+      <button id="save_agent_btn" type="button" disabled>Save draft</button>
+      <button id="publish_btn" type="button" disabled>Publish for testing</button>
+      <button id="show_evidence_btn" class="secondary" type="button" disabled title="Select this agent on the dashboard and show its last run.">Show evidence</button>
+    </div>
+
+    <div id="master_status" class="status">Ready.</div>
+  </div>
+
+</div>`;
+
+// ============================================================
+// CONFIG - the storage locations are fixed, not user-selected.
+// ============================================================
+
+/* Every path is browser-root-qualified (workspace/..., test_environment/...),
+   which is what the file API resolves back to a root. The prompt parts and the
+   published test agents live in the isolated test environment, and the
+   workspace root is the only other writable one, so the builder can only ever
+   write inside those two - it can no longer be pointed at an arbitrary folder
+   on the user's disk. */
+
+const DOC_ROOT = 'test_environment/PromptBuilderFiles';
+const PARTS_DIR = DOC_ROOT + '/prompt_parts';
+const DOC_OUTPUT_DIR = DOC_ROOT + '/output/agents';
+const AGENTS_DIR = 'test_environment/test_agents';
+
+/* The category list is data, not code. It lives in this file next to the
+   parts folders so it can be added to and subtracted from in the browser
+   - and hand-edited - without touching this script. Array order is the
+   order the dropdown, the parts list and the master prompt sections use,
+   so there is no separate sort key to keep in sync. It sits outside
+   prompt_parts/ so that folder holds nothing but category folders. */
+const CATEGORIES_FILE = DOC_ROOT + '/categories.json';
+const CATEGORIES_VERSION = 1;
+
+const PART_FILE = '.txt';
+
+/* The starting catalogue, written on the first run only. It is also the
+   title lookup: a category typed as "hallucinations" gets the readable
+   title from here rather than the id with a capital letter. */
+const SEED_CATEGORIES = [
+  { id: "role", title: "Role" },
+  { id: "rules", title: "Rules" },
+  { id: "hallucinations", title: "Hallucination Rules" },
+  { id: "tools", title: "Tools" },
+  { id: "skills", title: "Skills" },
+  { id: "input", title: "Input" },
+  { id: "reasoning", title: "Reasoning" },
+  { id: "logic", title: "Logic" }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+
+let categories = [];           // [{id, title}] from the manifest, in order
+let partIndex = {};            // {category: [{name, path}]}
+let textCache = new Map();     // part path -> text
+let selected = new Set();      // "category/name" keys that are checked
+let lockedCategories = new Set(); // categories that refused a write
+let editingCategory = null;    // category the part open in the form belongs to
+let workspaceRoot = "";        // absolute, from /api/health
+let projectRoot = "";          // the parent of workspaceRoot
+let ready = false;             // the parts folder answered at least once
+let assembled = null;          // selection signature of the last build
+
+/* Every button the panel and the form can reach, so their disabled
+   state is always derived from one place. */
+const BUTTONS = ["save_part_btn","clear_form_btn","create_master_btn",
+                  "save_agent_btn","publish_btn","refresh_parts_btn",
+                  "new_part_btn","new_category_btn","create_category_btn",
+                  "delete_category_btn","show_evidence_btn"];
+
+/* Buttons that additionally need something published in this session,
+   not just a live parts folder. "Show evidence" is the one that took
+   the old test_btn's gate: it only has a verdict to point at once
+   there is an agent for the dashboard to have tested. */
+const PUBLISH_GATED = new Set(["show_evidence_btn"]);
+
+let busy = false;
+
+/* Document-wide on purpose. The ids are unique per document, so this is
+   the same lookup the page always did and it costs nothing to keep -
+   it also means MARKUP can be injected into a panel without rewriting
+   every call site to take a root. */
+function $(id){ return document.getElementById(id); }
+
+function setStatus(id, message, kind){
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status" + (kind ? " " + kind : "");
+}
+
+/* One place decides every button's state, because three different
+   things can disable one: the parts folder is unreachable, an operation
+   is in flight, or there is nothing published to test. Deriving it in
+   one pass is what keeps a later setReady() from quietly re-enabling a
+   button whose own condition is gone. */
+function syncButtons(){
+  for (const id of BUTTONS){
+    const gated = PUBLISH_GATED.has(id) && !publishedAgentId;
+    $(id).disabled = busy || !ready || gated;
+  }
+}
+
+function setReady(value){
+  ready = value;
+  syncButtons();
+}
+
+/* Buttons stay disabled for the duration of an operation so a double
+   click cannot fire two writes at the same file. */
+function setBusy(value){
+  busy = value;
+  syncButtons();
+}
+
+function partKey(category, name){ return category + "/" + name; }
+
+function categoryPath(id){
+  return PARTS_DIR + "/" + id;
+}
+
+function partPath(category, name){
+  return categoryPath(category) + "/" + name + PART_FILE;
+}
+
+function relativePath(path){
+  return path.startsWith(DOC_ROOT + "/")
+    ? path.slice(DOC_ROOT.length + 1)
+    : path;
+}
+
+function safeSlug(value){
+  value = (value || "").trim().toLowerCase();
+  value = value.replace(/[^a-z0-9_-]+/g, "_");
+  value = value.replace(/_+/g, "_").replace(/^_|_$/g, "");
+  if (!value) throw new Error("Name cannot be empty.");
+  return value;
+}
+
+/* A category added in the browser has no entry in the seed, so its id is
+   the title unless it is one of the seeded ones. */
+function titleFor(id){
+  const seeded = SEED_CATEGORIES.find(cat => cat.id === id);
+  if (seeded) return seeded.title;
+  return id.replace(/[_-]+/g, " ")
+           .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* agent.json needs a human label; derive one from the id rather than
+   adding a field the builder would then have to keep in sync. */
+function displayName(id){
+  return id.replace(/[_-]+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ============================================================
+// ERRORS - a raw Python errno is not an explanation
+// ============================================================
+
+/* The API reports the absolute server path, so a failure reads as
+   "Permission denied: 'E:\agentCreator\project_manager\workspace\...'"
+   - a path the user cannot click and does not recognise. Both roots are
+   learned once so the same failure can be shown relative. Best effort:
+   if the lookup fails the original text is still shown. */
+function learnWorkspaceRoot(){
+  if (typeof API.health !== "function") return Promise.resolve();
+  return API.health()
+    .then((data) => {
+      workspaceRoot = (data && data.root) || "";
+      projectRoot = workspaceRoot
+        ? workspaceRoot.replace(/[\\/][^\\/]+[\\/]?$/, "")
+        : "";
+    })
+    .catch(() => {
+      workspaceRoot = "";
+      projectRoot = "";
+    });
+}
+
+function isPermissionError(error){
+  const message = (error && error.message) || String(error);
+  return /permission denied|access is denied|errno 13|winerror 5/i
+    .test(message);
+}
+
+/* Python quotes the offending path: "... denied: 'C:\\...'". */
+function extractFailedPath(message){
+  const quoted = String(message).match(/'([^']+)'/);
+  return quoted ? quoted[1] : "";
+}
+
+function shortenPath(value){
+  let out = String(value || "");
+  for (const root of [workspaceRoot, projectRoot]){
+    if (!root) continue;
+    out = out.split(root).join("");
+  }
+  return out.replace(/^[\\/]+/, "").replace(/\\/g, "/");
+}
+
+/* The remedy is the same for every refused write on the same volume, so
+   it is named from the drive rather than hard-coded. Pass lowercase to
+   embed it inside a sentence. */
+function repairHint(lowercase){
+  const drive = projectRoot.match(/^([A-Za-z]:)/);
+  const target = drive ? drive[1] : "the drive";
+  const text = "Repair the drive in an Administrator prompt: chkdsk "
+    + target + " /f";
+  return lowercase
+    ? text.charAt(0).toLowerCase() + text.slice(1)
+    : text;
+}
+
+function firstUnlockedCategory(){
+  const free = categories.find(cat => !lockedCategories.has(cat.id));
+  return free ? free.id : null;
+}
+
+/* A locked category is disabled in the dropdown rather than hidden, so
+   it stays visible that it exists and is why it cannot be used. */
+function syncCategoryDropdown(){
+  const sel = $("part_category");
+  if (!sel) return;
+  for (const opt of sel.options){
+    opt.disabled = lockedCategories.has(opt.value);
+  }
+  if (lockedCategories.has(sel.value)){
+    const free = firstUnlockedCategory();
+    if (free) sel.value = free;
+  }
+}
+
+function markCategoryLocked(category){
+  if (!category) return;
+  lockedCategories.add(category);
+  syncCategoryDropdown();
+  renderParts();
+}
+
+/* Turns a thrown error into a sentence the user can act on, and records
+   a refused folder so the panel stops offering it. */
+function prettyError(error, category){
+  const raw = (error && error.message) || String(error);
+
+  if (isPermissionError(error)){
+    if (category) markCategoryLocked(category);
+    const where = shortenPath(
+      extractFailedPath(raw) || "that folder"
+    );
+    return "Cannot write " + where
+      + " - Windows reports \"access denied\". Nothing was saved."
+      + " That folder is read-only or damaged: use another category, or "
+      + repairHint(true) + ". Then press 'Refresh Parts'.";
+  }
+
+  return "Error: " + shortenPath(raw);
+}
+
+// ============================================================
+// TREE LOOKUP - the /api/project tree is the listing source
+// ============================================================
+
+function findNode(items, path){
+  for (const item of items || []){
+    if (item.path === path) return item;
+    if (item.children){
+      const hit = findNode(item.children, path);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
+function childDir(node, name){
+  for (const child of (node && node.children) || []){
+    if (child.type === "directory" && child.name === name) return child;
+  }
+  return null;
+}
+
+// ============================================================
+// FOLDER
+// ============================================================
+
+/* Only the parts root is created up front. Category folders appear on
+   demand: every file write creates its parent directories, so seeding
+   eight empty folders would just be eight pointless API calls - and a
+   category with no parts does not need a folder to exist. */
+async function ensureStructure(){
+  await API.directoryCreate(PARTS_DIR);
+  $("parts_folder_label").textContent = relativePath(PARTS_DIR);
+  $("categories_file_label").textContent = relativePath(CATEGORIES_FILE);
+}
+
+// ============================================================
+// CATEGORIES - the manifest is the list
+// ============================================================
+
+/* One entry per category, in the order everything else uses. A bad entry
+   is dropped and a repeated id keeps its first position, because the
+   manifest is a plain text file a person is allowed to edit. */
+function normalizeCategories(raw){
+  const list = Array.isArray(raw && raw.categories) ? raw.categories : [];
+  const seen = new Set();
+  const out = [];
+  for (const item of list){
+    if (!item || typeof item.id !== "string") continue;
+    const id = item.id.trim().toLowerCase();
+    if (!id || seen.has(id)) continue;
+    const title = (typeof item.title === "string" && item.title.trim())
+      || titleFor(id);
+    seen.add(id);
+    out.push({ id, title });
+  }
+  return out;
+}
+
+function manifestText(list){
+  return JSON.stringify(
+    { version: CATEGORIES_VERSION, categories: list }, null, 2
+  ) + "\n";
+}
+
+/* Absent means "never set up", so the seed catalogue is written. Present
+   but unreadable is an error and is never overwritten: a hand-edit with
+   a typo in it has to survive until it is fixed. */
+async function readCategories(){
+  let text = null;
+
+  try {
+    text = (await API.fileRead(CATEGORIES_FILE)).content;
+  } catch (error) {
+    if (error.status !== 404) throw error;
+  }
+
+  if (text === null){
+    const seeded = normalizeCategories({ categories: SEED_CATEGORIES });
+    await API.fileWrite(CATEGORIES_FILE, manifestText(seeded));
+    return seeded;
+  }
+
+  try {
+    return normalizeCategories(JSON.parse(text));
+  } catch (error) {
+    throw new Error(relativePath(CATEGORIES_FILE)
+      + " is not valid JSON (" + error.message + ")."
+      + " Fix it in the editor - it has not been changed.");
+  }
+}
+
+/* Every change goes through here, and the in-memory list is rebuilt from
+   the same normalizer the file is written from, so what the page shows
+   is always exactly what is on disk. */
+async function writeCategories(list){
+  const payload = normalizeCategories({ categories: list });
+  await API.fileWrite(CATEGORIES_FILE, manifestText(payload));
+  categories = payload;
+  return payload;
+}
+
+// ============================================================
+// PARTS
+// ============================================================
+
+function populateCategoryDropdown(){
+  const sel = $("part_category");
+  const previous = sel.value;
+  sel.innerHTML = "";
+
+  /* With every category deleted there is nothing to save a part into, and
+     a blank dropdown would read as a bug rather than as that state. */
+  if (!categories.length){
+    const none = document.createElement("option");
+    none.value = "";
+    none.textContent = "(no categories - create one)";
+    sel.appendChild(none);
+  }
+
+  for (const cat of categories){
+    const opt = document.createElement("option");
+    opt.value = cat.id;
+    opt.textContent = cat.title;
+    sel.appendChild(opt);
+  }
+
+  /* A category that was just deleted is no longer an option, so the old
+     value would quietly become the first one instead. */
+  if (categories.some(cat => cat.id === previous)){
+    sel.value = previous;
+  }
+
+  syncCategoryDropdown();
+}
+
+async function readPart(path){
+  if (textCache.has(path)) return textCache.get(path);
+  const data = await API.fileRead(path);
+  const text = data.content || "";
+  textCache.set(path, text);
+  return text;
+}
+
+/* Selection is state, not DOM: the list is rebuilt from the tree on
+   every refresh, so checked boxes are re-applied from `selected`
+   instead of being inherited from the markup that just got replaced. */
+async function refreshParts(){
+  const data = await API.project();
+  const partsNode = findNode(data.filesystem, PARTS_DIR);
+
+  partIndex = {};
+  for (const cat of categories){
+    const catNode = childDir(partsNode, cat.id);
+    const entries = [];
+    for (const child of (catNode && catNode.children) || []){
+      if (child.type !== "file") continue;
+      if (!child.name.endsWith(PART_FILE)) continue;
+      entries.push({ name: child.name.slice(0, -PART_FILE.length), path: child.path });
+    }
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    partIndex[cat.id] = entries;
+  }
+
+  /* Drop selections whose part no longer exists, so a later build can
+     never reference a file that was deleted or renamed. A category that
+     was removed takes its checked parts with it. */
+  const live = new Set();
+  for (const cat of categories){
+    for (const entry of partIndex[cat.id]) live.add(partKey(cat.id, entry.name));
+  }
+  const dropped = [];
+  for (const key of Array.from(selected)){
+    if (!live.has(key)){ selected.delete(key); dropped.push(key); }
+  }
+
+  renderParts();
+  return { total: live.size, dropped };
+}
+
+function isChecked(category, name){
+  return selected.has(partKey(category, name));
+}
+
+function setChecked(category, name, value){
+  const key = partKey(category, name);
+  if (value) selected.add(key); else selected.delete(key);
+}
+
+function markAssembledStale(){
+  if (assembled === null) return;
+  if (assembled === selectionSignature()) return;
+  setStatus("master_status",
+    "The selected parts changed. Click 'Create Master Prompt' to rebuild before saving.", "warn");
+}
+
+function selectionSignature(){
+  return Array.from(selected).sort().join("|");
+}
+
+function renderParts(){
+  const box = $("parts_list");
+  box.innerHTML = "";
+
+  let total = 0;
+
+  for (const cat of categories){
+    const id = cat.id;
+    const entries = partIndex[id] || [];
+    const locked = lockedCategories.has(id);
+    total += entries.length;
+
+    const group = document.createElement("div");
+    group.className = "parts-group";
+
+    const heading = document.createElement("h3");
+    heading.appendChild(document.createTextNode(cat.title));
+    heading.title = relativePath(categoryPath(id));
+
+    const count = document.createElement("span");
+    count.className = "count";
+    count.textContent = "(" + entries.length + ")";
+    heading.appendChild(count);
+
+    /* The category is listed but cannot be used, so the panel says so
+       instead of showing an empty list as if nothing had ever been
+       written there. */
+    if (locked){
+      const badge = document.createElement("span");
+      badge.className = "lockbadge";
+      badge.textContent = "locked";
+      badge.title = "This folder refused a write, so its parts cannot be"
+        + " listed or saved. " + repairHint() + ", then press 'Refresh Parts'.";
+      heading.appendChild(badge);
+    }
+
+    if (entries.length){
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "secondary tiny";
+      toggle.textContent = "all / none";
+      toggle.addEventListener("click", () => toggleCategory(id));
+      heading.appendChild(toggle);
+    }
+
+    group.appendChild(heading);
+
+    if (entries.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = locked
+        ? "Folder is not writable right now."
+        : "No parts yet.";
+      group.appendChild(empty);
+    }
+
+    for (const entry of entries){
+      group.appendChild(buildPartRow(id, entry));
+    }
+
+    box.appendChild(group);
+  }
+
+  if (total === 0){
+    const hint = document.createElement("div");
+    hint.className = "empty";
+    hint.innerHTML =
+      "No parts in the folder yet. Use \"+ New Part\" above, or add a"
+      + " <code>.txt</code> file to <code>"
+      + relativePath(PARTS_DIR) + "/&lt;category&gt;/</code> in the editor."
+      + " A new category is a new folder there, so the editor works"
+      + " without this page too.";
+    box.appendChild(hint);
+  }
+}
+
+function buildPartRow(category, entry){
+  const row = document.createElement("div");
+  row.className = "part-row";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.id = "part_" + category + "_" + entry.name;
+  checkbox.checked = isChecked(category, entry.name);
+  checkbox.addEventListener("change", () => {
+    setChecked(category, entry.name, checkbox.checked);
+    markAssembledStale();
+  });
+
+  const label = document.createElement("label");
+  label.className = "name";
+  label.htmlFor = checkbox.id;
+  label.textContent = entry.name;
+  label.title = entry.path;
+
+  const actions = document.createElement("div");
+  actions.className = "actions";
+
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.className = "secondary tiny";
+  editBtn.textContent = "Edit";
+  editBtn.addEventListener("click", () => editPart(category, entry));
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "secondary tiny";
+  deleteBtn.textContent = "Delete";
+  deleteBtn.addEventListener("click", () => deletePart(category, entry));
+
+  actions.appendChild(editBtn);
+  actions.appendChild(deleteBtn);
+  row.appendChild(checkbox);
+  row.appendChild(label);
+  row.appendChild(actions);
+  return row;
+}
+
+function toggleCategory(category){
+  const entries = partIndex[category] || [];
+  const allChecked = entries.length > 0
+    && entries.every(entry => isChecked(category, entry.name));
+  for (const entry of entries){
+    setChecked(category, entry.name, !allChecked);
+  }
+  renderParts();
+  markAssembledStale();
+}
+
+/* Clearing the fields and reporting "Ready" are separate: a successful
+   save clears the form but must keep its own confirmation visible. */
+function clearFormFields(){
+  $("part_name").value = "";
+  $("part_text").value = "";
+  $("form_title").textContent = "Create Prompt Part";
+  editingCategory = null;
+}
+
+function resetForm(){
+  clearFormFields();
+  setStatus("part_status", "Ready.");
+}
+
+function editPart(category, entry){
+  setBusy(true);
+  readPart(entry.path)
+    .then((text) => {
+      $("part_category").value = category;
+      $("part_name").value = entry.name;
+      $("part_text").value = text.replace(/\s+$/, "");
+      $("form_title").textContent = "Edit Prompt Part";
+      /* Remembered so deleting this category can say the open part goes
+         with it, and so a cleared form is not mistaken for a live edit. */
+      editingCategory = category;
+      setStatus("part_status",
+        "Editing " + relativePath(entry.path) + ". Save Part to update it.", "ok");
+      $("part_text").focus();
+    })
+    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
+    .finally(() => setBusy(false));
+}
+
+function deletePart(category, entry){
+  if (!confirm("Delete " + relativePath(entry.path) + "?")) return;
+  setBusy(true);
+  API.fileDelete(entry.path)
+    .then(() => {
+      textCache.delete(entry.path);
+      selected.delete(partKey(category, entry.name));
+      return refreshParts();
+    })
+    .then(({ total, dropped }) => {
+      setStatus("part_status",
+        "Deleted " + relativePath(entry.path) + ". " + total + " part(s) left."
+        + droppedNote(dropped), "ok");
+      markAssembledStale();
+    })
+    .catch(error => setStatus("part_status", prettyError(error, category), "error"))
+    .finally(() => setBusy(false));
+}
+
+function droppedNote(dropped){
+  if (!dropped.length) return "";
+  return " Cleared " + dropped.length + " stale selection(s): " + dropped.join(", ") + ".";
+}
+
+// ============================================================
+// CATEGORY ACTIONS
+// ============================================================
+
+/* The name field is hidden until it is asked for, so the form keeps one
+   category selector instead of two near-identical text boxes. */
+function toggleNewCategoryRow(open){
+  const row = $("new_category_row");
+  const show = open === undefined ? row.hidden : open;
+  row.hidden = !show;
+  $("new_category_btn").textContent = show ? "Cancel" : "+ Category";
+  if (show) $("new_category_name").focus();
+  else $("new_category_name").value = "";
+}
+
+/* Adding a category is a manifest write and nothing else: the folder is
+   still created by the first part saved into it, which is the same
+   "on demand" rule every other part follows. */
+async function addCategory(){
+  let id = "";
+  try {
+    id = safeSlug($("new_category_name").value);
+  } catch (error) {
+    setStatus("part_status", "Category " + error.message, "error");
+    return;
+  }
+
+  if (categories.some(cat => cat.id === id)){
+    setStatus("part_status",
+      "The category '" + id + "' already exists.", "error");
+    return;
+  }
+
+  setBusy(true);
+  try {
+    const title = titleFor(id);
+    await writeCategories(categories.concat({ id, title }));
+    toggleNewCategoryRow(false);
+    populateCategoryDropdown();
+    $("part_category").value = id;
+    renderParts();
+    setStatus("part_status", "Added category " + title + " -> "
+      + relativePath(categoryPath(id))
+      + ". Its folder appears with the first part saved into it.", "ok");
+  } catch (error) {
+    setStatus("part_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* Everything the deleted folder was referenced by, so no path is left
+   pointing at a folder that is gone. */
+function forgetCategory(id){
+  const prefix = categoryPath(id) + "/";
+  for (const path of Array.from(textCache.keys())){
+    if (path.startsWith(prefix)) textCache.delete(path);
+  }
+  for (const key of Array.from(selected)){
+    if (key.startsWith(id + "/")) selected.delete(key);
+  }
+  lockedCategories.delete(id);
+}
+
+async function deleteCategory(){
+  const id = $("part_category").value;
+  const entry = categories.find(cat => cat.id === id);
+
+  if (!entry){
+    setStatus("part_status", "There is no category to delete.", "error");
+    return;
+  }
+
+  const parts = partIndex[id] || [];
+  const editing = editingCategory === id;
+
+  /* One confirm says what is destroyed: the folder, every part in it,
+     and an open part that otherwise would look like it survived. */
+  let message = "Delete the category " + entry.title + " ("
+    + relativePath(categoryPath(id)) + ")?";
+  message += parts.length
+    ? "\n\nThis permanently deletes " + parts.length + " part(s): "
+      + parts.map(part => part.name).join(", ") + "."
+    : "\n\nIt holds no parts.";
+  if (editing){
+    message += "\n\nThe part open in the form is one of them.";
+  }
+  if (!confirm(message)) return;
+
+  setBusy(true);
+  try {
+    /* The folder goes first. A refused recursive delete then leaves the
+       manifest untouched, so the list still matches the disk and the
+       delete can simply be tried again - the other order would hide a
+       category whose parts are already gone. A category that never had a
+       part saved into it has no folder to remove, and a stale tree must
+       not be able to skip a folder that does exist, so the answer to
+       "is it there" comes from the delete itself. */
+    try {
+      await API.directoryDelete(categoryPath(id));
+    } catch (error) {
+      if (error.status !== 404) throw error;
+    }
+    forgetCategory(id);
+    await writeCategories(categories.filter(cat => cat.id !== id));
+    populateCategoryDropdown();
+
+    const { total, dropped } = await refreshParts();
+    if (editing) resetForm();
+    setStatus("part_status", "Deleted category " + entry.title + ". "
+      + total + " part(s) left." + droppedNote(dropped), "ok");
+    markAssembledStale();
+  } catch (error) {
+    setStatus("part_status", prettyError(error, id), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* The create button in the panel header hands off to the form rather
+   than duplicating it: two editors for one file is how the two drift
+   apart. The category is moved off a locked folder first, because the
+   first option is otherwise a folder that may refuse the write. */
+function startNewPart(){
+  if (!categories.length){
+    setStatus("part_status",
+      "There are no categories yet - use \"+ Category\" to add one first.", "warn");
+    return;
+  }
+  const sel = $("part_category");
+  if (lockedCategories.has(sel.value)){
+    const free = firstUnlockedCategory();
+    if (free) sel.value = free;
+  }
+  clearFormFields();
+  const title = $("form_title");
+  if (title && typeof title.scrollIntoView === "function"){
+    title.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("part_name").focus();
+  setStatus("part_status", "Fill in the form to create a new part.", "");
+}
+
+async function savePart(){
+  const category = $("part_category").value;
+
+  if (!category){
+    setStatus("part_status",
+      "There are no categories yet - use \"+ Category\" to add one first.", "error");
+    return;
+  }
+
+  /* Refused up front: a locked folder already answered, so sending the
+     write again would only repeat the same error. */
+  if (lockedCategories.has(category)){
+    setStatus("part_status",
+      "Cannot save into " + titleFor(category) + " - that folder refused an"
+      + " earlier write. " + repairHint() + ", then press 'Refresh Parts'.",
+      "error");
+    return;
+  }
+
+  setBusy(true);
+  try {
+    const name = safeSlug($("part_name").value);
+    const text = $("part_text").value.trim();
+    if (!text) throw new Error("Part text cannot be empty.");
+
+    const path = partPath(category, name);
+    /* fileWrite creates or overwrites, so saving an edited part and
+       saving a new one are the same call. */
+    await API.fileWrite(path, text + "\n");
+    textCache.set(path, text + "\n");
+
+    const { total } = await refreshParts();
+    setStatus("part_status", "Saved: " + relativePath(path) + ". " + total + " part(s) total.", "ok");
+    clearFormFields();
+  } catch (error) {
+    setStatus("part_status", prettyError(error, category), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+// ============================================================
+// MASTER PROMPT
+// ============================================================
+
+function collectSelections(){
+  const selections = {};
+  for (const cat of categories){
+    const names = (partIndex[cat.id] || [])
+      .filter(entry => isChecked(cat.id, entry.name))
+      .map(entry => entry.name);
+    if (names.length) selections[cat.id] = names;
+  }
+  return selections;
+}
+
+async function buildMasterPrompt(){
+  const selections = collectSelections();
+
+  if (!Object.keys(selections).length){
+    setStatus("master_status", "No parts are selected.", "warn");
+    return;
+  }
+
+  setBusy(true);
+  const missing = [];
+  try {
+    const lines = ["# Agent Prompt", ""];
+
+    for (const cat of categories){
+      const names = selections[cat.id] || [];
+      const texts = [];
+      for (const name of names){
+        const path = partPath(cat.id, name);
+        let text = "";
+        try {
+          text = (await readPart(path)).trim();
+        } catch (error) {
+          missing.push(partKey(cat.id, name));
+          continue;
+        }
+        if (text) texts.push(text);
+      }
+      if (texts.length){
+        lines.push("## " + cat.title);
+        lines.push("");
+        lines.push(texts.join("\n\n"));
+        lines.push("");
+      }
+    }
+
+    $("master_prompt").value = lines.join("\n").trim() + "\n";
+    assembled = selectionSignature();
+
+    const count = Object.values(selections).reduce((sum, list) => sum + list.length, 0);
+    setStatus("master_status",
+      "Assembled " + count + " part(s). Edit the markdown if needed, then save."
+      + (missing.length ? " Skipped unreadable: " + missing.join(", ") + "." : ""),
+      missing.length ? "warn" : "ok");
+  } catch (error) {
+    setStatus("master_status", "Error: " + error.message, "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+function requireMarkdown(){
+  const markdown = $("master_prompt").value.trim();
+  if (!markdown) throw new Error("The master prompt is empty - nothing to save.");
+  return markdown;
+}
+
+async function saveToDocumentation(){
+  setBusy(true);
+  try {
+    const id = safeSlug($("agent_id").value);
+    const markdown = requireMarkdown();
+    const path = DOC_OUTPUT_DIR + "/" + id + "/agent.md";
+    await API.fileWrite(path, markdown + "\n");
+    setStatus("master_status", "Saved: " + relativePath(path), "ok");
+  } catch (error) {
+    setStatus("master_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* "Publish for testing" makes the prompt a real agent inside the isolated
+   test environment: the engine only lists folders that hold BOTH agent.json
+   and agent.md (engine/agents/registry.py), so the metadata file is created
+   here. An existing agent.json is left alone so hand-edited settings - and
+   any tests stored in it - are never overwritten.
+
+   Nothing is written to workspace/agents/. A published agent is a test
+   fixture: it is not registered as an agent root, so it never appears in
+   the live agent picker, and the four header tests drive it by path. */
+let publishedAgentId = null;
+
+async function publishForTesting(){
+  setBusy(true);
+  setPublished(false);
+  try {
+    const id = safeSlug($("agent_id").value);
+    const markdown = requireMarkdown();
+    const dir = AGENTS_DIR + "/" + id;
+
+    await API.fileWrite(dir + "/agent.md", markdown + "\n");
+
+    let metaCreated = false;
+    try {
+      await API.fileRead(dir + "/agent.json");
+    } catch {
+      const meta = {
+        id,
+        name: displayName(id),
+        description: "",
+        mode: "chat",
+        model: "",
+        tools: []
+      };
+      await API.fileCreate(dir + "/agent.json", JSON.stringify(meta, null, 2) + "\n");
+      metaCreated = true;
+    }
+
+    setPublished(true);
+    setStatus("master_status",
+      "Published to the test environment: " + dir + "/agent.md"
+      + (metaCreated ? " + agent.json (new)" : " (agent.json kept)")
+      + ".\nRun it from the dashboard.", "ok");
+
+    /* The host decides what publishing means for it: on /test this
+       re-reads the agent list so the new agent is pickable. Hosts
+       without a dashboard ignore it. */
+    if (Builder.onPublished) Builder.onPublished(publishedAgentId);
+
+  } catch (error) {
+    setStatus("master_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* "Show evidence" is only live for something that has actually been
+   published in this session. Reloading the page forgets it, which is
+   the honest state: a hand-edited agent.json may no longer match the
+   markdown above, and the dashboard is where you find out.
+
+   It hands the host the agent id rather than opening anything itself.
+   The builder used to open the dashboard in a window from here; it now
+   lives beside it, so one place runs the tests and one place shows the
+   verdict, and the two cannot disagree. */
+function setPublished(isPublished){
+  publishedAgentId = isPublished ? publishedAgentId : safeSlug($("agent_id").value) || null;
+  $("show_evidence_btn").title = publishedAgentId
+    ? "Show the last run for " + publishedAgentId + " on the dashboard."
+    : "Publish for testing first.";
+  syncButtons();
+}
+
+
+// ============================================================
+// RELOAD
+// ============================================================
+
+async function reloadParts(){
+  setBusy(true);
+  try {
+    /* A lock only records that a write was refused, not that the folder
+       is still broken, so the explicit refresh drops them and lets a
+       repaired folder be used again without reloading the page. */
+    lockedCategories.clear();
+    syncCategoryDropdown();
+
+    /* Read before the tree: the parts are listed per category, so the
+       list has to be known first. A categories.json edited in the
+       editor therefore takes effect on 'Refresh Parts'. */
+    categories = await readCategories();
+    populateCategoryDropdown();
+
+    const { total, dropped } = await refreshParts();
+    setStatus("storage_status",
+      "Parts folder: " + relativePath(PARTS_DIR) + " - " + total + " part(s)."
+      + droppedNote(dropped), "ok");
+    setReady(true);
+  } catch (error) {
+    setReady(false);
+    setStatus("storage_status", prettyError(error), "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+// ============================================================
+// MOUNT
+// ============================================================
+
+/* Was init(), which ran at parse because there was one host. The host
+   now decides when the builder starts, which is what lets the same
+   module back the standalone page and a panel. */
+function mount(host){
+  host.innerHTML = MARKUP;
+
+  /* "Show evidence" starts live rather than gated: after a reload the
+     publish is forgotten but the agent id is still in the box, and
+     pointing the dashboard at it is harmless when there is nothing
+     published - the dashboard's picker will simply not offer it. */
+  setPublished(false);
+  $("save_part_btn").addEventListener("click", savePart);
+  $("clear_form_btn").addEventListener("click", resetForm);
+  $("new_part_btn").addEventListener("click", startNewPart);
+  $("new_category_btn").addEventListener("click", () => toggleNewCategoryRow());
+  $("create_category_btn").addEventListener("click", addCategory);
+  $("delete_category_btn").addEventListener("click", deleteCategory);
+  $("new_category_name").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") addCategory();
+  });
+  $("create_master_btn").addEventListener("click", buildMasterPrompt);
+  $("save_agent_btn").addEventListener("click", saveToDocumentation);
+  $("publish_btn").addEventListener("click", publishForTesting);
+  $("show_evidence_btn").addEventListener("click", () => {
+    if (Builder.onShowEvidence) Builder.onShowEvidence(publishedAgentId);
+  });
+  $("refresh_parts_btn").addEventListener("click", reloadParts);
+
+  /* The dropdown is not built here: it is a view of the manifest, and the
+     manifest is read by the first reload. Every button is disabled until
+     then, so the empty dropdown is never something a user can act on. */
+  learnWorkspaceRoot()
+    .then(() => ensureStructure())
+    .then(() => reloadParts())
+    .catch(error => {
+      setReady(false);
+      setStatus("storage_status", prettyError(error), "error");
+      setStatus("part_status", "The parts folder is unavailable.", "error");
+    });
+}
+
+const Builder = {
+  mount,
+
+  /* Both are host hooks rather than arguments because they are assigned
+     before mount() runs in practice, and a host should not have to
+     rebuild the panel to change what publishing does.
+
+     onPublished(agentId)   - called after a successful publish.
+     onShowEvidence(agentId) - the "Show evidence" button. Undefined on
+     the standalone page, which has no dashboard to show. */
+  onPublished: null,
+  onShowEvidence: null,
+};
+
+export default Builder;
+```
+
+---
+
+<!-- ==== 68/105 : project_manager/interface/static/js/chat.js ==== -->
 
 ### project_manager/interface/static/js/chat.js
 
@@ -15436,7 +15742,7 @@ window.saveCurrentChat = saveCurrentChat;
 
 ---
 
-<!-- ==== 67/98 : project_manager/interface/static/js/editor.js ==== -->
+<!-- ==== 69/105 : project_manager/interface/static/js/editor.js ==== -->
 
 ### project_manager/interface/static/js/editor.js
 
@@ -15527,7 +15833,7 @@ export default Editor;
 
 ---
 
-<!-- ==== 68/98 : project_manager/interface/static/js/main.js ==== -->
+<!-- ==== 70/105 : project_manager/interface/static/js/main.js ==== -->
 
 ### project_manager/interface/static/js/main.js
 
@@ -15550,6 +15856,16 @@ let currentIsReadOnly = false;
 /* main.js is shared by home.html and editor.html. Only editor.html
    carries a #editor host, so every editor call is guarded. */
 const hasEditor = () => Editor.hasHost();
+
+/* The test environment is browsed from /test, so home does not list
+   it. The editor does: a published test agent's agent.md is edited
+   there, and /test hands its files over to the editor rather than
+   editing them itself, so a tree that omitted the root would open
+   the file somewhere it cannot be seen or saved.
+
+   Adding a root to BROWSE_ROOTS therefore makes it appear on the
+   editor and on /test but not on home, until this list catches up. */
+const HOME_ROOTS = ['workspace', 'source_files'];
 
 /* Paths are browser-root-qualified (workspace/..., source_files/...),
    so no scope needs to be tracked or sent. The active folder is the
@@ -15880,7 +16196,7 @@ function init() {
       });
 
       setStatus('Ready');
-      await Tree.load();
+      await Tree.load(hasEditor() ? null : HOME_ROOTS);
 
       /* Home page: agent cards replace the editor. */
       if (document.getElementById('agentCards')) {
@@ -15925,7 +16241,567 @@ export { openFile, saveFile, newFile, newFolder, renameSelected, deleteSelected,
 
 ---
 
-<!-- ==== 69/98 : project_manager/interface/static/js/session.js ==== -->
+<!-- ==== 71/105 : project_manager/interface/static/js/panels.js ==== -->
+
+### project_manager/interface/static/js/panels.js
+
+```javascript
+/* ============================================================
+   Resizable, collapsible side panels
+   ============================================================
+
+   For a row of panels with a draggable boundary between each pair of
+   visible neighbours. Written for the test dashboard's three panels
+   (tree, evidence, prompt builder) but nothing in it knows that: the
+   panel list is passed in.
+
+   The existing splitter in main.js is not reused because it only works
+   for a sidebar pinned to the viewport's left edge - it treats
+   e.clientX as the width directly - and it cannot collapse anything.
+   Both are needed here, and a right-hand panel needs the mirrored
+   arithmetic anyway.
+
+   The pure parts (clampWidth, fitPanels, resolveHandles, readState,
+   writeState) are exported so they can be checked without a DOM. */
+
+const STORAGE_PREFIX = 'pm.panels.';
+
+/* Handles are 4px in CSS and there are at most two of them. Reserving
+   them here rather than measuring the DOM keeps the arithmetic
+   answerable: the centre panel's width is what is left over, so an
+   unaccounted handle width would show up as a gap that never closes. */
+const HANDLE_WIDTH = 4;
+
+/* What the middle panel is guaranteed while it is visible and there is
+   more than one thing to drag. It is the number that decides whether
+   the side panels can both have their maximum: 520 + 720 needs 1240 of
+   window plus handles, and a narrower one has to choose. Below the floor
+   the centre is squeezed rather than the sides being refused. */
+const CENTRE_FLOOR = 360;
+
+/* The handle count is what tells us whether there is a centre left to
+   protect, so it is the single input both the fitter and the drag read.
+   Two handles means all three panels are up. */
+function centreFloor(handles) {
+  return handles > 1 ? CENTRE_FLOOR : 0;
+}
+
+export function clampWidth(value, panel) {
+  if (!Number.isFinite(value)) return panel.default;
+  return Math.min(Math.max(Math.round(value), panel.min), panel.max);
+}
+
+/* Where two fixed panels have to share a window too narrow for the two of
+   them at once, they shrink towards their minimums together. The centre
+   panel is not in this function beyond its floor: past that floor it is
+   what is left over, and it is allowed to go to zero, because a user who
+   has both side panels open on a small window meant it.
+
+   Scaling is proportional to the overshoot rather than a fixed priority,
+   so neither side silently loses all its width first. */
+export function fitPanels(containerWidth, left, right, handles = 0) {
+  const mins = [left.min, right.min];
+  const available = containerWidth - handles * HANDLE_WIDTH - centreFloor(handles);
+
+  if (available <= 0) {
+    return { left: mins[0], right: mins[1] };
+  }
+
+  let wanted = clampWidth(left.width, left) + clampWidth(right.width, right);
+
+  if (wanted <= available) {
+    return {
+      left: clampWidth(left.width, left),
+      right: clampWidth(right.width, right),
+    };
+  }
+
+  /* Both are above their minimum, so shrink each by the same share of
+     the overshoot. */
+  let slackLeft = clampWidth(left.width, left) - mins[0];
+  let slackRight = clampWidth(right.width, right) - mins[1];
+  const totalSlack = slackLeft + slackRight;
+  const excess = wanted - available;
+
+  const takeLeft = Math.round((slackLeft / totalSlack) * excess);
+  const takeRight = excess - takeLeft;
+
+  return {
+    left: clampWidth(clampWidth(left.width, left) - takeLeft, left),
+    right: clampWidth(clampWidth(right.width, right) - takeRight, right),
+  };
+}
+
+/* One handle per gap between two *adjacent visible* panels. So with
+   all three up there are two; hide the centre and its two gaps go with
+   it, leaving one handle on the only boundary left. Returns the ids of
+   the handles to show, in order. */
+export function resolveHandles(visible) {
+  const shown = [];
+  if (visible.left && visible.centre) shown.push('left');
+  if (visible.centre && visible.right) shown.push('right');
+  /* Centre hidden with both sides up: the left handle now sits on the
+     boundary between them. Reusing it keeps one rule - the left handle
+     always controls the left edge of whatever is to its right. */
+  if (!visible.centre && visible.left && visible.right) shown.push('left');
+  return shown;
+}
+
+export function readState(key) {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_PREFIX + key);
+    if (!raw) return {};
+    const value = JSON.parse(raw);
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    /* A corrupt or unreadable store is not worth an error page; it just
+       means this session starts on the defaults. */
+    return {};
+  }
+}
+
+export function writeState(key, state) {
+  try {
+    window.localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(state));
+  } catch {
+    /* Private mode, quota, disabled storage. The panels still work for
+       this session; they just will not remember. */
+  }
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+
+/**
+ * Wire a panel row.
+ *
+ * @param {object} spec
+ *   container   - element the panels live in
+ *   left/right  - {element, panel:{min,max,default}} fixed-width sides
+ *   centre      - {element} the flexible middle
+ *   handleLeft/handleRight - the two draggable dividers
+ *   storageKey  - localStorage suffix
+ *   onLayout    - called after every width or visibility change
+ */
+export function init(spec) {
+  const { container, left, right, centre } = spec;
+  const handleLeft = spec.handleLeft;
+  const handleRight = spec.handleRight;
+  const onLayout = spec.onLayout || (() => {});
+
+  const state = readState(spec.storageKey);
+
+  const widths = {
+    left: clampWidth(state.left, left.panel),
+    right: clampWidth(state.right, right.panel),
+  };
+
+  let hidden = {
+    left: state.leftHidden === true,
+    centre: state.centreHidden === true,
+    right: state.rightHidden === true,
+  };
+
+  function visible() {
+    return {
+      left: !hidden.left,
+      centre: !hidden.centre,
+      right: !hidden.right,
+    };
+  }
+
+  /* Apply widths to the two fixed sides. The centre's width is left to
+     flexbox: everything not claimed by the sides and handles. */
+  function handleCount() {
+    return resolveHandles(visible()).length;
+  }
+
+  function applyWidths() {
+    const room = container.getBoundingClientRect().width;
+    const fitted = fitPanels(
+      room,
+      { width: widths.left, min: left.panel.min, max: left.panel.max },
+      { width: widths.right, min: right.panel.min, max: right.panel.max },
+      handleCount(),
+    );
+
+    widths.left = fitted.left;
+    widths.right = fitted.right;
+
+    left.element.style.width = widths.left + 'px';
+    right.element.style.width = widths.right + 'px';
+  }
+
+  function applyVisibility() {
+    const show = visible();
+
+    left.element.hidden = !show.left;
+    centre.element.hidden = !show.centre;
+    right.element.hidden = !show.right;
+
+    /* With the centre gone the right panel takes the free space instead
+       of leaving a dead gap the only remaining handle cannot reach. */
+    if (!show.centre && show.right) {
+      right.element.style.flex = '1 1 auto';
+      right.element.style.minWidth = right.panel.min + 'px';
+    } else {
+      right.element.style.flex = '0 0 auto';
+      right.element.style.minWidth = '';
+    }
+
+    const handles = resolveHandles(show);
+    handleLeft.hidden = !handles.includes('left');
+    handleRight.hidden = !handles.includes('right');
+
+    /* State is published as aria-pressed rather than as a class: the
+       toggle button *is* the control, so its pressed state is the
+       truthful thing to announce, and the host styles it off that. */
+    for (const [id, element] of Object.entries(spec.toggles || {})) {
+      element.setAttribute('aria-pressed', String(!hidden[id]));
+    }
+  }
+
+  function layout() {
+    applyVisibility();
+    applyWidths();
+    onLayout();
+  }
+
+  function persist() {
+    writeState(spec.storageKey, {
+      left: widths.left,
+      right: widths.right,
+      leftHidden: hidden.left,
+      centreHidden: hidden.centre,
+      rightHidden: hidden.right,
+    });
+  }
+
+  /* The handle never follows the cursor past a panel's own bounds, and
+     once the centre is down to its floor the handle starts pushing the
+     opposite side in rather than stealing from it. Both numbers come
+     from the same helpers the fitter uses, so a drag and a layout pass
+     cannot disagree about what fits.
+
+     `which` and `other` are slot names, not the spec objects - `right`
+     in this scope is {element, panel}, so indexing `widths` with it
+     would file the value under "[object Object]" and the opposite
+     panel would never actually yield. */
+  function dragWidth(which, clientX, rect) {
+    const panel = which === 'left' ? left.panel : right.panel;
+    const other = which === 'left' ? right.panel : left.panel;
+    const room = rect.width;
+    const handles = handleCount();
+    const floor = centreFloor(handles);
+
+    let width = which === 'left'
+      ? clientX - rect.left
+      : rect.right - clientX;
+
+    const roomForCentre = room - widths.left - widths.right - handles * HANDLE_WIDTH;
+
+    if (roomForCentre < floor) {
+      width += roomForCentre - floor;
+    }
+
+    widths[which] = clampWidth(width, panel);
+
+    /* The opposite side gives up only what it can spare, and never drops
+       below its own minimum. */
+    const spare = room - widths[which] - handles * HANDLE_WIDTH - floor;
+    const otherSlot = which === 'left' ? 'right' : 'left';
+    widths[otherSlot] = Math.max(Math.min(widths[otherSlot], spare), other.min);
+  }
+
+  function beginDrag(which, event) {
+    event.preventDefault();
+
+    const move = (moveEvent) => {
+      dragWidth(which, moveEvent.clientX, container.getBoundingClientRect());
+      applyWidths();
+      onLayout();
+    };
+
+    const end = () => {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup', end);
+      document.body.classList.remove('panel-dragging');
+      applyWidths();
+      onLayout();
+      persist();
+    };
+
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', end);
+    document.body.classList.add('panel-dragging');
+  }
+
+  handleLeft.addEventListener('mousedown', (event) => beginDrag('left', event));
+  handleRight.addEventListener('mousedown', (event) => beginDrag('right', event));
+
+  /* Double-click is the reset. Without it the only way back to a
+     comfortable width is to drag there by hand. */
+  for (const [which, handle] of [['left', handleLeft], ['right', handleRight]]) {
+    handle.addEventListener('dblclick', () => {
+      widths[which] = spec[which].panel.default;
+      applyWidths();
+      onLayout();
+      persist();
+    });
+
+    /* Arrows for keyboard resizing, Home/End for the bounds. The
+       splitter is focusable, so it has to be operable without a mouse. */
+    handle.addEventListener('keydown', (event) => {
+      const step = event.shiftKey ? 40 : 16;
+      const panel = spec[which].panel;
+      let next = null;
+
+      if (event.key === 'ArrowLeft') {
+        next = (which === 'left' ? widths[which] - step : widths[which] + step);
+      } else if (event.key === 'ArrowRight') {
+        next = (which === 'left' ? widths[which] + step : widths[which] - step);
+      } else if (event.key === 'Home') {
+        next = panel.min;
+      } else if (event.key === 'End') {
+        next = panel.max;
+      }
+
+      if (next === null) return;
+      event.preventDefault();
+      widths[which] = clampWidth(next, panel);
+      applyWidths();
+      onLayout();
+      persist();
+    });
+  }
+
+  for (const [id, element] of Object.entries(spec.toggles || {})) {
+    element.addEventListener('click', () => {
+      hidden[id] = !hidden[id];
+      layout();
+      persist();
+    });
+  }
+
+  layout();
+
+  return {
+    layout,
+    /* The host needs this to bring back a panel it collapsed itself -
+       "Show evidence" un-hides the centre when it is not visible. */
+    show(slot) {
+      if (!hidden[slot]) return false;
+      hidden[slot] = false;
+      layout();
+      persist();
+      return true;
+    },
+    isVisible: (slot) => !hidden[slot],
+  };
+}
+
+export default { init, clampWidth, fitPanels, resolveHandles, readState, writeState };
+```
+
+---
+
+<!-- ==== 72/105 : project_manager/interface/static/js/report.js ==== -->
+
+### project_manager/interface/static/js/report.js
+
+```javascript
+/* ============================================================
+   Header test report formatting
+   ============================================================
+
+   The text a saved report is written in, and the filename it gets.
+   No DOM and no fetch, so both can be checked without a browser.
+
+   Separate from the dashboard that shows the report because this is
+   formatting with real branching - missing summary, missing prompt,
+   agent ids that are not filenames - and inline in test.html it could
+   only be checked by running a model.
+
+   buildReportText() is the one definition of what a report reads like.
+   The on-screen renderer in test.html and this file can disagree about
+   wording, but they cannot disagree about content: both read the same
+   object. */
+
+/* The four headers in suite order. Anything the report carries that is
+   not one of these is appended, so a suite that grows a fifth header
+   produces a file that mentions it rather than dropping it. */
+const HEADERS = ['role', 'user', 'purpose', 'hallucinations'];
+
+/* Indent two spaces so a reply that contains its own blank lines or
+   something dash-shaped cannot be read as the next section heading.
+   Nothing an agent can say survives the two-space indent as a
+   top-level marker. */
+const INDENT = '  ';
+
+const UNDERLINE = '='.repeat(60);
+const RULE = '-'.repeat(5);
+
+function field(value, fallback = '?') {
+  const text = value === undefined || value === null ? '' : String(value).trim();
+  return text || fallback;
+}
+
+function block(text, fallback = '(empty)') {
+  const body = (text === undefined || text === null ? '' : String(text)).trim();
+  /* The fallback is indented too. An unindented "(empty)" would be the
+     only body line in the file that sits at column zero, and a reader
+     scanning for headings would take it for one. */
+  if (!body) return INDENT + fallback;
+  return body
+    .split('\n')
+    .map((line) => INDENT + line)
+    .join('\n');
+}
+
+/* "2026-09-30 14:22:31" for an ISO string, or the raw value when the
+   report carries something unparseable. A wrong-but-present timestamp
+   is better than a blank field, because the point of the line is to
+   tell two saved reports apart. */
+function readableTime(value) {
+  if (!value) return '?';
+  const when = new Date(value);
+  if (isNaN(when)) return String(value);
+  return when.toLocaleString();
+}
+
+/**
+ * Render a report as the text of a saved file.
+ *
+ * @param {object} report - {summary, results} as GET /api/test/results
+ *                          returns it. Any field may be missing.
+ * @returns {string} the report, newline-terminated.
+ */
+export function buildReportText(report) {
+  const data = report || {};
+  const summary = data.summary || {};
+  const results = Array.isArray(data.results) ? data.results : [];
+
+  /* An absent total is filled from the rows, but only if there are any:
+     a report with neither a summary nor rows has no total to report, and
+     "0 of 0" would read as a real run of nothing. */
+  const total = summary.total === undefined
+    ? (results.length ? results.length : '?')
+    : summary.total;
+  const passed = summary.passed === undefined ? '?' : summary.passed;
+  const failed = summary.failed === undefined ? '?' : summary.failed;
+
+  /* FAIL only when something is positively known to have failed. An
+     absent summary.failed falls back to the rows; with neither, the
+     verdict is '?' rather than a pass nobody can support. */
+  const known = summary.total !== undefined
+    || summary.failed !== undefined
+    || results.length > 0;
+  const anyFailed = summary.failed === undefined
+    ? results.some((row) => row && row.status && row.status !== 'PASS')
+    : summary.failed > 0;
+  const verdict = !known ? '?' : (anyFailed ? 'FAIL' : 'PASS');
+
+  const lines = [];
+
+  lines.push('Agent Header Test Report');
+  lines.push(UNDERLINE);
+  lines.push('Agent    : ' + field(summary.agent_id, '(unknown)'));
+  lines.push('Model    : ' + field(summary.model, "(the agent's own model)"));
+  lines.push('Ran at   : ' + readableTime(summary.ran_at));
+  lines.push(
+    'Result   : ' + verdict
+    + ' - ' + passed + ' of ' + total + ' passed'
+    + (summary.failed ? ', ' + failed + ' failed' : '')
+  );
+  if (summary.results_file) {
+    lines.push('Evidence : ' + summary.results_file);
+  }
+
+  if (!results.length) {
+    lines.push('');
+    lines.push('No results were recorded in this report.');
+    return lines.join('\n') + '\n';
+  }
+
+  /* Suite order first so the file reads the same way every time, then
+     anything unrecognised. The dashboard renders the same way. */
+  const ordered = [];
+  for (const name of HEADERS) {
+    for (const row of results) {
+      if (row && row.section === name) ordered.push(row);
+    }
+  }
+  for (const row of results) {
+    if (row && !HEADERS.includes(row.section)) ordered.push(row);
+  }
+
+  for (const row of ordered) {
+    lines.push('');
+    lines.push(String(row.section || 'unknown').toUpperCase());
+    lines.push(RULE);
+    lines.push('Status : ' + field(row.status, '?'));
+    if (row.reason) lines.push('Reason : ' + String(row.reason).trim());
+    lines.push('Prompt :');
+    lines.push(block(row.prompt));
+    lines.push('Reply  :');
+    lines.push(block(row.response));
+  }
+
+  return lines.join('\n') + '\n';
+}
+
+/* Same sanitiser the chat export uses (routers/chat.py): anything that
+   is not a letter, digit, underscore or dash collapses to a dash. It
+   also strips the characters Windows forbids in a filename, which is
+   the whole reason the agent id is not trusted verbatim. */
+function safeSegment(value, fallback, maxLength) {
+  const cleaned = String(value === undefined || value === null ? '' : value)
+    .replace(/[^A-Za-z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, maxLength);
+  return cleaned || fallback;
+}
+
+/* YYYYMMDD-HHMMSS, local time. No colons: Windows rejects them in a
+   filename, and a save that silently fails on the user's own machine is
+   worse than a slightly ugly name. */
+function timestamp(date) {
+  const when = date instanceof Date && !isNaN(date) ? date : new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return [
+    when.getFullYear(),
+    pad(when.getMonth() + 1),
+    pad(when.getDate()),
+    '-',
+    pad(when.getHours()),
+    pad(when.getMinutes()),
+    pad(when.getSeconds()),
+  ].join('');
+}
+
+/**
+ * The filename a saved report gets.
+ *
+ * Timestamp-per-run, so successive saves accumulate instead of
+ * overwriting, and each one is distinguishable by name.
+ *
+ * @param {object} summary - the report's summary object.
+ * @param {Date}   [when]   - injectable so the name is testable.
+ * @returns {string} e.g. 'test_report_demo_agent_20260930-142231.txt'
+ */
+export function reportFileName(summary, when) {
+  const agent = safeSegment((summary || {}).agent_id, 'unknown-agent', 40);
+  return 'test_report_' + agent + '_' + timestamp(when) + '.txt';
+}
+
+export default { buildReportText, reportFileName };
+```
+
+---
+
+<!-- ==== 73/105 : project_manager/interface/static/js/session.js ==== -->
 
 ### project_manager/interface/static/js/session.js
 
@@ -15996,7 +16872,7 @@ export default Session;
 
 ---
 
-<!-- ==== 70/98 : project_manager/interface/static/js/topbar.js ==== -->
+<!-- ==== 74/105 : project_manager/interface/static/js/topbar.js ==== -->
 
 ### project_manager/interface/static/js/topbar.js
 
@@ -16164,7 +17040,7 @@ export { initTopbar, openPopup, NAV_ITEMS };
 
 ---
 
-<!-- ==== 71/98 : project_manager/interface/static/js/tree.js ==== -->
+<!-- ==== 75/105 : project_manager/interface/static/js/tree.js ==== -->
 
 ### project_manager/interface/static/js/tree.js
 
@@ -16178,6 +17054,12 @@ const Tree = {
   activeRoot: null,
   selectedPath: null,
   expanded: new Set(),
+  /* Which browser roots this page is shown. null = the server's
+     default, every root. Held here rather than passed to render()
+     because refresh() has to reproduce the same view: a tree that
+     widened itself on refresh would quietly show a page folders it
+     was never given. */
+  allowedRoots: null,
   onFileSelect: null,
   onFolderSelect: null,
   onRootSelect: null,
@@ -16208,8 +17090,9 @@ const Tree = {
     return null;
   },
 
-  async load() {
-    const data = await API.project();
+  async load(roots = null) {
+    this.allowedRoots = roots;
+    const data = await API.project(null, this.allowedRoots);
     this.root = data.filesystem || [];
     this.roots = {};
     for (const node of this.root) {
@@ -16350,7 +17233,7 @@ const Tree = {
   },
 
   refresh() {
-    return this.load();
+    return this.load(this.allowedRoots);
   },
 
   getFileIcon(name) {
@@ -16378,7 +17261,7 @@ export default Tree;
 
 ---
 
-<!-- ==== 72/98 : project_manager/interface/static/test.html ==== -->
+<!-- ==== 76/105 : project_manager/interface/static/test.html ==== -->
 
 ### project_manager/interface/static/test.html
 
@@ -16390,28 +17273,97 @@ export default Tree;
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Header Test Dashboard</title>
 
-<!-- One file, on purpose. The evidence log is read by a person looking
-     at a verdict, and a page that has to be reassembled from a
-     stylesheet, a script and a module to show four PASS/FAIL rows is a
-     page that breaks in the one moment it is needed. Everything below -
-     the styles, the fetch calls, the nav - is inline. -->
+<!-- The Prompt Builder's own styles. The standalone /prompt-builder page
+     links the same file, which is what keeps the panel and the page
+     looking like the same builder. Everything else stays inline: the
+     styles, the fetch calls and the nav. -->
+<link rel="stylesheet" href="/static/builder.css">
+
+<!-- The evidence log is read by a person looking at a verdict, and a
+     page that has to be reassembled from a stylesheet and a module to
+     show four PASS/FAIL rows is a page that breaks in the one moment it
+     is needed. So the styles, the fetch calls and the nav stay inline.
+
+     The one exception is the sidebar tree, which is the shared
+     js/tree.js module. It is not reimplemented here because a second
+     copy of the tree would be a second copy of the expand state, the
+     folder switcher and the editor hand-off, and the dashboard would
+     drift from the editor the first time any of them changed.
+
+     Four modules are imported now, and all four earn it: js/tree.js
+     (the tree), js/builder.js (the right-hand Prompt Builder panel),
+     js/panels.js (resize and collapse) and js/report.js (the saved
+     report's text). The evidence log's own fetches stay inline. -->
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2}
-header{padding:18px 24px;background:#181d24;border-bottom:1px solid #303741;display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap}
-header h1{margin:0 0 5px;font-size:22px}
-header p{margin:0;color:#9ca8b5;font-size:13px;max-width:70ch;line-height:1.5}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+body.panel-dragging{cursor:col-resize;user-select:none}
+body.panel-dragging *{cursor:col-resize !important}
+header{padding:10px 24px;background:#181d24;border-bottom:1px solid #303741;display:flex;align-items:center;gap:18px;flex-wrap:wrap;flex-shrink:0}
 nav{display:flex;gap:6px;margin-left:auto;flex-shrink:0;align-self:center;flex-wrap:wrap}
 nav a{display:inline-flex;align-items:center;padding:6px 12px;border-radius:6px;border:1px solid #45474d;background:#2f3136;color:#e5e7eb;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap}
 nav a:hover{background:#3a3d44;border-color:#565a61;color:#fff}
 nav a[aria-current=page]{background:#0e639c;border-color:#1177bb;color:#fff}
-main{max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:20px}
+
+/* The panel toggles live in the page header rather than in each
+   panel's own header bar. That is not a style choice: a panel's header
+   goes away with the panel, so a collapse button inside it would take
+   its own way out of reach. One strip survives every collapse. */
+.panel-toggles{display:flex;gap:6px;align-self:center;flex-wrap:wrap}
+.panel-toggles button{padding:6px 12px;font-size:13px;font-weight:500;background:#2f3136;border:1px solid #45474d;color:#c9d1d9}
+.panel-toggles button:hover:not(:disabled){background:#3a3d44;border-color:#565a61;color:#fff}
+.panel-toggles button[aria-pressed=true]{background:#123a24;border-color:#2a6b45;color:#8fe3a6}
+.panel-toggles button[aria-pressed=false]{background:#151a20;border-color:#39424d;color:#6b7280;text-decoration:line-through}
+.panel-toggles .group-label{align-self:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6f7d8c;margin-right:2px}
+
+.workspace{display:flex;flex:1;min-height:0}
+
+/* Handles: 4px so they are findable but not a wall. Double-click
+   resets the panel to its default width; arrows work when focused. */
+.resize-handle{width:4px;flex:0 0 auto;cursor:col-resize;background:transparent;transition:background .2s}
+.resize-handle:hover,.resize-handle:focus-visible{background:#0e639c;outline:none}
+.resize-handle[hidden]{display:none}
+
+.sidebar{width:260px;min-width:180px;flex-shrink:0;background:#181d24;border-right:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+
+/* The right panel is the Prompt Builder. Its header matches the
+   sidebar's so the two edges of the row read as one instrument. */
+.builder-panel{width:420px;min-width:300px;flex-shrink:0;background:#181d24;border-left:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
+.builder-panel-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.builder-host{flex:1;overflow-y:auto;padding:12px}
+
+.tree{flex:1;overflow-y:auto;padding:8px}
+.tree-item{user-select:none;cursor:pointer;padding:4px 6px;border-radius:3px}
+.tree-item:hover{background:#20262e}
+.tree-item.selected{background:#094771}
+.tree-item.folder{display:flex;align-items:center;gap:4px}
+.tree-item.folder .toggle{display:inline-block;width:12px;font-size:11px;color:#8fa0b3;text-align:center;flex-shrink:0}
+.tree-item.folder .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree-item.root{font-weight:bold;text-transform:uppercase;font-size:11px;letter-spacing:.5px;color:#9ca3af;margin-top:4px}
+.tree-item.root.active{color:#e5e7eb}
+.tree-item.root.readonly .label{color:#6b7280}
+.tree-item.readonly{opacity:.6}
+.root-lock{margin-left:auto;font-size:11px;opacity:.7}
+.children{margin-left:12px}
+.children.collapsed{display:none}
+
+main{flex:1;min-width:0;overflow-y:auto;padding:40px 32px 48px;display:grid;gap:20px;align-content:start}
+
+/* The title sits with the content it describes rather than in the
+   header, matching home.html. home.html centres the heading by
+   shrink-wrapping it in a flex column; main is a grid whose items
+   span the full width, so the wrapper centres the text instead. */
+.page-intro{text-align:center}
+.page-intro h1{margin:0;font-size:34px;font-weight:bold;letter-spacing:1px;color:#fff}
+.page-intro p{margin:8px 0 8px;font-size:13px;color:#9ca8b5;line-height:1.5}
 .card{background:#151a20;border:1px solid #303741;border-radius:8px;padding:16px}
 h2{margin:0 0 12px;font-size:16px;color:#dfe6ee;border-bottom:1px solid #303741;padding-bottom:8px;display:flex;align-items:center;gap:10px}
 h2 .spacer{flex:1}
 button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:#4c8bf5;color:#fff;font-size:14px;font-family:inherit}
 button.secondary{background:#303944}
+button.tiny{padding:4px 10px;font-size:12px}
 button:disabled{opacity:.45;cursor:not-allowed}
 button:hover:not(:disabled){opacity:.92}
 select,input{background:#0d1116;color:#edf2f7;border:1px solid #39424d;border-radius:6px;padding:9px;font-family:inherit;font-size:14px;min-width:0}
@@ -16457,12 +17409,6 @@ summary:hover{color:#cbd5e1}
 
 <body>
 <header>
-  <div>
-    <h1>&#129514; Agent Header Test Dashboard</h1>
-    <p>Four questions, one per header of an agent's markdown, asked of the running
-       agent. The verdict comes from its own reply, so this shows what the model
-       received - not what the file says.</p>
-  </div>
   <nav aria-label="Main">
     <a href="/">Home</a>
     <a href="/editor">Editor</a>
@@ -16470,56 +17416,102 @@ summary:hover{color:#cbd5e1}
     <a href="/prompt-builder" target="_blank" rel="noopener">Prompt Builder</a>
     <a href="/test" aria-current="page">Test</a>
   </nav>
+  <!-- The Prompt Builder link above still opens the standalone page, which
+       is the same module as the panel on the right. Two entry points, one
+       builder. -->
+  <div class="panel-toggles" role="group" aria-label="Panels">
+    <span class="group-label">Panels</span>
+    <button id="toggle_left"   type="button" aria-pressed="true" title="Show or hide the file tree">Folders</button>
+    <button id="toggle_centre" type="button" aria-pressed="true" title="Show or hide the test results">Tests</button>
+    <button id="toggle_right"  type="button" aria-pressed="true" title="Show or hide the Prompt Builder">Builder</button>
+  </div>
 </header>
 
-<main>
-
-  <div class="card">
-    <h2>Run the header tests</h2>
-    <div class="toolbar">
-      <label class="field">
-        <span>Test agent</span>
-        <select id="agent_select" disabled></select>
-      </label>
-      <label class="field">
-        <span>Model</span>
-        <select id="model_select" disabled>
-          <option value="">(the agent's own model)</option>
-        </select>
-      </label>
-      <button id="run_btn" type="button" disabled>Run tests</button>
-      <button id="refresh_btn" class="secondary" type="button">Refresh</button>
-    </div>
-    <div id="run_status" class="status" hidden></div>
+<div class="workspace" id="workspace">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">Folders</div>
+    <div id="tree" class="tree">Loading...</div>
   </div>
 
-  <div class="card">
-    <h2>Last run</h2>
-    <div id="summary" class="summary">
-      <span class="badge idle">NO RESULTS</span>
-      <span class="empty">Loading evidence log&hellip;</span>
-    </div>
-  </div>
+  <div class="resize-handle" id="handleLeft" role="separator" aria-orientation="vertical" tabindex="0"
+       title="Drag to resize. Double-click to reset. Arrow keys move 16px, shift 40px."></div>
 
-  <div class="card">
-    <h2>Evidence</h2>
-    <div id="results" class="results">
-      <div class="empty">Loading evidence log&hellip;</div>
-    </div>
-  </div>
+  <main id="centrePanel">
 
-</main>
+    <div class="page-intro">
+      <h1>&#129514; Agent Header Test Dashboard</h1>
+      <p>Four questions, one per header of an agent's markdown, asked of the running
+         agent. The verdict comes from its own reply, so this shows what the model
+         received - not what the file says.</p>
+    </div>
+
+    <div class="card">
+      <h2>Run the header tests</h2>
+      <div class="toolbar">
+        <label class="field">
+          <span>Test agent</span>
+          <select id="agent_select" disabled></select>
+        </label>
+        <label class="field">
+          <span>Model</span>
+          <select id="model_select" disabled>
+            <option value="">(the agent's own model)</option>
+          </select>
+        </label>
+        <button id="run_btn" type="button" disabled>Run tests</button>
+        <button id="refresh_btn" class="secondary" type="button">Refresh</button>
+      </div>
+      <div id="run_status" class="status" hidden></div>
+    </div>
+
+    <div class="card" id="lastRunCard">
+      <h2>Last run
+        <span class="spacer"></span>
+        <button id="clear_btn" class="secondary tiny" type="button" disabled
+                title="Empty this page. The saved results file is not touched - Refresh brings the run back.">Clear</button>
+        <button id="save_btn" class="secondary tiny" type="button" disabled
+                title="Write the report to a timestamped text file in the test environment, then offer it to your browser.">Save report</button>
+      </h2>
+      <div id="summary" class="summary">
+        <span class="badge idle">NO RESULTS</span>
+        <span class="empty">Loading evidence log&hellip;</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Evidence</h2>
+      <div id="results" class="results">
+        <div class="empty">Loading evidence log&hellip;</div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="resize-handle" id="handleRight" role="separator" aria-orientation="vertical" tabindex="0"
+       title="Drag to resize. Double-click to reset. Arrow keys move 16px, shift 40px."></div>
+
+  <aside class="builder-panel" id="builderPanel" aria-label="Prompt Builder">
+    <div class="builder-panel-header">Prompt Builder</div>
+    <div class="builder-host pb" id="builderHost"></div>
+  </aside>
+</div>
 
 <script type="module">
+import Tree from "/static/js/tree.js";
+import Builder from "/static/js/builder.js";
+import Panels from "/static/js/panels.js";
+import { buildReportText, reportFileName } from "/static/js/report.js";
+
 // ============================================================
 // HTTP
 // ============================================================
 
-/* The API client module is deliberately not imported: this page has to
-   keep working if api.js changes shape, and it makes three calls. The
-   status code rides along on the error so "nothing published yet"
-   (404) can be told from "the server is down" (0) without matching on
-   message text. */
+/* The API client module is deliberately not imported for the dashboard's
+   own calls: this page has to keep working if api.js changes shape, and it
+   makes four. Tree and Builder pull it in as dependencies, but nothing
+   below uses it. The status code rides along on the error so "nothing
+   published yet" (404) can be told from "the server is down" (0) without
+   matching on message text. */
 async function api(path, options = {}) {
   const res = await fetch(path, options);
   if (!res.ok) {
@@ -16547,6 +17539,20 @@ function setStatus(message, kind) {
   el.hidden = false;
   el.textContent = message;
   el.className = "status" + (kind ? " " + kind : "");
+}
+
+// ============================================================
+// REPORT STATE
+// ============================================================
+
+/* The report is held here, not only in the DOM. Clear and Save both need
+   to know whether there is one and what it says, and re-reading it from
+   the rendered rows would mean parsing text back into data. */
+let currentReport = null;
+
+function setReportButtonsEnabled(hasReport) {
+  $("clear_btn").disabled = !hasReport;
+  $("save_btn").disabled = !hasReport;
 }
 
 // ============================================================
@@ -16640,6 +17646,8 @@ function renderSummary(summary) {
 }
 
 function renderReport(report) {
+  currentReport = report || null;
+  setReportButtonsEnabled(Boolean(currentReport));
   renderSummary(report && report.summary);
 
   const host = $("results");
@@ -16715,6 +17723,20 @@ async function loadModels() {
   $("model_select").disabled = false;
 }
 
+/* Point the picker at one agent and reload. The builder's "Show evidence"
+   uses this instead of putting ?agent= in the URL, because the panel is in
+   this document: rewriting the address bar to select a dropdown is a
+   worse answer than passing the id across. */
+function selectAgent(agentId) {
+  const select = $("agent_select");
+  if (!agentId || !Array.from(select.options).some((o) => o.value === agentId)) {
+    return false;
+  }
+  select.value = agentId;
+  $("run_btn").disabled = false;
+  return true;
+}
+
 async function loadResults() {
   try {
     renderReport(await api("/api/test/results"));
@@ -16727,6 +17749,49 @@ async function loadResults() {
     }
     renderReport(null);
     setStatus("Cannot read the evidence log: " + error.message, "error");
+  }
+}
+
+// ============================================================
+// FILE TREE
+// ============================================================
+
+/* Only the test environment, because only the test environment is what
+   this page has verdicts about. Home omits the same root for the same
+   reason, and the editor keeps both. */
+const TEST_ROOT = "test_environment";
+
+/* The dashboard never edits a file, so a click opens one in the editor.
+   The window is named so a second click lands in the same tab instead of
+   stacking popups, and sized and centred here rather than left to the
+   default 1x1 corner placement. */
+const EDITOR_WINDOW = "header_test_file";
+
+const EDITOR_FEATURES = [
+  "popup=yes",
+  "width=1100",
+  "height=780",
+  "left=" + Math.round((screen.availWidth - 1100) / 2),
+  "top=" + Math.round((screen.availHeight - 780) / 2),
+].join(",");
+
+Tree.onFileSelect = (path) => {
+  window.open(
+    "/editor?path=" + encodeURIComponent(path)
+      + "&root=" + encodeURIComponent(TEST_ROOT),
+    EDITOR_WINDOW,
+    EDITOR_FEATURES
+  );
+};
+
+async function loadTree() {
+  try {
+    await Tree.load([TEST_ROOT]);
+  } catch (error) {
+    /* A blank sidebar reads as an empty test environment, which is a
+       different and wrong answer, so say so in place. */
+    const host = document.getElementById("tree");
+    host.textContent = "Cannot list " + TEST_ROOT + ": " + error.message;
   }
 }
 
@@ -16787,10 +17852,168 @@ async function refresh() {
   } catch (error) {
     setStatus("Cannot reach the Project Manager: " + error.message, "error");
   }
+  /* After the refresh button rather than inside refresh(): a run writes
+     test_results.json into the tree, so this is how a just-finished run
+     becomes visible without a reload. The tree reports its own failure
+     in its own pane and must not take the evidence pane down with it. */
+  await loadTree();
 }
+
+// ============================================================
+// CLEAR
+// ============================================================
+
+/* Deliberately destructive to nothing. Emptying the page is a way of
+   re-reading the report, not of disposing of it: the run is still on
+   disk, and Refresh brings it straight back. Deleting the results file
+   would make this button the only place evidence could be lost by
+   accident, which is a poor trade for a control that sits next to the
+   verdict. */
+function clearReport() {
+  renderReport(null);
+
+  fillSelect($("agent_select"), [], null, "choose an agent");
+  $("agent_select").disabled = true;
+  $("run_btn").disabled = true;
+  fillSelect($("model_select"), [], null, "(the agent's own model)");
+  $("model_select").disabled = false;
+
+  /* Drop ?agent= too, or the next Refresh silently re-selects the agent
+     that was just cleared. */
+  history.replaceState(null, "", location.pathname);
+
+  setStatus(
+    "Cleared. Nothing was deleted - press Refresh to read the last run again.",
+    ""
+  );
+}
+
+// ============================================================
+// SAVE
+// ============================================================
+
+/* Where a saved report lands, under the test root so it shows up in the
+   tree on the left and opens from there like any other file. */
+const REPORT_DIR = "test_environment/output";
+
+/* One press, two destinations, one text. Both copies come from the same
+   string, so the file in the project and the file the browser writes
+   cannot differ - which a server-side export re-derived from the JSON
+   could not promise. */
+async function saveReport() {
+  if (!currentReport) return;
+
+  const text = buildReportText(currentReport);
+  const file = reportFileName(currentReport.summary || {});
+  const path = REPORT_DIR + "/" + file;
+
+  $("save_btn").disabled = true;
+
+  /* The project copy first, in its own try: a refused write must not
+     stop the user getting the report at all. */
+  let wrote = false;
+  let problem = "";
+  try {
+    await api("/api/file/write?path=" + encodeURIComponent(path), {
+      method: "PUT",
+      headers: { "Content-Type": "text/plain" },
+      body: text,
+    });
+    wrote = true;
+  } catch (error) {
+    problem = "\nNot saved to the project: " + error.message;
+  }
+
+  /* Then the browser's own Save As. Appended before the click because a
+     detached anchor's activation is inconsistent between browsers, and
+     revoked immediately after so the blob does not outlive it. */
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+
+  /* The new file is in the tree now, so the left pane is showing a stale
+     listing until this runs. */
+  if (wrote) await loadTree();
+
+  setReportButtonsEnabled(Boolean(currentReport));
+
+  setStatus(
+    (wrote ? "Saved " + path + "." : "Could not save into the project.")
+    + "\nYour browser was offered " + file + " as well." + problem,
+    wrote ? "ok" : "warn"
+  );
+}
+
+// ============================================================
+// PANELS
+// ============================================================
+
+const panels = Panels.init({
+  container: $("workspace"),
+  left: {
+    element: $("sidebar"),
+    panel: { min: 180, max: 520, default: 260 },
+  },
+  centre: { element: $("centrePanel") },
+  right: {
+    element: $("builderPanel"),
+    panel: { min: 300, max: 720, default: 420 },
+  },
+  handleLeft: $("handleLeft"),
+  handleRight: $("handleRight"),
+  toggles: {
+    left: $("toggle_left"),
+    centre: $("toggle_centre"),
+    right: $("toggle_right"),
+  },
+  storageKey: "testDashboard",
+});
+
+/* Bring the verdict into view from wherever the user is. Used by the
+   builder panel's "Show evidence", which may well be pressed while the
+   centre is collapsed - restoring it is part of showing it. */
+async function showEvidence(agentId) {
+  const restored = panels.show("centre");
+  const picked = selectAgent(agentId);
+  await refresh();
+  $("lastRunCard").scrollIntoView({ block: "start", behavior: "smooth" });
+  if (!picked && agentId) {
+    setStatus(
+      "Published '" + agentId + "', but it is not in the picker - refresh, "
+      + "or check that agent.json and agent.md are both there.",
+      "warn"
+    );
+  } else if (restored) {
+    setStatus("Restored the results panel.", "ok");
+  }
+}
+
+// ============================================================
+// WIRING
+// ============================================================
 
 $("run_btn").addEventListener("click", runTests);
 $("refresh_btn").addEventListener("click", refresh);
+$("clear_btn").addEventListener("click", clearReport);
+$("save_btn").addEventListener("click", saveReport);
+
+/* Two-way with the builder panel. Both are assigned before the panel is
+   mounted below, so a publish that lands during mount already has a
+   listener. */
+Builder.onPublished = async (agentId) => {
+  if (selectAgent(agentId)) {
+    setStatus("Published '" + agentId + "'. Press Run tests.", "ok");
+  }
+  await loadTree();
+};
+Builder.onShowEvidence = showEvidence;
+
+Builder.mount($("builderHost"));
 
 /* The agents and the models are independent of the evidence, so a
    failure in one does not blank the other two. */
@@ -16801,6 +18024,8 @@ $("refresh_btn").addEventListener("click", refresh);
     /* The model list is a convenience; the suite resolves a model on
        its own, so this is not worth an error banner. */
   }
+  /* refresh() loads the tree too, and the first call is how the tree
+     gets loaded at all -- no separate tree load here. */
   await refresh();
 })();
 </script>
@@ -16810,7 +18035,7 @@ $("refresh_btn").addEventListener("click", refresh);
 
 ---
 
-<!-- ==== 73/98 : project_manager/parameters/__init__.py ==== -->
+<!-- ==== 77/105 : project_manager/parameters/__init__.py ==== -->
 
 ### project_manager/parameters/__init__.py
 
@@ -16824,7 +18049,7 @@ the managed workspace, plus the project metadata it manages.
 
 ---
 
-<!-- ==== 74/98 : project_manager/parameters/filesystem.py ==== -->
+<!-- ==== 78/105 : project_manager/parameters/filesystem.py ==== -->
 
 ### project_manager/parameters/filesystem.py
 
@@ -17236,7 +18461,9 @@ def require_writable(
     return root_name
 
 
-def read_browse_filesystem() -> list[dict[str, Any]]:
+def read_browse_filesystem(
+    roots: list[str] | None = None,
+) -> list[dict[str, Any]]:
     """
     Build the browser tree.
 
@@ -17245,11 +18472,29 @@ def read_browse_filesystem() -> list[dict[str, Any]]:
     is prefixed with its root name.
 
     Roots that do not exist on disk are skipped.
+
+    Args:
+        roots:
+            Names to include, or None for all of them. This narrows
+            what a page is *shown*, nothing more: the omitted roots
+            stay in ``BROWSE_ROOTS``, so their paths still resolve
+            for read, write and delete. A page that lists one root
+            can therefore hand a file from another root to a page
+            that does list it.
+
+    Returns:
+        JSON-friendly tree, in ``BROWSE_ROOTS`` declaration order.
     """
+
+    wanted = None if roots is None else set(roots)
 
     results: list[dict[str, Any]] = []
 
     for root_name, config in BROWSE_ROOTS.items():
+
+        if wanted is not None and root_name not in wanted:
+
+            continue
 
         root_path: Path = config["path"]
 
@@ -18006,7 +19251,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 75/98 : project_manager/README.md ==== -->
+<!-- ==== 79/105 : project_manager/README.md ==== -->
 
 ### project_manager/README.md
 
@@ -18029,11 +19274,16 @@ so agents run against the managed workspace with no second server.
 Start it with `scripts\run.bat` (Windows) or `scripts/run.sh` (Linux) from this
 directory. Note that `scripts/setup.sh` does not install the engine's `ollama`
 and `pydantic` dependencies, which the server needs to import at all.
+
+The `/test` page and the `/api/test/*` routes it uses are served from here, but
+the agents they test and the four header questions live outside this package in
+[`test_environment/`](../test_environment/agent_test.py), because they are about
+the test environment rather than about the workspace.
 ```
 
 ---
 
-<!-- ==== 76/98 : project_manager/requirements.txt ==== -->
+<!-- ==== 80/105 : project_manager/requirements.txt ==== -->
 
 ### project_manager/requirements.txt
 
@@ -18046,7 +19296,7 @@ websockets==13.1
 
 ---
 
-<!-- ==== 77/98 : project_manager/scripts/run.bat ==== -->
+<!-- ==== 81/105 : project_manager/scripts/run.bat ==== -->
 
 ### project_manager/scripts/run.bat
 
@@ -18070,7 +19320,7 @@ echo.
 
 ---
 
-<!-- ==== 78/98 : project_manager/scripts/run.sh ==== -->
+<!-- ==== 82/105 : project_manager/scripts/run.sh ==== -->
 
 ### project_manager/scripts/run.sh
 
@@ -18101,7 +19351,7 @@ echo
 
 ---
 
-<!-- ==== 79/98 : project_manager/scripts/setup.sh ==== -->
+<!-- ==== 83/105 : project_manager/scripts/setup.sh ==== -->
 
 ### project_manager/scripts/setup.sh
 
@@ -18142,7 +19392,7 @@ echo "Then open:  http://127.0.0.1:8000"
 
 ---
 
-<!-- ==== 80/98 : project_manager/server.py ==== -->
+<!-- ==== 84/105 : project_manager/server.py ==== -->
 
 ### project_manager/server.py
 
@@ -18223,8 +19473,10 @@ CHAT_HTML = STATIC_DIR / "chat.html"
 #: Standalone tool page, opened in its own window from the topbar.
 PROMPT_BUILDER_HTML = STATIC_DIR / "Agentpromptbuilder.html"
 
-#: Evidence dashboard for the four agent header tests. Self-contained:
-#: it carries its own styles and script and imports nothing.
+#: Evidence dashboard for the four agent header tests. The evidence
+#: log carries its own styles and script; the tree, the Prompt Builder
+#: panel, the resizable panels and the saved report are the shared
+#: modules beside it.
 TEST_HTML = STATIC_DIR / "test.html"
 
 #: Name the engine knows this agent root by. Re-registering the same
@@ -18394,7 +19646,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 81/98 : project_manager/workspace/agents/ProjectManager/agent.json ==== -->
+<!-- ==== 85/105 : project_manager/workspace/agents/ProjectManager/agent.json ==== -->
 
 ### project_manager/workspace/agents/ProjectManager/agent.json
 
@@ -18415,7 +19667,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 82/98 : project_manager/workspace/agents/ProjectManager/agent.md ==== -->
+<!-- ==== 86/105 : project_manager/workspace/agents/ProjectManager/agent.md ==== -->
 
 ### project_manager/workspace/agents/ProjectManager/agent.md
 
@@ -18441,7 +19693,7 @@ Describe the shape of the reply the agent must produce.
 
 ---
 
-<!-- ==== 83/98 : project_manager/workspace/project.json ==== -->
+<!-- ==== 87/105 : project_manager/workspace/project.json ==== -->
 
 ### project_manager/workspace/project.json
 
@@ -18455,387 +19707,7 @@ Describe the shape of the reply the agent must produce.
 
 ---
 
-<!-- ==== 84/98 : project_manager/workspace/To Do/list.txt ==== -->
-
-### project_manager/workspace/To Do/list.txt
-
-```text
-Improvements List
-Created by Jesus Rodriguez
-September 28, 2026
-
-1) make a plan for testing prompts 
-
-2) combine the pipeline feature in the editor, with Agentpromptbuilder.html, the funtionality of the publish button so when its push the testing environment is activated. Reorganize the files so workspace is not mix with the test environment and perhaps add chatlog data to test environment. Add to the data to a new data.html file that will register a log of chats, and perhaps the to do list. Move the folder PromptBuildersFiles to the test environment. Which will be foler structure dedicated to that. Conisder that the new folder strucutre is its isolate environemnt. 
-
-3) save to git hub 
-```
-
----
-
-<!-- ==== 85/98 : project_manager/workspace/To Do/todolistPrompt ==== -->
-
-### project_manager/workspace/To Do/todolistPrompt
-
-````text
-Here is the prompt refined into a step-by-step specification for an AI coding agent (such as Claude Code, Cursor, or an internal agent). It includes explicit file paths, code snippets, execution order, and verification tests for each phase.
-
-
-
----
-
-
-
-### Master Prompt for AI Developer Agent
-
-
-
-```markdown
-
-# TASK SPECIFICATION: Isolated Test Environment, Dynamic Tools, Telemetry Dashboard, & Pipeline-Builder Integration
-
-
-
-You are an expert AI software engineer. Your task is to refactor and expand the `agentCreator` repository (`headless_app` + `project_manager`) to support an isolated testing environment, dynamic custom tool loading, a unified telemetry dashboard (`data.html`), and a seamless "Publish-to-Test" workflow from `Agentpromptbuilder.html`.
-
-
-
-Follow the execution plan step-by-step. For every phase, write the required code, execute verification scripts to confirm functionality, and ensure no existing features are broken.
-
-
-
----
-
-
-
-## SYSTEM ARCHITECTURE OVERVIEW
-
-- **`headless_app/`**: Core agent engine (`engine/`, `tools/`, `pipeline.py`, `interface_runner.py`).
-
-- **`project_manager/`**: FastAPI backend server (`server.py`, `interface/routers/`) and web editor UI (`interface/static/`).
-
-- **Root Workspace**: Live project folder (`workspace/`).
-
-
-
----
-
-
-
-## PHASE 1: Isolated Directory Setup & Relocation
-
-### Objectives:
-
-1. Create a root-level isolated test directory: `test_environment/`.
-
-2. Move `PromptBuildersFiles/` into `test_environment/PromptBuildersFiles/`.
-
-3. Create subdirectories:
-
-   - `test_environment/test_agents/`
-
-   - `test_environment/test_data/chatlog/`
-
-   - `test_environment/test_data/toollog/`
-
-   - `test_environment/tools/`
-
-   - `test_environment/config/`
-
-
-
-### Verification Step:
-
-- Run a shell command to verify the folder tree exists and `PromptBuildersFiles/` has been moved cleanly.
-
-- Verify imports or file references to `PromptBuildersFiles/` across the project are updated to point to `test_environment/PromptBuildersFiles/`.
-
-
-
----
-
-
-
-## PHASE 2: Dynamic Tool Scanner & Tool Log API
-
-### Objectives:
-
-1. **Dynamic Tool Scanner (`headless_app/tools/registry.py`)**:
-
-   Add a scanner `load_custom_tools()` that searches `test_environment/tools/` (and `workspace/tools/`) for `.py` files, dynamically imports top-level tool functions, and registers them into `_TOOL_REGISTRY`.
-
-2. **Tool Telemetry Endpoint (`project_manager/interface/routers/chat.py` or `server.py`)**:
-
-   Implement `@app.get("/api/logs/tools")` to parse and return recent JSONL events from `data/toollog/tool_usage.jsonl` (or `test_environment/test_data/toollog/tool_usage.jsonl`).
-
-
-
-```python
-
-# headless_app/tools/registry.py snippet
-
-import importlib.util
-
-from pathlib import Path
-
-
-
-CUSTOM_TOOLS_DIR = Path(__file__).resolve().parents / "test_environment" / "tools"
-
-
-
-def load_custom_tools(custom_dir: Path = CUSTOM_TOOLS_DIR) -> int:
-
-    if not custom_dir.is_dir():
-
-        return 0
-
-    count = 0
-
-    for file_path in custom_dir.glob("*.py"):
-
-        if file_path.name.startswith(("_", ".")):
-
-            continue
-
-        spec = importlib.util.spec_from_file_location(f"custom_{file_path.stem}", file_path)
-
-        if spec and spec.loader:
-
-            mod = importlib.util.module_from_spec(spec)
-
-            spec.loader.exec_module(mod)
-
-            for attr_name in dir(mod):
-
-                attr = getattr(mod, attr_name)
-
-                if callable(attr) and (getattr(attr, "_is_tool", False) or attr_name.startswith("tool_")):
-
-                    tool_id = getattr(attr, "_tool_id", attr_name)
-
-                    _TOOL_REGISTRY[tool_id] = attr
-
-                    count += 1
-
-    return count
-
-```
-
-
-
-### Verification Step:
-
-- Create a test script in `test_environment/tools/tool_dummy.py` with a dummy function `def tool_hello_world(): return "hello"`.
-
-- Run a test script to import `registry` and assert `"tool_hello_world"` is in `_TOOL_REGISTRY`.
-
-- Perform a `curl GET http://localhost:8000/api/logs/tools` (or run a FastAPI test client) to verify it returns `200 OK` and structured event objects.
-
-
-
----
-
-
-
-## PHASE 3: `data.html` Telemetry & To-Do Dashboard
-
-### Objectives:
-
-1. Create `project_manager/interface/static/data.html`.
-
-2. Do NOT use external JS files for data logic; embed all JavaScript in an **inline `<script type="module">`** tag inside `data.html`.
-
-3. UI Features:
-
-   - **Chat Logs Tab**: Renders recent entries fetched from `/api/chat?limit=100`.
-
-   - **Tool Logs Tab**: Renders tool execution cards from `/api/logs/tools`.
-
-   - **To-Do Panel**: Reads and updates tasks stored in `workspace/to_do.md` or `test_environment/to_do.md`.
-
-
-
-```html
-
-<!-- Structure inside data.html -->
-
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Data & Telemetry Dashboard</title>
-
-    <link rel="stylesheet" href="/static/css/styles.css">
-
-</head>
-
-<body>
-
-    <header class="app-header" data-pm-header></header>
-
-    <div class="data-container">
-
-        <aside class="todo-panel">
-
-            <h3>📝 Project To-Do List</h3>
-
-            <div id="todoListContainer"></div>
-
-            <button id="addTodoBtn">+ Add Task</button>
-
-        </aside>
-
-        <main class="log-stream-panel">
-
-            <div class="tabs">
-
-                <button class="tab-btn active" id="tabChat">Chat Logs</button>
-
-                <button class="tab-btn" id="tabTools">Tool Execution Logs</button>
-
-            </div>
-
-            <div id="chatLogsTab" class="tab-content"></div>
-
-            <div id="toolLogsTab" class="tab-content" style="display:none;"></div>
-
-        </main>
-
-    </div>
-
-    <script type="module">
-
-        import API from '/static/js/api.js';
-
-        // Inline implementation of log fetching, tab switching, and DOM rendering
-
-    </script>
-
-</body>
-
-</html>
-
-```
-
-
-
-### Verification Step:
-
-- Verify `data.html` exists in `project_manager/interface/static/`.
-
-- Validate HTML syntax and ensure no external missing JS dependencies are imported.
-
-
-
----
-
-
-
-## PHASE 4: Topbar Button & Server Routing
-
-### Objectives:
-
-1. Update `project_manager/interface/static/js/topbar.js`: Add `{ page: 'data', label: '📊 Data', href: '/data' }` to `NAV_ITEMS`.
-
-2. Update `project_manager/server.py`: Mount route `@app.get("/data")` serving `data.html`.
-
-
-
-```javascript
-
-// topbar.js
-
-const NAV_ITEMS = [
-
-  { page: 'home', label: 'Home', href: '/' },
-
-  { page: 'editor', label: 'Editor', href: '/editor' },
-
-  { page: 'chat', label: 'Chat', href: '/chat' },
-
-  { page: 'data', label: '📊 Data', href: '/data' }
-
-];
-
-```
-
-
-
-### Verification Step:
-
-- Start server or check routes using `pytest` / `TestClient`.
-
-- Send GET request to `/data` and verify `200 OK` HTML response containing `Data & Telemetry Dashboard`.
-
-
-
----
-
-
-
-## PHASE 5: "Publish-to-Test" Integration in Prompt Builder & Pipeline
-
-### Objectives:
-
-1. Update `Agentpromptbuilder.html` and its corresponding script to bind the **Publish** button to a new test deployment flow:
-
-   - Compiles agent spec (`agent.json` and `agent.md`).
-
-   - Saves files directly into `test_environment/test_agents/<agent_id>/`.
-
-   - Triggers isolated pipeline test execution against `test_environment/test_data/`.
-
-   - Redirects or opens `data.html?active_test=<agent_id>`.
-
-2. Add backend endpoint `POST /api/test/agents/publish` in `project_manager/interface/routers/agents.py` to handle test agent deployment.
-
-
-
-### Verification Step:
-
-- Send a mock POST payload to `/api/test/agents/publish` with sample agent metadata.
-
-- Verify `agent.json` and `agent.md` are correctly created in `test_environment/test_agents/<agent_id>/`.
-
-- Confirm response redirects to `/data`.
-
-
-
----
-
-
-
-## FINAL SYSTEM ACCEPTANCE TESTS
-
-Run the following checks after completing all phases:
-
-1. Verify `test_environment/` structure is fully populated and isolated from `workspace/`.
-
-2. Verify topbar renders "📊 Data" button on all main pages (`/`, `/editor`, `/chat`, `/data`).
-
-3. Execute `load_custom_tools()` and confirm zero runtime import crashes.
-
-4. Confirm FastAPI server boots cleanly without missing file or route errors.
-
-```
-
-
-
----
-
-
-
-💡 Would you like me to save this prompt directly to a file in your workspace (such as `test_environment/plan.md`) so your agent can read and execute it?
-````
-
----
-
-<!-- ==== 86/98 : README.md ==== -->
+<!-- ==== 88/105 : README.md ==== -->
 
 ### README.md
 
@@ -18943,6 +19815,12 @@ selectors), and `/test` (the agent header test dashboard). The full HTTP
 contract is in
 [the Project Manager master copy](source_files/project_manager_MASTER_COPY.md).
 
+The tree is scoped per page, so the same directory is not browsed from two
+places. Home lists the workspace and this app's own source; `/test` lists
+`test_environment/`; the editor lists everything. Selecting a file in `/test`
+opens it in an editor window. Scoping is a view: `test_environment/` files
+still open and save from the editor.
+
 **Two scopes.** *Workspace* is the managed project in
 `project_manager/workspace/` and is writable. *Dev* is agentCreator's own
 source, so you can read and edit the app that is running you.
@@ -19011,8 +19889,8 @@ verdict to take on trust.
 Agents under test live in `test_environment/test_agents/` and that folder is
 deliberately **not** a registered agent root: a test agent never joins the
 registry and never appears in the chat picker. The Prompt Builder's
-"Publish for testing" button writes there, and "Run header tests" runs the
-suite against what it just published. `test_data/` holds the run's chat and
+"Publish for testing" button writes there, and **Run tests** on the dashboard
+runs the suite against what it just published. `test_data/` holds the run's chat and
 tool logs, so test prompts never enter the chat history that
 `search_chat_logs` and saved sessions read.
 
@@ -19024,9 +19902,27 @@ From a terminal:
 ```
 
 The dashboard is at `/test`, or via the API: `GET /api/test/agents`,
-`POST /api/test/run_header_tests`, `GET /api/test/results`. The four verdict
-functions have offline tests of their own, so a change to the checks is
-verifiable without a model:
+`POST /api/test/run_header_tests`, `GET /api/test/results`. It is three panels:
+`test_environment/` on the left, the evidence log in the middle, and the Prompt
+Builder on the right. **Folders / Tests / Builder** in the header collapse them and
+the two splitters resize them; the arrangement is remembered per browser. A file
+clicked in the sidebar opens in an editor window rather than being edited in
+place, so the evidence pane and the file under test are never confused with each
+other.
+
+The builder on that panel is the same module as `/prompt-builder`, not a second
+copy: `interface/static/js/builder.js` exports `mount(host)` and both pages use
+it. Publishing from the panel picks the new agent in the dashboard's dropdown,
+and **Show evidence** scrolls the last run into view. The standalone page still
+exists for working on prompts without the dashboard around them.
+
+**Clear** empties the dashboard and nothing else — the results file stays on disk
+and **Refresh** brings the run back. **Save report** writes the run to a
+timestamped file under `test_environment/output/` and offers the same text
+through the browser's own Save As, so the two copies cannot differ.
+
+The four verdict functions have offline tests of their own, so a change to the
+checks is verifiable without a model:
 
 ```bat
 .venv\Scripts\python.exe test_environment\test_agent_test.py
@@ -19092,7 +19988,191 @@ install in `node_modules`.
 
 ---
 
-<!-- ==== 87/98 : scripts/gen_master_copy.py ==== -->
+<!-- ==== 89/105 : scripts/check_builder_css.py ==== -->
+
+### scripts/check_builder_css.py
+
+```python
+"""
+scripts/check_builder_css.py
+============================
+
+Guard rails for the extracted Prompt Builder styles and markup.
+
+The builder is embedded in two pages, so its CSS has to be scoped and its
+ids have to be unique across every host. Both are easy to break with a
+one-line edit and impossible to notice by eye - an unscoped `button` rule
+does not look wrong in builder.css, it only shows up as a restyled
+control on a page nobody was editing.
+
+Run it directly, or let the test suite pick it up:
+
+    .venv\\Scripts\\python.exe scripts\\check_builder_css.py
+
+Exits non-zero and prints what it found.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+STATIC = ROOT / "project_manager" / "interface" / "static"
+
+BUILDER_CSS = STATIC / "builder.css"
+
+BUILDER_JS = STATIC / "js" / "builder.js"
+
+#: Every page that hosts the builder. A new host has to be added here or
+#: the id check silently stops covering it.
+HOSTS = {
+    "test.html": STATIC / "test.html",
+    "Agentpromptbuilder.html": STATIC / "Agentpromptbuilder.html",
+}
+
+#: Selectors that cannot be scoped and are deleted instead. Present only
+#: to give the failure a reason rather than just a line number.
+UNSCOPABLE = {"body", "html"}
+
+
+def css_rules(text: str) -> list[tuple[int, str]]:
+    """Every selector in the stylesheet, with its line number.
+
+    Comments and at-rule preludes are skipped; an @media block is walked
+    into rather than reported as one selector, because the rules inside
+    it need checking just as much.
+    """
+
+    rules: list[tuple[int, str]] = []
+    depth = 0
+    buffer = ""
+
+    for number, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+
+        if stripped.startswith("/*") or stripped.startswith("*"):
+            continue
+
+        # A comment that opens and closes on the same line.
+        line = re.sub(r"/\*.*?\*/", "", line).strip()
+        if not line:
+            continue
+
+        if stripped.startswith("@"):
+            depth += line.count("{")
+            buffer = ""
+            continue
+
+        if "{" in line:
+            selector = line.split("{", 1)[0].strip()
+            if selector:
+                rules.append((number, selector))
+            depth += line.count("{")
+            buffer = ""
+
+        if "}" in line:
+            depth -= line.count("}")
+            buffer = ""
+
+    del depth, buffer
+    return rules
+
+
+def check_css() -> list[str]:
+    text = BUILDER_CSS.read_text(encoding="utf-8")
+    problems: list[str] = []
+
+    for number, selector in css_rules(text):
+        for part in selector.split(","):
+            part = part.strip()
+            if not part:
+                continue
+
+            head = part.split(" ")[0].split(">")[0].split(":")[0]
+            root = head.lstrip("*.")
+
+            if root in UNSCOPABLE:
+                problems.append(
+                    f"builder.css:{number}: {part!r} targets {root!r}, "
+                    f"which cannot be scoped to the panel. Delete the rule - "
+                    f"the host page owns it."
+                )
+            elif not head.startswith(".pb"):
+                problems.append(
+                    f"builder.css:{number}: {part!r} is not scoped under "
+                    f".pb, so it becomes a global rule on every host page."
+                )
+
+    return problems
+
+
+def markup_ids(text: str) -> set[str]:
+    """Ids in a chunk of HTML or in a JS template literal."""
+
+    return set(re.findall(r'id="([^"]+)"', text))
+
+
+def builder_ids() -> set[str]:
+    text = BUILDER_JS.read_text(encoding="utf-8")
+    match = re.search(r"const MARKUP = `(.*?)`;", text, re.S)
+    if not match:
+        return set()
+    return markup_ids(match.group(1))
+
+
+def check_ids() -> list[str]:
+    mine = builder_ids()
+    problems: list[str] = []
+
+    if not mine:
+        return ["builder.js: no ids found in MARKUP - has it been moved?"]
+
+    for name, path in HOSTS.items():
+        if not path.is_file():
+            problems.append(f"host page missing: {path}")
+            continue
+
+        theirs = markup_ids(path.read_text(encoding="utf-8"))
+
+        for shared in sorted(mine & theirs):
+            problems.append(
+                f"id {shared!r} is in both js/builder.js's MARKUP and {name}. "
+                f"The builder looks ids up on the document, so the page would "
+                f"steal its element."
+            )
+
+    return problems
+
+
+def main() -> int:
+    problems = check_css() + check_ids()
+
+    for problem in problems:
+        print(f"[FAIL] {problem}")
+
+    if problems:
+        print(f"\n{len(problems)} problem(s).")
+        return 1
+
+    print(
+        f"[ok] builder.css: every selector scoped under .pb\n"
+        f"[ok] ids: js/builder.js's {len(builder_ids())} ids are unique "
+        f"across {len(HOSTS)} host page(s)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+---
+
+<!-- ==== 90/105 : scripts/gen_master_copy.py ==== -->
 
 ### scripts/gen_master_copy.py
 
@@ -19294,6 +20374,10 @@ TARGETS: dict[str, dict[str, Any]] = {
             "test_environment/test_data": (
                 "runtime output: chat log and tool log of test runs"
             ),
+            "project_manager/workspace/To Do": (
+                "personal working notes, gitignored and not part of the "
+                "project"
+            ),
         },
     },
     "headless_app": {
@@ -19333,6 +20417,10 @@ TARGETS: dict[str, dict[str, Any]] = {
         "exclude": {
             "workspace/data": (
                 "runtime output: chat log and saved chat sessions"
+            ),
+            "workspace/To Do": (
+                "personal working notes, gitignored and not part of the "
+                "project"
             ),
         },
     },
@@ -19714,7 +20802,7 @@ Every agent tool the interface can touch is exposed as a small API method:
 | `API.models()`                     | `GET /api/models`                    | Fill the model selector                    |
 | `API.fileRead(path, scope)`        | `GET /api/file/read?path=&scope=`    | Open a file in the editor                  |
 | `API.fileWrite(path, content, sc)` | `PUT /api/file/write`                | Save the current buffer                    |
-| `API.project(scope)`               | `GET /api/project?scope=`            | Reload the file tree                       |
+| `API.project(scope, roots)`        | `GET /api/project?scope=&roots=`    | Reload the file tree                       |
 | `API.pathRename(old, new, scope)`  | `PUT /api/path/rename`               | Rename a file / folder                     |
 | `API.fileDelete(path, scope)`      | `DELETE /api/file/delete?path=`      | Delete a file                              |
 | `API.directoryDelete(path, scope)` | `DELETE /api/directory/delete?path=` | Delete a folder                            |
@@ -19725,11 +20813,41 @@ The surfaces that expose them:
 - **+ File / + Folder / Rename / Delete** → the matching create/rename/delete
   accessors
 - **Scope toggle** (workspace / app) → `API.project` plus every file accessor
+- **Per-page roots** → `API.project(null, roots)` decides what a page is *shown*,
+  not what it may reach: home asks for `workspace,source_files`, `/test` asks for
+  `test_environment`, the editor asks for none and so sees every root. An omitted
+  root still resolves for read and write, which is what lets `/test` hand a file to
+  the editor. Unknown names are refused with 422.
 - **Chat page** (`/chat`) → agent and model `<select>`s, `API.chatSend`, and a
   collapsible *Tools used:* disclosure per reply
 - **Agent panel** (`interface/static/js/agents.js`, right sidebar of the editor)
   → `+ Agent` scaffold, **Run Agent** against the open file, and a reorderable
   **cascade pipeline** queue
+- **Test dashboard** (`interface/static/test.html`) → three panels. The left one is
+  `js/tree.js` scoped to `test_environment`; the middle one is the evidence log;
+  the right one is the Prompt Builder. **Folders / Tests / Builder** in the header
+  collapse them, the two splitters resize them, and `js/panels.js` remembers the
+  arrangement under `pm.panels.testDashboard`. **Clear** empties the page and
+  nothing else, **Save report** writes the same text twice - once to
+  `test_environment/output/test_report_<agent>_<stamp>.txt` and once through the
+  browser's own Save As.
+
+### The Prompt Builder is one module, two pages
+
+`interface/static/js/builder.js` holds the markup as a `MARKUP` template and
+exports `mount(host)`. `/prompt-builder` is a shell around it, and the dashboard's
+right-hand panel mounts the same module, so there is one builder and not two that
+drift. `Builder.onPublished` and `Builder.onShowEvidence` are the host hooks: the
+standalone page leaves them null, the dashboard uses them to re-read its agent list
+and to scroll its own results into view.
+
+Two rules keep the embedding honest, and `scripts/check_builder_css.py` enforces
+both:
+
+- every selector in `builder.css` is scoped under `.pb`, because a bare `button`
+  rule in a shared stylesheet restyles a page nobody was editing;
+- every `id` in `MARKUP` is unique across both host pages, because the module looks
+  elements up with `document.getElementById` and the page would otherwise steal one.
 
 For a new agent tool the pattern to follow is:
 `schema → route → API.* accessor → toolbar/panel control`. Nothing else in the
@@ -21230,7 +22348,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 88/98 : scripts/venv.bat ==== -->
+<!-- ==== 91/105 : scripts/venv.bat ==== -->
 
 ### scripts/venv.bat
 
@@ -21274,7 +22392,7 @@ exit /b 1
 
 ---
 
-<!-- ==== 89/98 : scripts/venv.ps1 ==== -->
+<!-- ==== 92/105 : scripts/venv.ps1 ==== -->
 
 ### scripts/venv.ps1
 
@@ -21323,7 +22441,7 @@ Write-Host "Venv active. Python: $($python)" -ForegroundColor Green
 
 ---
 
-<!-- ==== 90/98 : test_environment/agent_test.py ==== -->
+<!-- ==== 93/105 : test_environment/agent_test.py ==== -->
 
 ### test_environment/agent_test.py
 
@@ -22340,7 +23458,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 91/98 : test_environment/PromptBuilderFiles/categories.json ==== -->
+<!-- ==== 94/105 : test_environment/PromptBuilderFiles/categories.json ==== -->
 
 ### test_environment/PromptBuilderFiles/categories.json
 
@@ -22374,7 +23492,7 @@ if __name__ == "__main__":
 
 ---
 
-<!-- ==== 92/98 : test_environment/PromptBuilderFiles/prompt_parts/hallucinations/rule_set_one_by_gemni.txt ==== -->
+<!-- ==== 95/105 : test_environment/PromptBuilderFiles/prompt_parts/hallucinations/rule_set_one_by_gemni.txt ==== -->
 
 ### test_environment/PromptBuilderFiles/prompt_parts/hallucinations/rule_set_one_by_gemni.txt
 
@@ -22392,7 +23510,17 @@ Implement Independent Post-Verification and Auditing: Pass all generated outputs
 
 ---
 
-<!-- ==== 93/98 : test_environment/PromptBuilderFiles/prompt_parts/role/problem_anallyser.txt ==== -->
+<!-- ==== 96/105 : test_environment/PromptBuilderFiles/prompt_parts/role/planner.txt ==== -->
+
+### test_environment/PromptBuilderFiles/prompt_parts/role/planner.txt
+
+```text
+You are a planner agent. Help the user create a plan. The plan is an outline of what needs to be done.
+```
+
+---
+
+<!-- ==== 97/105 : test_environment/PromptBuilderFiles/prompt_parts/role/problem_anallyser.txt ==== -->
 
 ### test_environment/PromptBuilderFiles/prompt_parts/role/problem_anallyser.txt
 
@@ -22402,7 +23530,7 @@ The Agent will help me define my problem. Questions to answer: Is this problemat
 
 ---
 
-<!-- ==== 94/98 : test_environment/PromptBuilderFiles/prompt_parts/tools/resoources.txt ==== -->
+<!-- ==== 98/105 : test_environment/PromptBuilderFiles/prompt_parts/tools/resoources.txt ==== -->
 
 ### test_environment/PromptBuilderFiles/prompt_parts/tools/resoources.txt
 
@@ -22412,7 +23540,7 @@ Read and Map Tool: These are your tools you can use to read files and folders an
 
 ---
 
-<!-- ==== 95/98 : test_environment/PromptBuilderFiles/prompt_parts/user/greating.txt ==== -->
+<!-- ==== 99/105 : test_environment/PromptBuilderFiles/prompt_parts/user/greating.txt ==== -->
 
 ### test_environment/PromptBuilderFiles/prompt_parts/user/greating.txt
 
@@ -22422,7 +23550,17 @@ Great Me As "Hello Jesus, I am ready to think about the problem we will try to s
 
 ---
 
-<!-- ==== 96/98 : test_environment/test_agent_test.py ==== -->
+<!-- ==== 100/105 : test_environment/PromptBuilderFiles/prompt_parts/user/name.txt ==== -->
+
+### test_environment/PromptBuilderFiles/prompt_parts/user/name.txt
+
+```text
+Jesus
+```
+
+---
+
+<!-- ==== 101/105 : test_environment/test_agent_test.py ==== -->
 
 ### test_environment/test_agent_test.py
 
@@ -22585,7 +23723,7 @@ sys.exit(1 if failures else 0)
 
 ---
 
-<!-- ==== 97/98 : test_environment/test_agents/demo_agent/agent.json ==== -->
+<!-- ==== 102/105 : test_environment/test_agents/demo_agent/agent.json ==== -->
 
 ### test_environment/test_agents/demo_agent/agent.json
 
@@ -22605,7 +23743,7 @@ sys.exit(1 if failures else 0)
 
 ---
 
-<!-- ==== 98/98 : test_environment/test_agents/demo_agent/agent.md ==== -->
+<!-- ==== 103/105 : test_environment/test_agents/demo_agent/agent.md ==== -->
 
 ### test_environment/test_agents/demo_agent/agent.md
 
@@ -22639,7 +23777,54 @@ do not know something, say you do not know.
 
 ---
 
-> Generated by `scripts/gen_master_copy.py` on 2026-09-29. Do not edit by hand; regenerate with:
+<!-- ==== 104/105 : test_environment/test_agents/new_agent/agent.json ==== -->
+
+### test_environment/test_agents/new_agent/agent.json
+
+```json
+{
+  "id": "new_agent",
+  "name": "New Agent",
+  "description": "",
+  "mode": "chat",
+  "model": "",
+  "tools": []
+}
+```
+
+---
+
+<!-- ==== 105/105 : test_environment/test_agents/new_agent/agent.md ==== -->
+
+### test_environment/test_agents/new_agent/agent.md
+
+```markdown
+# Agent Prompt
+
+## Role
+
+You are a planner agent. Help the user create a plan. The plan is an outline of what needs to be done.
+
+## Hallucination Rules
+
+Ground Responses strictly in Verified Context: Mandate that the model state facts, numbers, and references using only explicitly provided source text, retrieved context, or trusted external data, treating missing context as "unknown" rather than inventing plausible details.
+
+Enforce Absolute Honesty Over Speculation: Require the model to explicitly state "I don't know" or "Insufficient information" whenever requested data is missing, incomplete, or beyond its verified knowledge base, prohibiting any ungrounded extrapolation or guessing.
+
+Require Explicit Citation and Source Attribution: Compel the model to link every factual claim directly to its exact source, page, or document snippet. If a claim cannot be directly mapped to a retrieved reference, it must be flagged or excluded.
+
+Isolate Reasoning from Factual Outputs: Separate the system into distinct phases—first retrieving and validating relevant context, then performing logical reasoning, and finally formatting the response—preventing the model from generating factual content during free-form synthesis.
+
+Implement Independent Post-Verification and Auditing: Pass all generated outputs through a secondary verification pass or validation layer that cross-checks the response against the primary source material, auto-correcting or rejecting unverified assertions before final output.
+
+## User
+
+Jesus
+```
+
+---
+
+> Generated by `scripts/gen_master_copy.py` on 2026-09-30. Do not edit by hand; regenerate with:
 >
 > ```bat
 > .venv/Scripts/python -m scripts.gen_master_copy

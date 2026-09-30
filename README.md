@@ -101,6 +101,12 @@ selectors), and `/test` (the agent header test dashboard). The full HTTP
 contract is in
 [the Project Manager master copy](source_files/project_manager_MASTER_COPY.md).
 
+The tree is scoped per page, so the same directory is not browsed from two
+places. Home lists the workspace and this app's own source; `/test` lists
+`test_environment/`; the editor lists everything. Selecting a file in `/test`
+opens it in an editor window. Scoping is a view: `test_environment/` files
+still open and save from the editor.
+
 **Two scopes.** *Workspace* is the managed project in
 `project_manager/workspace/` and is writable. *Dev* is agentCreator's own
 source, so you can read and edit the app that is running you.
@@ -169,8 +175,8 @@ verdict to take on trust.
 Agents under test live in `test_environment/test_agents/` and that folder is
 deliberately **not** a registered agent root: a test agent never joins the
 registry and never appears in the chat picker. The Prompt Builder's
-"Publish for testing" button writes there, and "Run header tests" runs the
-suite against what it just published. `test_data/` holds the run's chat and
+"Publish for testing" button writes there, and **Run tests** on the dashboard
+runs the suite against what it just published. `test_data/` holds the run's chat and
 tool logs, so test prompts never enter the chat history that
 `search_chat_logs` and saved sessions read.
 
@@ -182,9 +188,27 @@ From a terminal:
 ```
 
 The dashboard is at `/test`, or via the API: `GET /api/test/agents`,
-`POST /api/test/run_header_tests`, `GET /api/test/results`. The four verdict
-functions have offline tests of their own, so a change to the checks is
-verifiable without a model:
+`POST /api/test/run_header_tests`, `GET /api/test/results`. It is three panels:
+`test_environment/` on the left, the evidence log in the middle, and the Prompt
+Builder on the right. **Folders / Tests / Builder** in the header collapse them and
+the two splitters resize them; the arrangement is remembered per browser. A file
+clicked in the sidebar opens in an editor window rather than being edited in
+place, so the evidence pane and the file under test are never confused with each
+other.
+
+The builder on that panel is the same module as `/prompt-builder`, not a second
+copy: `interface/static/js/builder.js` exports `mount(host)` and both pages use
+it. Publishing from the panel picks the new agent in the dashboard's dropdown,
+and **Show evidence** scrolls the last run into view. The standalone page still
+exists for working on prompts without the dashboard around them.
+
+**Clear** empties the dashboard and nothing else — the results file stays on disk
+and **Refresh** brings the run back. **Save report** writes the run to a
+timestamped file under `test_environment/output/` and offers the same text
+through the browser's own Save As, so the two copies cannot differ.
+
+The four verdict functions have offline tests of their own, so a change to the
+checks is verifiable without a model:
 
 ```bat
 .venv\Scripts\python.exe test_environment\test_agent_test.py

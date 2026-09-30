@@ -1,0 +1,8 @@
+{
+  "id": "new_agent",
+  "name": "New Agent",
+  "description": "",
+  "mode": "chat",
+  "model": "",
+  "tools": []
+}

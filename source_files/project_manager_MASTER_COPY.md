@@ -6,8 +6,8 @@ The `project_manager/` half of agentCreator: the FastAPI workspace server, its e
 | ----- | ----- |
 | Scope | `project_manager/` |
 | Contains | structure + module reference, no code |
-| Files | 48 |
-| Generated | 2026-09-29 |
+| Files | 50 |
+| Generated | 2026-09-30 |
 | Generator | `scripts/gen_master_copy.py` |
 | Regenerate | `.venv/Scripts/python -m scripts.gen_master_copy` |
 | Companions | [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) — the whole repository, verbatim, [`headless_app_MASTER_COPY.md`](headless_app_MASTER_COPY.md) — `headless_app/` |
@@ -126,7 +126,7 @@ Every agent tool the interface can touch is exposed as a small API method:
 | `API.models()`                     | `GET /api/models`                    | Fill the model selector                    |
 | `API.fileRead(path, scope)`        | `GET /api/file/read?path=&scope=`    | Open a file in the editor                  |
 | `API.fileWrite(path, content, sc)` | `PUT /api/file/write`                | Save the current buffer                    |
-| `API.project(scope)`               | `GET /api/project?scope=`            | Reload the file tree                       |
+| `API.project(scope, roots)`        | `GET /api/project?scope=&roots=`    | Reload the file tree                       |
 | `API.pathRename(old, new, scope)`  | `PUT /api/path/rename`               | Rename a file / folder                     |
 | `API.fileDelete(path, scope)`      | `DELETE /api/file/delete?path=`      | Delete a file                              |
 | `API.directoryDelete(path, scope)` | `DELETE /api/directory/delete?path=` | Delete a folder                            |
@@ -137,11 +137,41 @@ The surfaces that expose them:
 - **+ File / + Folder / Rename / Delete** → the matching create/rename/delete
   accessors
 - **Scope toggle** (workspace / app) → `API.project` plus every file accessor
+- **Per-page roots** → `API.project(null, roots)` decides what a page is *shown*,
+  not what it may reach: home asks for `workspace,source_files`, `/test` asks for
+  `test_environment`, the editor asks for none and so sees every root. An omitted
+  root still resolves for read and write, which is what lets `/test` hand a file to
+  the editor. Unknown names are refused with 422.
 - **Chat page** (`/chat`) → agent and model `<select>`s, `API.chatSend`, and a
   collapsible *Tools used:* disclosure per reply
 - **Agent panel** (`interface/static/js/agents.js`, right sidebar of the editor)
   → `+ Agent` scaffold, **Run Agent** against the open file, and a reorderable
   **cascade pipeline** queue
+- **Test dashboard** (`interface/static/test.html`) → three panels. The left one is
+  `js/tree.js` scoped to `test_environment`; the middle one is the evidence log;
+  the right one is the Prompt Builder. **Folders / Tests / Builder** in the header
+  collapse them, the two splitters resize them, and `js/panels.js` remembers the
+  arrangement under `pm.panels.testDashboard`. **Clear** empties the page and
+  nothing else, **Save report** writes the same text twice - once to
+  `test_environment/output/test_report_<agent>_<stamp>.txt` and once through the
+  browser's own Save As.
+
+### The Prompt Builder is one module, two pages
+
+`interface/static/js/builder.js` holds the markup as a `MARKUP` template and
+exports `mount(host)`. `/prompt-builder` is a shell around it, and the dashboard's
+right-hand panel mounts the same module, so there is one builder and not two that
+drift. `Builder.onPublished` and `Builder.onShowEvidence` are the host hooks: the
+standalone page leaves them null, the dashboard uses them to re-read its agent list
+and to scroll its own results into view.
+
+Two rules keep the embedding honest, and `scripts/check_builder_css.py` enforces
+both:
+
+- every selector in `builder.css` is scoped under `.pb`, because a bare `button`
+  rule in a shared stylesheet restyles a page nobody was editing;
+- every `id` in `MARKUP` is unique across both host pages, because the module looks
+  elements up with `document.getElementById` and the page would otherwise steal one.
 
 For a new agent tool the pattern to follow is:
 `schema → route → API.* accessor → toolbar/panel control`. Nothing else in the
@@ -179,13 +209,17 @@ project_manager/
 │       │   ├── agentColors.js
 │       │   ├── agents.js
 │       │   ├── api.js
+│       │   ├── builder.js
 │       │   ├── chat.js
 │       │   ├── editor.js
 │       │   ├── main.js
+│       │   ├── panels.js
+│       │   ├── report.js
 │       │   ├── session.js
 │       │   ├── topbar.js
 │       │   └── tree.js
 │       ├── Agentpromptbuilder.html
+│       ├── builder.css
 │       ├── chat.html
 │       ├── editor.html
 │       ├── home.html
@@ -208,9 +242,7 @@ project_manager/
 │   ├── documentation/
 │   ├── project_scope/
 │   ├── Tests/
-│   ├── To Do/
-│   │   ├── list.txt
-│   │   └── todolistPrompt
+│   ├── To Do/   # not embedded: personal working notes, gitignored and not part of the project
 │   ├── Tools/
 │   ├── updates/
 │   └── project.json
@@ -223,12 +255,13 @@ project_manager/
 
 ## Scope
 
-This document covers every source file under `project_manager/`, **48 files** in total, in case-insensitive path order, and describes each one in the Module Reference below. No file bodies are embedded: a master copy is a map, and the code is in [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md).
+This document covers every source file under `project_manager/`, **50 files** in total, in case-insensitive path order, and describes each one in the Module Reference below. No file bodies are embedded: a master copy is a map, and the code is in [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md).
 
 The following are listed in the structure above but deliberately **not** covered:
 
 | Path | Reason |
 | ---- | ------ |
+| `workspace/To Do` | personal working notes, gitignored and not part of the project |
 | `workspace/data` | runtime output: chat log and saved chat sessions |
 
 Also excluded everywhere: `.git`, `__pycache__/`, virtualenvs, editor and tool caches (`.venv`, `venv`, `.idea`, `.vscode`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`), compiled and runtime artifacts (`*.pyc`, `*.pyo`, `*.log`, `*.dll`).
@@ -369,7 +402,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `import uuid`
 - `from typing import Any, Callable`
 **Constants**
-- `EVENT_TYPES` = `{'saved', 'tree_changed', 'renamed', 'deleted', 'created'}`
+- `EVENT_TYPES` = `{'created', 'tree_changed', 'deleted', 'saved', 'renamed'}`
 **Classes**
 - **`EventBus`** *(class)* — Simple in-memory publish/subscribe event bus.
   - **`__init__(self)`** *method*
@@ -395,7 +428,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`EditorInterface`** *(class)* — The Project Manager operation/interface layer.
   - **`__init__(self, filesystem: Any=None, events: EventBus | None=None, sessions: EditorManager | None=None)`** *method*
   - **`health(self)`** *method* — Project Manager health and project information.
-  - **`tree(self, scope: str | None=None)`** *method* — Project state: project info, active root and filesystem tree.
+  - **`tree(self, scope: str | None=None, roots: list[str] | None=None)`** *method* — Project state: project info, active root and filesystem tree.
   - **`sessions(self)`** *method* — Snapshot of all connected interface sessions.
   - **`open(self, path: str, scope: str | None=None)`** *method* — Open a project file and return its contents.
   - **`save(self, path: str, content: str, scope: str | None=None)`** *method* — Write file contents back to the project filesystem.
@@ -446,6 +479,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 **Functions**
 - **`controller()`** *function* — The single shared Project Manager interface instance.
 - **`normalize_scope(scope: str | None)`** *function* — Validate and normalize a scope query parameter.
+- **`normalize_roots(roots: str | None)`** *function* — Validate and normalize the ``roots`` query parameter.
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/routers/__init__.py`*
 
@@ -634,12 +668,12 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `from __future__ import annotations`
 - `from typing import Any`
 - `from fastapi import APIRouter, Request`
-- `from . import normalize_scope`
+- `from . import normalize_roots, normalize_scope`
 - `from .errors import project_manager_error`
 **Functions**
 - **`health(request: Request)`** *function* — Project Manager health and project information.
   - *decorator:* `@router.get('/api/health')`
-- **`get_project(request: Request, scope: str | None=None)`** *function* — Project information and filesystem tree.
+- **`get_project(request: Request, scope: str | None=None, roots: str | None=None)`** *function* — Project information and filesystem tree.
   - *decorator:* `@router.get('/api/project')`
 - **`get_sessions(request: Request)`** *function* — Active interface sessions.
   - *decorator:* `@router.get('/api/sessions')`
@@ -694,9 +728,17 @@ One entry per file, in the same order as the file structure above. Each entry li
 ### `interface/static/Agentpromptbuilder.html`
 
 **Title.** Agent Prompt Builder
-**Element ids (26).** `parts_folder_label`, `refresh_parts_btn`, `storage_status`, `form_title`, `part_category`, `new_category_btn`, `delete_category_btn`, `new_category_row`, `new_category_name`, `create_category_btn`, `categories_file_label`, `part_name`, `part_text`, `save_part_btn`, `clear_form_btn`, `part_status`, `new_part_btn`, `parts_list`, `create_master_btn`, `agent_id`, `master_prompt`, `save_agent_btn`, `publish_btn`, `test_btn`, `open_test_btn`, `master_status`
+**Includes**
+- `/static/builder.css`
+**Element ids (1).** `pbHost`
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/Agentpromptbuilder.html`*
+
+### `interface/static/builder.css`
+
+*(no structured reference for this file type)*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/builder.css`*
 
 ### `interface/static/chat.html`
 
@@ -790,7 +832,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`API.health()`** *method*
 - **`API.withPath(path, scope)`** *method*
 - **`API.withScope(body, scope)`** *method*
-- **`API.project(scope = null)`** *method*
+- **`API.project(scope = null, roots = null)`** *method*
 - **`API.fileRead(path, scope = null)`** *method*
 - **`API.fileWrite(path, content, scope = null)`** *method*
 - **`API.fileCreate(path, content = '', scope = null)`** *method*
@@ -815,6 +857,93 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`API.models()`** *method*
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/api.js`*
+
+### `interface/static/js/builder.js`
+
+**Declarations**
+- **`MARKUP`** *constant* = ```
+- **`DOC_ROOT`** *constant* = `'test_environment/PromptBuilderFiles'`
+- **`PARTS_DIR`** *constant* = `DOC_ROOT + '/prompt_parts'`
+- **`DOC_OUTPUT_DIR`** *constant* = `DOC_ROOT + '/output/agents'`
+- **`AGENTS_DIR`** *constant* = `'test_environment/test_agents'`
+- **`CATEGORIES_FILE`** *constant* = `DOC_ROOT + '/categories.json'`
+- **`CATEGORIES_VERSION`** *constant* = `1`
+- **`PART_FILE`** *constant* = `'.txt'`
+- **`SEED_CATEGORIES`** *array* = `[`
+- **`categories`** *array* = `[]; // [{id, title}] from the manifest, in order`
+- **`textCache`** *constant* = `new Map(); // part path -> text`
+- **`selected`** *constant* = `new Set(); // "category/name" keys that are checked`
+- **`lockedCategories`** *constant* = `new Set(); // categories that refused a write`
+- **`editingCategory`** *constant* = `null; // category the part open in the form belongs to`
+- **`workspaceRoot`** *constant* = `""; // absolute, from /api/health`
+- **`projectRoot`** *constant* = `""; // the parent of workspaceRoot`
+- **`ready`** *constant* = `false; // the parts folder answered at least once`
+- **`assembled`** *constant* = `null; // selection signature of the last build`
+- **`BUTTONS`** *array* = `["save_part_btn","clear_form_btn","create_master_btn",`
+- **`PUBLISH_GATED`** *constant* = `new Set(["show_evidence_btn"])`
+- **`busy`** *constant* = `false`
+- **`$(id)`** *function*
+- **`setStatus(id, message, kind)`** *function*
+- **`syncButtons()`** *function*
+- **`setReady(value)`** *function*
+- **`setBusy(value)`** *function*
+- **`partKey(category, name)`** *function*
+- **`categoryPath(id)`** *function*
+- **`partPath(category, name)`** *function*
+- **`relativePath(path)`** *function*
+- **`safeSlug(value)`** *function*
+- **`titleFor(id)`** *function*
+- **`displayName(id)`** *function*
+- **`learnWorkspaceRoot()`** *function*
+- **`isPermissionError(error)`** *function*
+- **`extractFailedPath(message)`** *function*
+- **`shortenPath(value)`** *function*
+- **`repairHint(lowercase)`** *function*
+- **`firstUnlockedCategory()`** *function*
+- **`syncCategoryDropdown()`** *function*
+- **`markCategoryLocked(category)`** *function*
+- **`prettyError(error, category)`** *function*
+- **`findNode(items, path)`** *function*
+- **`childDir(node, name)`** *function*
+- **`ensureStructure()`** *function*
+- **`normalizeCategories(raw)`** *function*
+- **`manifestText(list)`** *function*
+- **`readCategories()`** *function*
+- **`writeCategories(list)`** *function*
+- **`populateCategoryDropdown()`** *function*
+- **`readPart(path)`** *function*
+- **`refreshParts()`** *function*
+- **`isChecked(category, name)`** *function*
+- **`setChecked(category, name, value)`** *function*
+- **`markAssembledStale()`** *function*
+- **`selectionSignature()`** *function*
+- **`renderParts()`** *function*
+- **`buildPartRow(category, entry)`** *function*
+- **`toggleCategory(category)`** *function*
+- **`clearFormFields()`** *function*
+- **`resetForm()`** *function*
+- **`editPart(category, entry)`** *function*
+- **`deletePart(category, entry)`** *function*
+- **`droppedNote(dropped)`** *function*
+- **`toggleNewCategoryRow(open)`** *function*
+- **`addCategory()`** *function*
+- **`forgetCategory(id)`** *function*
+- **`deleteCategory()`** *function*
+- **`startNewPart()`** *function*
+- **`savePart()`** *function*
+- **`collectSelections()`** *function*
+- **`buildMasterPrompt()`** *function*
+- **`requireMarkdown()`** *function*
+- **`saveToDocumentation()`** *function*
+- **`publishedAgentId`** *constant* = `null`
+- **`publishForTesting()`** *function*
+- **`setPublished(isPublished)`** *function*
+- **`reloadParts()`** *function*
+- **`mount(host)`** *function*
+- **`partIndex`** *object literal, 0 methods*
+- **`Builder`** *object literal, 0 methods*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/builder.js`*
 
 ### `interface/static/js/chat.js`
 
@@ -894,6 +1023,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`currentIsFolder`** *constant* = `false`
 - **`currentIsReadOnly`** *constant* = `false`
 - **`hasEditor()`** *arrow function*
+- **`HOME_ROOTS`** *array* = `['workspace', 'source_files'];`
 - **`isPathReadOnly(path)`** *function*
 - **`applyReadOnly()`** *function*
 - **`getLanguage(filePath)`** *function*
@@ -916,6 +1046,41 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `document.addEventListener('DOMContentLoaded', init)`
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/main.js`*
+
+### `interface/static/js/panels.js`
+
+**Purpose.** =
+**Declarations**
+- **`STORAGE_PREFIX`** *constant* = `'pm.panels.'`
+- **`HANDLE_WIDTH`** *constant* = `4`
+- **`CENTRE_FLOOR`** *constant* = `360`
+- **`centreFloor(handles)`** *function*
+- **`clampWidth(value, panel)`** *function*
+- **`fitPanels(containerWidth, left, right, handles = 0)`** *function*
+- **`resolveHandles(visible)`** *function*
+- **`readState(key)`** *function*
+- **`writeState(key, state)`** *function*
+- **`init(spec)`** *function*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/panels.js`*
+
+### `interface/static/js/report.js`
+
+**Purpose.** =
+**Declarations**
+- **`HEADERS`** *array* = `['role', 'user', 'purpose', 'hallucinations'];`
+- **`INDENT`** *constant* = `' '`
+- **`UNDERLINE`** *constant* = `'='.repeat(60)`
+- **`RULE`** *constant* = `'-'.repeat(5)`
+- **`field(value, fallback = '?')`** *function*
+- **`block(text, fallback = '(empty)`** *function*
+- **`readableTime(value)`** *function*
+- **`buildReportText(report)`** *function*
+- **`safeSegment(value, fallback, maxLength)`** *function*
+- **`timestamp(date)`** *function*
+- **`reportFileName(summary, when)`** *function*
+
+*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/report.js`*
 
 ### `interface/static/js/session.js`
 
@@ -956,7 +1121,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`Tree.rootOf(path)`** *method*
 - **`Tree.isWritable()`** *method*
 - **`Tree.nodeFor(path, items = this.root)`** *method*
-- **`Tree.load()`** *method*
+- **`Tree.load(roots = null)`** *method*
 - **`Tree.key(path)`** *method*
 - **`Tree.render(containerId = 'tree')`** *method*
 - **`Tree.renderItems(items, container, depth = 0)`** *method*
@@ -971,7 +1136,9 @@ One entry per file, in the same order as the file structure above. Each entry li
 ### `interface/static/test.html`
 
 **Title.** Agent Header Test Dashboard
-**Element ids (7).** `agent_select`, `model_select`, `run_btn`, `refresh_btn`, `run_status`, `summary`, `results`
+**Includes**
+- `/static/builder.css`
+**Element ids (21).** `toggle_left`, `toggle_centre`, `toggle_right`, `workspace`, `sidebar`, `tree`, `handleLeft`, `centrePanel`, `agent_select`, `model_select`, `run_btn`, `refresh_btn`, `run_status`, `lastRunCard`, `clear_btn`, `save_btn`, `summary`, `results`, `handleRight`, `builderPanel`, `builderHost`
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/test.html`*
 
@@ -1003,8 +1170,8 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `PROJECT_FOLDERS` = `['documentation', 'project_scope', 'To Do', 'updates', 'config', 'data', 'Tests']`
 - `BROWSE_ROOTS`
 - `MAX_EDITABLE_BYTES`
-- `TEXT_EXTENSIONS` = `{'.tsx', '.ts', '.html', '.sql', '.css', '.htm', '.yaml', '.toml', '.xml', '.cfg', '.json…`
-- `IGNORED_DIRECTORIES` = `{'.idea', '.pytest_cache', '.vscode', '__pycache__', '.mypy_cache', 'venv', '.venv', '.gi…`
+- `TEXT_EXTENSIONS` = `{'.yaml', '.tsx', '.py', '.xml', '.css', '.html', '.env', '.htm', '.yml', '.csv', '.js',…`
+- `IGNORED_DIRECTORIES` = `{'.idea', '.pytest_cache', 'venv', '.git', '.venv', '.mypy_cache', '__pycache__', '.vscod…`
 - `DEFAULT_PROJECT`
 - `TRANSIENT_DELETE_WIN_ERRORS`
 - `TRANSIENT_DELETE_ERRNOS`
@@ -1017,7 +1184,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`resolve_browse_target(relative_path: str, legacy_root: Path | None=None)`** *function* — Split a possibly root-qualified path into the arguments the filesystem operations expect.
 - **`resolve_browse_path(relative_path: str, legacy_root: Path | None=None)`** *function* — Resolve a possibly root-qualified path to a safe absolute path.
 - **`require_writable(relative_path: str, legacy_root: Path | None=None)`** *function* — Ensure a path may be written to.
-- **`read_browse_filesystem()`** *function* — Build the browser tree.
+- **`read_browse_filesystem(roots: list[str] | None=None)`** *function* — Build the browser tree.
 - **`build_project_filesystem()`** *function* — Create the standard Project Manager filesystem.
 - **`read_project_info()`** *function* — Read project.json.
 - **`should_ignore(path: Path)`** *function* — Determine whether a path should be hidden from the project browser.
@@ -1143,22 +1310,10 @@ One entry per file, in the same order as the file structure above. Each entry li
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/project.json`*
 
-### `workspace/To Do/list.txt`
-
-*(no symbols extracted)*
-
-*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/To Do/list.txt`*
-
-### `workspace/To Do/todolistPrompt`
-
-*(no structured reference for this file type)*
-
-*Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `workspace/To Do/todolistPrompt`*
-
 
 ---
 
-> Generated by `scripts/gen_master_copy.py` on 2026-09-29. Do not edit by hand; regenerate with:
+> Generated by `scripts/gen_master_copy.py` on 2026-09-30. Do not edit by hand; regenerate with:
 >
 > ```bat
 > .venv/Scripts/python -m scripts.gen_master_copy

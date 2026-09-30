@@ -74,8 +74,10 @@ CHAT_HTML = STATIC_DIR / "chat.html"
 #: Standalone tool page, opened in its own window from the topbar.
 PROMPT_BUILDER_HTML = STATIC_DIR / "Agentpromptbuilder.html"
 
-#: Evidence dashboard for the four agent header tests. Self-contained:
-#: it carries its own styles and script and imports nothing.
+#: Evidence dashboard for the four agent header tests. The evidence
+#: log carries its own styles and script; the tree, the Prompt Builder
+#: panel, the resizable panels and the saved report are the shared
+#: modules beside it.
 TEST_HTML = STATIC_DIR / "test.html"
 
 #: Name the engine knows this agent root by. Re-registering the same

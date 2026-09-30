@@ -195,6 +195,10 @@ TARGETS: dict[str, dict[str, Any]] = {
             "test_environment/test_data": (
                 "runtime output: chat log and tool log of test runs"
             ),
+            "project_manager/workspace/To Do": (
+                "personal working notes, gitignored and not part of the "
+                "project"
+            ),
         },
     },
     "headless_app": {
@@ -234,6 +238,10 @@ TARGETS: dict[str, dict[str, Any]] = {
         "exclude": {
             "workspace/data": (
                 "runtime output: chat log and saved chat sessions"
+            ),
+            "workspace/To Do": (
+                "personal working notes, gitignored and not part of the "
+                "project"
             ),
         },
     },
@@ -615,7 +623,7 @@ Every agent tool the interface can touch is exposed as a small API method:
 | `API.models()`                     | `GET /api/models`                    | Fill the model selector                    |
 | `API.fileRead(path, scope)`        | `GET /api/file/read?path=&scope=`    | Open a file in the editor                  |
 | `API.fileWrite(path, content, sc)` | `PUT /api/file/write`                | Save the current buffer                    |
-| `API.project(scope)`               | `GET /api/project?scope=`            | Reload the file tree                       |
+| `API.project(scope, roots)`        | `GET /api/project?scope=&roots=`    | Reload the file tree                       |
 | `API.pathRename(old, new, scope)`  | `PUT /api/path/rename`               | Rename a file / folder                     |
 | `API.fileDelete(path, scope)`      | `DELETE /api/file/delete?path=`      | Delete a file                              |
 | `API.directoryDelete(path, scope)` | `DELETE /api/directory/delete?path=` | Delete a folder                            |
@@ -626,11 +634,41 @@ The surfaces that expose them:
 - **+ File / + Folder / Rename / Delete** → the matching create/rename/delete
   accessors
 - **Scope toggle** (workspace / app) → `API.project` plus every file accessor
+- **Per-page roots** → `API.project(null, roots)` decides what a page is *shown*,
+  not what it may reach: home asks for `workspace,source_files`, `/test` asks for
+  `test_environment`, the editor asks for none and so sees every root. An omitted
+  root still resolves for read and write, which is what lets `/test` hand a file to
+  the editor. Unknown names are refused with 422.
 - **Chat page** (`/chat`) → agent and model `<select>`s, `API.chatSend`, and a
   collapsible *Tools used:* disclosure per reply
 - **Agent panel** (`interface/static/js/agents.js`, right sidebar of the editor)
   → `+ Agent` scaffold, **Run Agent** against the open file, and a reorderable
   **cascade pipeline** queue
+- **Test dashboard** (`interface/static/test.html`) → three panels. The left one is
+  `js/tree.js` scoped to `test_environment`; the middle one is the evidence log;
+  the right one is the Prompt Builder. **Folders / Tests / Builder** in the header
+  collapse them, the two splitters resize them, and `js/panels.js` remembers the
+  arrangement under `pm.panels.testDashboard`. **Clear** empties the page and
+  nothing else, **Save report** writes the same text twice - once to
+  `test_environment/output/test_report_<agent>_<stamp>.txt` and once through the
+  browser's own Save As.
+
+### The Prompt Builder is one module, two pages
+
+`interface/static/js/builder.js` holds the markup as a `MARKUP` template and
+exports `mount(host)`. `/prompt-builder` is a shell around it, and the dashboard's
+right-hand panel mounts the same module, so there is one builder and not two that
+drift. `Builder.onPublished` and `Builder.onShowEvidence` are the host hooks: the
+standalone page leaves them null, the dashboard uses them to re-read its agent list
+and to scroll its own results into view.
+
+Two rules keep the embedding honest, and `scripts/check_builder_css.py` enforces
+both:
+
+- every selector in `builder.css` is scoped under `.pb`, because a bare `button`
+  rule in a shared stylesheet restyles a page nobody was editing;
+- every `id` in `MARKUP` is unique across both host pages, because the module looks
+  elements up with `document.getElementById` and the page would otherwise steal one.
 
 For a new agent tool the pattern to follow is:
 `schema → route → API.* accessor → toolbar/panel control`. Nothing else in the

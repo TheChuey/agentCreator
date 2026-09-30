@@ -5,28 +5,97 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Header Test Dashboard</title>
 
-<!-- One file, on purpose. The evidence log is read by a person looking
-     at a verdict, and a page that has to be reassembled from a
-     stylesheet, a script and a module to show four PASS/FAIL rows is a
-     page that breaks in the one moment it is needed. Everything below -
-     the styles, the fetch calls, the nav - is inline. -->
+<!-- The Prompt Builder's own styles. The standalone /prompt-builder page
+     links the same file, which is what keeps the panel and the page
+     looking like the same builder. Everything else stays inline: the
+     styles, the fetch calls and the nav. -->
+<link rel="stylesheet" href="/static/builder.css">
+
+<!-- The evidence log is read by a person looking at a verdict, and a
+     page that has to be reassembled from a stylesheet and a module to
+     show four PASS/FAIL rows is a page that breaks in the one moment it
+     is needed. So the styles, the fetch calls and the nav stay inline.
+
+     The one exception is the sidebar tree, which is the shared
+     js/tree.js module. It is not reimplemented here because a second
+     copy of the tree would be a second copy of the expand state, the
+     folder switcher and the editor hand-off, and the dashboard would
+     drift from the editor the first time any of them changed.
+
+     Four modules are imported now, and all four earn it: js/tree.js
+     (the tree), js/builder.js (the right-hand Prompt Builder panel),
+     js/panels.js (resize and collapse) and js/report.js (the saved
+     report's text). The evidence log's own fetches stay inline. -->
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2}
-header{padding:18px 24px;background:#181d24;border-bottom:1px solid #303741;display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap}
-header h1{margin:0 0 5px;font-size:22px}
-header p{margin:0;color:#9ca8b5;font-size:13px;max-width:70ch;line-height:1.5}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#101318;color:#e8edf2;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+body.panel-dragging{cursor:col-resize;user-select:none}
+body.panel-dragging *{cursor:col-resize !important}
+header{padding:10px 24px;background:#181d24;border-bottom:1px solid #303741;display:flex;align-items:center;gap:18px;flex-wrap:wrap;flex-shrink:0}
 nav{display:flex;gap:6px;margin-left:auto;flex-shrink:0;align-self:center;flex-wrap:wrap}
 nav a{display:inline-flex;align-items:center;padding:6px 12px;border-radius:6px;border:1px solid #45474d;background:#2f3136;color:#e5e7eb;font-size:13px;font-weight:500;text-decoration:none;white-space:nowrap}
 nav a:hover{background:#3a3d44;border-color:#565a61;color:#fff}
 nav a[aria-current=page]{background:#0e639c;border-color:#1177bb;color:#fff}
-main{max-width:1200px;margin:0 auto;padding:20px;display:grid;gap:20px}
+
+/* The panel toggles live in the page header rather than in each
+   panel's own header bar. That is not a style choice: a panel's header
+   goes away with the panel, so a collapse button inside it would take
+   its own way out of reach. One strip survives every collapse. */
+.panel-toggles{display:flex;gap:6px;align-self:center;flex-wrap:wrap}
+.panel-toggles button{padding:6px 12px;font-size:13px;font-weight:500;background:#2f3136;border:1px solid #45474d;color:#c9d1d9}
+.panel-toggles button:hover:not(:disabled){background:#3a3d44;border-color:#565a61;color:#fff}
+.panel-toggles button[aria-pressed=true]{background:#123a24;border-color:#2a6b45;color:#8fe3a6}
+.panel-toggles button[aria-pressed=false]{background:#151a20;border-color:#39424d;color:#6b7280;text-decoration:line-through}
+.panel-toggles .group-label{align-self:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6f7d8c;margin-right:2px}
+
+.workspace{display:flex;flex:1;min-height:0}
+
+/* Handles: 4px so they are findable but not a wall. Double-click
+   resets the panel to its default width; arrows work when focused. */
+.resize-handle{width:4px;flex:0 0 auto;cursor:col-resize;background:transparent;transition:background .2s}
+.resize-handle:hover,.resize-handle:focus-visible{background:#0e639c;outline:none}
+.resize-handle[hidden]{display:none}
+
+.sidebar{width:260px;min-width:180px;flex-shrink:0;background:#181d24;border-right:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+
+/* The right panel is the Prompt Builder. Its header matches the
+   sidebar's so the two edges of the row read as one instrument. */
+.builder-panel{width:420px;min-width:300px;flex-shrink:0;background:#181d24;border-left:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
+.builder-panel-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.builder-host{flex:1;overflow-y:auto;padding:12px}
+
+.tree{flex:1;overflow-y:auto;padding:8px}
+.tree-item{user-select:none;cursor:pointer;padding:4px 6px;border-radius:3px}
+.tree-item:hover{background:#20262e}
+.tree-item.selected{background:#094771}
+.tree-item.folder{display:flex;align-items:center;gap:4px}
+.tree-item.folder .toggle{display:inline-block;width:12px;font-size:11px;color:#8fa0b3;text-align:center;flex-shrink:0}
+.tree-item.folder .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tree-item.root{font-weight:bold;text-transform:uppercase;font-size:11px;letter-spacing:.5px;color:#9ca3af;margin-top:4px}
+.tree-item.root.active{color:#e5e7eb}
+.tree-item.root.readonly .label{color:#6b7280}
+.tree-item.readonly{opacity:.6}
+.root-lock{margin-left:auto;font-size:11px;opacity:.7}
+.children{margin-left:12px}
+.children.collapsed{display:none}
+
+main{flex:1;min-width:0;overflow-y:auto;padding:40px 32px 48px;display:grid;gap:20px;align-content:start}
+
+/* The title sits with the content it describes rather than in the
+   header, matching home.html. home.html centres the heading by
+   shrink-wrapping it in a flex column; main is a grid whose items
+   span the full width, so the wrapper centres the text instead. */
+.page-intro{text-align:center}
+.page-intro h1{margin:0;font-size:34px;font-weight:bold;letter-spacing:1px;color:#fff}
+.page-intro p{margin:8px 0 8px;font-size:13px;color:#9ca8b5;line-height:1.5}
 .card{background:#151a20;border:1px solid #303741;border-radius:8px;padding:16px}
 h2{margin:0 0 12px;font-size:16px;color:#dfe6ee;border-bottom:1px solid #303741;padding-bottom:8px;display:flex;align-items:center;gap:10px}
 h2 .spacer{flex:1}
 button{border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:#4c8bf5;color:#fff;font-size:14px;font-family:inherit}
 button.secondary{background:#303944}
+button.tiny{padding:4px 10px;font-size:12px}
 button:disabled{opacity:.45;cursor:not-allowed}
 button:hover:not(:disabled){opacity:.92}
 select,input{background:#0d1116;color:#edf2f7;border:1px solid #39424d;border-radius:6px;padding:9px;font-family:inherit;font-size:14px;min-width:0}
@@ -72,12 +141,6 @@ summary:hover{color:#cbd5e1}
 
 <body>
 <header>
-  <div>
-    <h1>&#129514; Agent Header Test Dashboard</h1>
-    <p>Four questions, one per header of an agent's markdown, asked of the running
-       agent. The verdict comes from its own reply, so this shows what the model
-       received - not what the file says.</p>
-  </div>
   <nav aria-label="Main">
     <a href="/">Home</a>
     <a href="/editor">Editor</a>
@@ -85,56 +148,102 @@ summary:hover{color:#cbd5e1}
     <a href="/prompt-builder" target="_blank" rel="noopener">Prompt Builder</a>
     <a href="/test" aria-current="page">Test</a>
   </nav>
+  <!-- The Prompt Builder link above still opens the standalone page, which
+       is the same module as the panel on the right. Two entry points, one
+       builder. -->
+  <div class="panel-toggles" role="group" aria-label="Panels">
+    <span class="group-label">Panels</span>
+    <button id="toggle_left"   type="button" aria-pressed="true" title="Show or hide the file tree">Folders</button>
+    <button id="toggle_centre" type="button" aria-pressed="true" title="Show or hide the test results">Tests</button>
+    <button id="toggle_right"  type="button" aria-pressed="true" title="Show or hide the Prompt Builder">Builder</button>
+  </div>
 </header>
 
-<main>
-
-  <div class="card">
-    <h2>Run the header tests</h2>
-    <div class="toolbar">
-      <label class="field">
-        <span>Test agent</span>
-        <select id="agent_select" disabled></select>
-      </label>
-      <label class="field">
-        <span>Model</span>
-        <select id="model_select" disabled>
-          <option value="">(the agent's own model)</option>
-        </select>
-      </label>
-      <button id="run_btn" type="button" disabled>Run tests</button>
-      <button id="refresh_btn" class="secondary" type="button">Refresh</button>
-    </div>
-    <div id="run_status" class="status" hidden></div>
+<div class="workspace" id="workspace">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">Folders</div>
+    <div id="tree" class="tree">Loading...</div>
   </div>
 
-  <div class="card">
-    <h2>Last run</h2>
-    <div id="summary" class="summary">
-      <span class="badge idle">NO RESULTS</span>
-      <span class="empty">Loading evidence log&hellip;</span>
-    </div>
-  </div>
+  <div class="resize-handle" id="handleLeft" role="separator" aria-orientation="vertical" tabindex="0"
+       title="Drag to resize. Double-click to reset. Arrow keys move 16px, shift 40px."></div>
 
-  <div class="card">
-    <h2>Evidence</h2>
-    <div id="results" class="results">
-      <div class="empty">Loading evidence log&hellip;</div>
-    </div>
-  </div>
+  <main id="centrePanel">
 
-</main>
+    <div class="page-intro">
+      <h1>&#129514; Agent Header Test Dashboard</h1>
+      <p>Four questions, one per header of an agent's markdown, asked of the running
+         agent. The verdict comes from its own reply, so this shows what the model
+         received - not what the file says.</p>
+    </div>
+
+    <div class="card">
+      <h2>Run the header tests</h2>
+      <div class="toolbar">
+        <label class="field">
+          <span>Test agent</span>
+          <select id="agent_select" disabled></select>
+        </label>
+        <label class="field">
+          <span>Model</span>
+          <select id="model_select" disabled>
+            <option value="">(the agent's own model)</option>
+          </select>
+        </label>
+        <button id="run_btn" type="button" disabled>Run tests</button>
+        <button id="refresh_btn" class="secondary" type="button">Refresh</button>
+      </div>
+      <div id="run_status" class="status" hidden></div>
+    </div>
+
+    <div class="card" id="lastRunCard">
+      <h2>Last run
+        <span class="spacer"></span>
+        <button id="clear_btn" class="secondary tiny" type="button" disabled
+                title="Empty this page. The saved results file is not touched - Refresh brings the run back.">Clear</button>
+        <button id="save_btn" class="secondary tiny" type="button" disabled
+                title="Write the report to a timestamped text file in the test environment, then offer it to your browser.">Save report</button>
+      </h2>
+      <div id="summary" class="summary">
+        <span class="badge idle">NO RESULTS</span>
+        <span class="empty">Loading evidence log&hellip;</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Evidence</h2>
+      <div id="results" class="results">
+        <div class="empty">Loading evidence log&hellip;</div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="resize-handle" id="handleRight" role="separator" aria-orientation="vertical" tabindex="0"
+       title="Drag to resize. Double-click to reset. Arrow keys move 16px, shift 40px."></div>
+
+  <aside class="builder-panel" id="builderPanel" aria-label="Prompt Builder">
+    <div class="builder-panel-header">Prompt Builder</div>
+    <div class="builder-host pb" id="builderHost"></div>
+  </aside>
+</div>
 
 <script type="module">
+import Tree from "/static/js/tree.js";
+import Builder from "/static/js/builder.js";
+import Panels from "/static/js/panels.js";
+import { buildReportText, reportFileName } from "/static/js/report.js";
+
 // ============================================================
 // HTTP
 // ============================================================
 
-/* The API client module is deliberately not imported: this page has to
-   keep working if api.js changes shape, and it makes three calls. The
-   status code rides along on the error so "nothing published yet"
-   (404) can be told from "the server is down" (0) without matching on
-   message text. */
+/* The API client module is deliberately not imported for the dashboard's
+   own calls: this page has to keep working if api.js changes shape, and it
+   makes four. Tree and Builder pull it in as dependencies, but nothing
+   below uses it. The status code rides along on the error so "nothing
+   published yet" (404) can be told from "the server is down" (0) without
+   matching on message text. */
 async function api(path, options = {}) {
   const res = await fetch(path, options);
   if (!res.ok) {
@@ -162,6 +271,20 @@ function setStatus(message, kind) {
   el.hidden = false;
   el.textContent = message;
   el.className = "status" + (kind ? " " + kind : "");
+}
+
+// ============================================================
+// REPORT STATE
+// ============================================================
+
+/* The report is held here, not only in the DOM. Clear and Save both need
+   to know whether there is one and what it says, and re-reading it from
+   the rendered rows would mean parsing text back into data. */
+let currentReport = null;
+
+function setReportButtonsEnabled(hasReport) {
+  $("clear_btn").disabled = !hasReport;
+  $("save_btn").disabled = !hasReport;
 }
 
 // ============================================================
@@ -255,6 +378,8 @@ function renderSummary(summary) {
 }
 
 function renderReport(report) {
+  currentReport = report || null;
+  setReportButtonsEnabled(Boolean(currentReport));
   renderSummary(report && report.summary);
 
   const host = $("results");
@@ -330,6 +455,20 @@ async function loadModels() {
   $("model_select").disabled = false;
 }
 
+/* Point the picker at one agent and reload. The builder's "Show evidence"
+   uses this instead of putting ?agent= in the URL, because the panel is in
+   this document: rewriting the address bar to select a dropdown is a
+   worse answer than passing the id across. */
+function selectAgent(agentId) {
+  const select = $("agent_select");
+  if (!agentId || !Array.from(select.options).some((o) => o.value === agentId)) {
+    return false;
+  }
+  select.value = agentId;
+  $("run_btn").disabled = false;
+  return true;
+}
+
 async function loadResults() {
   try {
     renderReport(await api("/api/test/results"));
@@ -342,6 +481,49 @@ async function loadResults() {
     }
     renderReport(null);
     setStatus("Cannot read the evidence log: " + error.message, "error");
+  }
+}
+
+// ============================================================
+// FILE TREE
+// ============================================================
+
+/* Only the test environment, because only the test environment is what
+   this page has verdicts about. Home omits the same root for the same
+   reason, and the editor keeps both. */
+const TEST_ROOT = "test_environment";
+
+/* The dashboard never edits a file, so a click opens one in the editor.
+   The window is named so a second click lands in the same tab instead of
+   stacking popups, and sized and centred here rather than left to the
+   default 1x1 corner placement. */
+const EDITOR_WINDOW = "header_test_file";
+
+const EDITOR_FEATURES = [
+  "popup=yes",
+  "width=1100",
+  "height=780",
+  "left=" + Math.round((screen.availWidth - 1100) / 2),
+  "top=" + Math.round((screen.availHeight - 780) / 2),
+].join(",");
+
+Tree.onFileSelect = (path) => {
+  window.open(
+    "/editor?path=" + encodeURIComponent(path)
+      + "&root=" + encodeURIComponent(TEST_ROOT),
+    EDITOR_WINDOW,
+    EDITOR_FEATURES
+  );
+};
+
+async function loadTree() {
+  try {
+    await Tree.load([TEST_ROOT]);
+  } catch (error) {
+    /* A blank sidebar reads as an empty test environment, which is a
+       different and wrong answer, so say so in place. */
+    const host = document.getElementById("tree");
+    host.textContent = "Cannot list " + TEST_ROOT + ": " + error.message;
   }
 }
 
@@ -402,10 +584,168 @@ async function refresh() {
   } catch (error) {
     setStatus("Cannot reach the Project Manager: " + error.message, "error");
   }
+  /* After the refresh button rather than inside refresh(): a run writes
+     test_results.json into the tree, so this is how a just-finished run
+     becomes visible without a reload. The tree reports its own failure
+     in its own pane and must not take the evidence pane down with it. */
+  await loadTree();
 }
+
+// ============================================================
+// CLEAR
+// ============================================================
+
+/* Deliberately destructive to nothing. Emptying the page is a way of
+   re-reading the report, not of disposing of it: the run is still on
+   disk, and Refresh brings it straight back. Deleting the results file
+   would make this button the only place evidence could be lost by
+   accident, which is a poor trade for a control that sits next to the
+   verdict. */
+function clearReport() {
+  renderReport(null);
+
+  fillSelect($("agent_select"), [], null, "choose an agent");
+  $("agent_select").disabled = true;
+  $("run_btn").disabled = true;
+  fillSelect($("model_select"), [], null, "(the agent's own model)");
+  $("model_select").disabled = false;
+
+  /* Drop ?agent= too, or the next Refresh silently re-selects the agent
+     that was just cleared. */
+  history.replaceState(null, "", location.pathname);
+
+  setStatus(
+    "Cleared. Nothing was deleted - press Refresh to read the last run again.",
+    ""
+  );
+}
+
+// ============================================================
+// SAVE
+// ============================================================
+
+/* Where a saved report lands, under the test root so it shows up in the
+   tree on the left and opens from there like any other file. */
+const REPORT_DIR = "test_environment/output";
+
+/* One press, two destinations, one text. Both copies come from the same
+   string, so the file in the project and the file the browser writes
+   cannot differ - which a server-side export re-derived from the JSON
+   could not promise. */
+async function saveReport() {
+  if (!currentReport) return;
+
+  const text = buildReportText(currentReport);
+  const file = reportFileName(currentReport.summary || {});
+  const path = REPORT_DIR + "/" + file;
+
+  $("save_btn").disabled = true;
+
+  /* The project copy first, in its own try: a refused write must not
+     stop the user getting the report at all. */
+  let wrote = false;
+  let problem = "";
+  try {
+    await api("/api/file/write?path=" + encodeURIComponent(path), {
+      method: "PUT",
+      headers: { "Content-Type": "text/plain" },
+      body: text,
+    });
+    wrote = true;
+  } catch (error) {
+    problem = "\nNot saved to the project: " + error.message;
+  }
+
+  /* Then the browser's own Save As. Appended before the click because a
+     detached anchor's activation is inconsistent between browsers, and
+     revoked immediately after so the blob does not outlive it. */
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+
+  /* The new file is in the tree now, so the left pane is showing a stale
+     listing until this runs. */
+  if (wrote) await loadTree();
+
+  setReportButtonsEnabled(Boolean(currentReport));
+
+  setStatus(
+    (wrote ? "Saved " + path + "." : "Could not save into the project.")
+    + "\nYour browser was offered " + file + " as well." + problem,
+    wrote ? "ok" : "warn"
+  );
+}
+
+// ============================================================
+// PANELS
+// ============================================================
+
+const panels = Panels.init({
+  container: $("workspace"),
+  left: {
+    element: $("sidebar"),
+    panel: { min: 180, max: 520, default: 260 },
+  },
+  centre: { element: $("centrePanel") },
+  right: {
+    element: $("builderPanel"),
+    panel: { min: 300, max: 720, default: 420 },
+  },
+  handleLeft: $("handleLeft"),
+  handleRight: $("handleRight"),
+  toggles: {
+    left: $("toggle_left"),
+    centre: $("toggle_centre"),
+    right: $("toggle_right"),
+  },
+  storageKey: "testDashboard",
+});
+
+/* Bring the verdict into view from wherever the user is. Used by the
+   builder panel's "Show evidence", which may well be pressed while the
+   centre is collapsed - restoring it is part of showing it. */
+async function showEvidence(agentId) {
+  const restored = panels.show("centre");
+  const picked = selectAgent(agentId);
+  await refresh();
+  $("lastRunCard").scrollIntoView({ block: "start", behavior: "smooth" });
+  if (!picked && agentId) {
+    setStatus(
+      "Published '" + agentId + "', but it is not in the picker - refresh, "
+      + "or check that agent.json and agent.md are both there.",
+      "warn"
+    );
+  } else if (restored) {
+    setStatus("Restored the results panel.", "ok");
+  }
+}
+
+// ============================================================
+// WIRING
+// ============================================================
 
 $("run_btn").addEventListener("click", runTests);
 $("refresh_btn").addEventListener("click", refresh);
+$("clear_btn").addEventListener("click", clearReport);
+$("save_btn").addEventListener("click", saveReport);
+
+/* Two-way with the builder panel. Both are assigned before the panel is
+   mounted below, so a publish that lands during mount already has a
+   listener. */
+Builder.onPublished = async (agentId) => {
+  if (selectAgent(agentId)) {
+    setStatus("Published '" + agentId + "'. Press Run tests.", "ok");
+  }
+  await loadTree();
+};
+Builder.onShowEvidence = showEvidence;
+
+Builder.mount($("builderHost"));
 
 /* The agents and the models are independent of the evidence, so a
    failure in one does not blank the other two. */
@@ -416,6 +756,8 @@ $("refresh_btn").addEventListener("click", refresh);
     /* The model list is a convenience; the suite resolves a model on
        its own, so this is not worth an error banner. */
   }
+  /* refresh() loads the tree too, and the first call is how the tree
+     gets loaded at all -- no separate tree load here. */
   await refresh();
 })();
 </script>

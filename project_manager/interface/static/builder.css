@@ -1,0 +1,181 @@
+/* ============================================================
+   Agent Prompt Builder - panel styles
+   ============================================================
+
+   Shared by two hosts: /prompt-builder (standalone) and /test (the
+   right-hand panel). Loaded by both rather than inlined, because the
+   builder is no longer one page.
+
+   Every rule is scoped under .pb, and the three rules that cannot be
+   scoped are gone rather than prefixed:
+
+     body  - the host owns it. In /test it is a flex column pinned to
+             the viewport; a nested body cannot be reached from here at
+             all, and in the standalone shell it is already correct.
+     header / h1 / header p - page furniture, not builder furniture.
+             Both hosts carry their own.
+     main - the builder's own layout is .pb-cards below. A prefixing
+             `main` selector would either miss the panel (the panel is
+             an aside in /test) or hit the host's main and give it the
+             builder's 1fr 1fr columns.
+
+   Anything added here without the .pb prefix silently becomes a global
+   rule and will hit whichever page embeds this. scripts/check_builder_css.py
+   asserts that. */
+
+.pb-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Caps and centres the cards on the standalone page, where there is
+       no panel to bound them. Inside the /test panel it never binds:
+       the panel's own max is narrower than this. */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pb .card { background: #151a20; border: 1px solid #303741; border-radius: 8px; padding: 16px; }
+
+/* The 2-column grid the standalone page used is dropped rather than
+   narrowed: at panel width every card would be an unreadable column. */
+.pb h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    color: #dfe6ee;
+    border-bottom: 1px solid #303741;
+    padding-bottom: 8px;
+}
+
+.pb label {
+    display: block;
+    margin: 10px 0 6px;
+    font-size: 13px;
+    color: #aeb9c5;
+}
+
+.pb .microlabel {
+    display: block;
+    margin: 14px 0 5px;
+    font-size: 12px;
+    color: #8fa0b3;
+    letter-spacing: .04em;
+}
+
+.pb .catrow { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.pb .catrow select, .pb .catrow input { flex: 1; min-width: 0; }
+.pb .catrow button { flex-shrink: 0; }
+.pb .catrow[hidden] { display: none; }
+
+.pb input, .pb textarea, .pb select {
+    width: 100%;
+    background: #0d1116;
+    color: #edf2f7;
+    border: 1px solid #39424d;
+    border-radius: 6px;
+    padding: 9px;
+    font-family: inherit;
+}
+
+.pb textarea { min-height: 110px; resize: vertical; }
+.pb #master_prompt { min-height: 320px; font-family: Consolas, Menlo, monospace; font-size: 13px; }
+
+.pb button {
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    cursor: pointer;
+    background: #4c8bf5;
+    color: white;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.pb button.secondary { background: #303944; }
+.pb button.danger { background: #7a2f3c; }
+.pb button.tiny { padding: 3px 9px; font-size: 12px; }
+.pb button:disabled { opacity: .45; cursor: not-allowed; }
+.pb button:hover:not(:disabled) { opacity: .92; }
+
+.pb .row { display: flex; gap: 8px; margin-top: 14px; }
+.pb .row button { flex: 1; }
+
+.pb .parts-group { margin-bottom: 14px; }
+.pb .parts-group h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #8fa0b3;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pb .parts-group h3 .count { color: #5c6774; text-transform: none; letter-spacing: 0; }
+
+.pb .part-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 14px; }
+.pb .part-row input[type=checkbox] { width: auto; }
+.pb .part-row .name {
+    margin: 0;
+    flex: 1;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pb .part-row .actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.pb .empty { color: #5c6774; font-size: 13px; font-style: italic; }
+.pb .empty code {
+    font-style: normal;
+    background: #0d1116;
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid #39424d;
+}
+
+/* The dashboard's own .status rules carry line-height and the [hidden]
+   guard; repeated here so the two pages cannot drift apart. */
+.pb .status {
+    margin-top: 14px;
+    padding: 10px;
+    border-radius: 6px;
+    background: #1a2129;
+    color: #aeb9c5;
+    font-size: 13px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+.pb .status[hidden] { display: none; }
+.pb .status.error { color: #ff9b9b; }
+.pb .status.ok { color: #8fe3a6; }
+.pb .status.warn { color: #f5c96b; }
+
+.pb .folderbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #aeb9c5;
+}
+.pb .folderbar code {
+    background: #0d1116;
+    padding: 3px 7px;
+    border-radius: 5px;
+    border: 1px solid #39424d;
+}
+.pb .folderbar button { margin-left: auto; }
+
+.pb .headrow { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.pb .headrow h2 { margin: 0; flex: 1; }
+
+.pb .parts-group h3 .lockbadge {
+    background: #4a2530;
+    color: #ff9b9b;
+    border: 1px solid #6b3341;
+    padding: 1px 7px;
+    border-radius: 9px;
+    font-size: 11px;
+    letter-spacing: .02em;
+    cursor: help;
+}
