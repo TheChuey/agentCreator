@@ -50,9 +50,13 @@ const API = {
     return { ...body, scope };
   },
 
-  project(scope = null) {
+  /* ``roots`` is a list of browser-root names the caller wants shown.
+     Omitted (the default) means all of them, so every existing caller
+     keeps the full tree. */
+  project(scope = null, roots = null) {
     const params = new URLSearchParams();
     if (scope) params.set('scope', scope);
+    if (roots && roots.length) params.set('roots', roots.join(','));
     const query = params.toString();
     return this.request('GET', '/api/project' + (query ? `?${query}` : ''));
   },

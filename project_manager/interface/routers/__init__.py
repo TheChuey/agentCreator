@@ -56,3 +56,47 @@ def normalize_scope(scope: str | None) -> str | None:
         )
 
     return scope
+
+
+def normalize_roots(
+    roots: str | None,
+) -> list[str] | None:
+    """
+    Validate and normalize the ``roots`` query parameter.
+
+    A comma-separated list of browser-root names. Empty entries are
+    dropped and order is preserved; None means "no filter", which is
+    the whole browser tree.
+
+    Raises:
+        HTTPException (422):
+            If a name is not a configured browser root. An unknown
+            root is refused rather than dropped, because a typo
+            that returned a smaller tree would read as a page that
+            legitimately has less in it.
+    """
+
+    if roots is None:
+
+        return None
+
+    names = [
+        name.strip()
+        for name in roots.split(",")
+        if name.strip()
+    ]
+
+    if not names:
+
+        return None
+
+    for name in names:
+
+        if name not in filesystem.BROWSE_ROOTS:
+
+            raise HTTPException(
+                status_code=422,
+                detail=f"Unknown browser root: {name}",
+            )
+
+    return names

@@ -7,6 +7,12 @@ const Tree = {
   activeRoot: null,
   selectedPath: null,
   expanded: new Set(),
+  /* Which browser roots this page is shown. null = the server's
+     default, every root. Held here rather than passed to render()
+     because refresh() has to reproduce the same view: a tree that
+     widened itself on refresh would quietly show a page folders it
+     was never given. */
+  allowedRoots: null,
   onFileSelect: null,
   onFolderSelect: null,
   onRootSelect: null,
@@ -37,8 +43,9 @@ const Tree = {
     return null;
   },
 
-  async load() {
-    const data = await API.project();
+  async load(roots = null) {
+    this.allowedRoots = roots;
+    const data = await API.project(null, this.allowedRoots);
     this.root = data.filesystem || [];
     this.roots = {};
     for (const node of this.root) {
@@ -179,7 +186,7 @@ const Tree = {
   },
 
   refresh() {
-    return this.load();
+    return this.load(this.allowedRoots);
   },
 
   getFileIcon(name) {

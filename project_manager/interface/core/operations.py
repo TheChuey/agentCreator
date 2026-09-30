@@ -136,6 +136,7 @@ class EditorInterface:
     def tree(
         self,
         scope: str | None = None,
+        roots: list[str] | None = None,
     ) -> dict[str, Any]:
         """
         Project state: project info, active root and filesystem tree.
@@ -146,11 +147,31 @@ class EditorInterface:
                 level is the configured ``BROWSE_ROOTS`` folders.
                 ``"workspace"`` or ``"app"`` return the legacy
                 single-root tree for that scope.
+            roots:
+                Browser roots to include, or None for all of them.
+                Ignored when ``scope`` is set: the legacy view is
+                already a single root, so there is nothing to
+                choose between. This filters the listing only --
+                the returned roots stay resolvable everywhere.
         """
 
         try:
 
             if not scope:
+
+                browse_roots = (
+                    self.filesystem.BROWSE_ROOTS
+                )
+
+                if roots is not None:
+
+                    wanted = set(roots)
+
+                    browse_roots = {
+                        name: config
+                        for name, config in browse_roots.items()
+                        if name in wanted
+                    }
 
                 return {
                     "scope": None,
@@ -166,12 +187,16 @@ class EditorInterface:
                             ),
                         }
                         for name, config
-                        in self.filesystem.BROWSE_ROOTS.items()
+                        in browse_roots.items()
                     ],
                     "root": str(
                         self.filesystem.PROJECT_ROOT
                     ),
-                    "filesystem": self.filesystem.read_browse_filesystem(),
+                    "filesystem": (
+                        self.filesystem.read_browse_filesystem(
+                            roots=roots
+                        )
+                    ),
                 }
 
             root = _root_for(scope)

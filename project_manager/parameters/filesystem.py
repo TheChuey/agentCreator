@@ -405,7 +405,9 @@ def require_writable(
     return root_name
 
 
-def read_browse_filesystem() -> list[dict[str, Any]]:
+def read_browse_filesystem(
+    roots: list[str] | None = None,
+) -> list[dict[str, Any]]:
     """
     Build the browser tree.
 
@@ -414,11 +416,29 @@ def read_browse_filesystem() -> list[dict[str, Any]]:
     is prefixed with its root name.
 
     Roots that do not exist on disk are skipped.
+
+    Args:
+        roots:
+            Names to include, or None for all of them. This narrows
+            what a page is *shown*, nothing more: the omitted roots
+            stay in ``BROWSE_ROOTS``, so their paths still resolve
+            for read, write and delete. A page that lists one root
+            can therefore hand a file from another root to a page
+            that does list it.
+
+    Returns:
+        JSON-friendly tree, in ``BROWSE_ROOTS`` declaration order.
     """
+
+    wanted = None if roots is None else set(roots)
 
     results: list[dict[str, Any]] = []
 
     for root_name, config in BROWSE_ROOTS.items():
+
+        if wanted is not None and root_name not in wanted:
+
+            continue
 
         root_path: Path = config["path"]
 

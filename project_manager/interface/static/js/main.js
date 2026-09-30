@@ -17,6 +17,16 @@ let currentIsReadOnly = false;
    carries a #editor host, so every editor call is guarded. */
 const hasEditor = () => Editor.hasHost();
 
+/* The test environment is browsed from /test, so home does not list
+   it. The editor does: a published test agent's agent.md is edited
+   there, and /test hands its files over to the editor rather than
+   editing them itself, so a tree that omitted the root would open
+   the file somewhere it cannot be seen or saved.
+
+   Adding a root to BROWSE_ROOTS therefore makes it appear on the
+   editor and on /test but not on home, until this list catches up. */
+const HOME_ROOTS = ['workspace', 'source_files'];
+
 /* Paths are browser-root-qualified (workspace/..., source_files/...),
    so no scope needs to be tracked or sent. The active folder is the
    root folder selected in the tree. */
@@ -346,7 +356,7 @@ function init() {
       });
 
       setStatus('Ready');
-      await Tree.load();
+      await Tree.load(hasEditor() ? null : HOME_ROOTS);
 
       /* Home page: agent cards replace the editor. */
       if (document.getElementById('agentCards')) {
