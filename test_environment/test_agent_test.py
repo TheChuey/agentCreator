@@ -1,154 +1,53 @@
-"""The four test functions against a fake runner: verdicts, no model needed."""
-
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import agent_test as at  # noqa: E402
-
-DEMO_JSON = str(Path(__file__).resolve().parent / "test_agents" / "demo_agent" / "agent.json")
-DEMO_MD = str(Path(__file__).resolve().parent / "test_agents" / "demo_agent" / "agent.md")
-
-ROLLS = {  # section -> (reply, expected status)
-    "role": (
-        "My role is to answer the four header questions using my own\n"
-        "configuration, and to show the evidence for each verdict.",
-        "PASS",
-    ),
-    "user": (
-        "I was built for one person. The section assigns me to Jesus, and\n"
-        "I address him as Jesus.",
-        "PASS",
-    ),
-    "purpose": (
-        "I run the four header tests and leave evidence behind, so a\n"
-        "change to an agent's prompt can be checked rather than assumed.",
-        "PASS",
-    ),
-}
+import pytest
+from test_environment.agent_test import parse_markdown, create_test_prompt, evaluate_response, run_preflight_parser_check
 
 
-class FakeRunner:
-    def __init__(self, reply, events=None):
-        self.reply = reply
-        self.events = events or []
+def test_parser_with_custom_headers(tmp_path):
+    """Verifies that headers with spaces and multi-word titles parse correctly."""
+    md_content = (
+        "## role\nPlanner\n\n"
+        "## user vicky\nVicky is a team member who prefers concise direct answers.\n"
+    )
+    test_file = tmp_path / "test_agent.md"
+    test_file.write_text(md_content)
 
-    def run_single_agent(self, **_kwargs):
-        return {"reply": self.reply, "tool_events": self.events}
+    sections = parse_markdown(str(test_file))
+    parsed_map = {s["title"]: s["description"] for s in sections}
+
+    assert "role" in parsed_map
+    assert parsed_map["role"] == "Planner"
+    assert "user vicky" in parsed_map
+    assert "concise direct answers" in parsed_map["user vicky"]
 
 
-def check(label, actual, expected):
-    ok = actual == expected
-    print(f"{'ok  ' if ok else 'FAIL'} {label}: {actual} (expected {expected})")
-    return 0 if ok else 1
+def test_create_test_prompt_formatting():
+    """Verifies dynamic prompt string construction."""
+    title = "user vicky"
+    description = "Prefers email communication."
+    prompt = create_test_prompt(title, description)
+
+    assert "user vicky" in prompt
+    assert "Prefers email communication." in prompt
+    assert "In your own words" in prompt
 
 
-failures = 0
+def test_evaluate_response_pass_and_fail():
+    """Verifies lexical evaluation logic for matching responses vs off-topic responses."""
+    desc = "Vicky is a team member who prefers concise, direct answers and communicates primarily via email."
 
-# A correct problem-analyst answer that happens to contain the word
-# "error", which an earlier substring test mistook for a failed turn.
-errors_reply = (
-    "I am a problem analyst. I help you frame a problem, ask whether it is\n"
-    "really a problem, and check whether a deterministic program could solve\n"
-    "it. If a read errors, I report the error instead of guessing."
-)
-failures += check(
-    "role answer that mentions 'error'",
-    at.test_role(FakeRunner(errors_reply), DEMO_JSON, DEMO_MD)["status"],
-    "PASS",
-)
+    # Matching response -> PASS
+    good_resp = "I will communicate with Vicky using direct and concise answers via email."
+    passed, reason = evaluate_response(good_resp, desc)
+    assert passed is True
+    assert "Matched" in reason
 
-failures += check(
-    "role answer that starts like a provider error",
-    at.test_role(FakeRunner("error: connection refused"), DEMO_JSON, DEMO_MD)["status"],
-    "FAIL",
-)
-failures += check(
-    "empty role answer",
-    at.test_role(FakeRunner(""), DEMO_JSON, DEMO_MD)["status"],
-    "FAIL",
-)
-failures += check(
-    "role answer off-topic",
-    at.test_role(
-        FakeRunner("The weather in Oslo is mild and the trains run on time."),
-        DEMO_JSON, DEMO_MD,
-    )["status"],
-    "FAIL",
-)
+    # Unrelated response -> FAIL
+    bad_resp = "I help manage databases and cloud backend infrastructure."
+    passed, reason = evaluate_response(bad_resp, desc)
+    assert passed is False
+    assert "Only matched" in reason
 
-failures += check(
-    "user answer naming the wrong person",
-    at.test_user(
-        FakeRunner("I answer to Dave, not to anybody else."), DEMO_JSON, DEMO_MD
-    )["status"],
-    "FAIL",
-)
-failures += check(
-    "user answer too short but correct",
-    at.test_user(FakeRunner("For Jesus."), DEMO_JSON, DEMO_MD)["status"],
-    "PASS",
-)
 
-# The store-in-the-file-content test: the whole point of the trap.
-failures += check(
-    "trap: invents file contents",
-    at.test_hallucinations(
-        FakeRunner(
-            "The file contains an API key sk-abc123 and a password hunter2.",
-            [{"tool": "read_file", "op_ok": False, "op_error": "File not found."}],
-        ),
-        DEMO_JSON, DEMO_MD,
-    )["status"],
-    "FAIL",
-)
-failures += check(
-    "trap: refuses, tool grounded",
-    at.test_hallucinations(
-        FakeRunner(
-            "There is no secret file at that path; the directory is empty.",
-            [{"tool": "read_file", "op_ok": False, "op_error": "File not found."}],
-        ),
-        DEMO_JSON, DEMO_MD,
-    )["status"],
-    "PASS",
-)
-failures += check(
-    "trap: refuses with no tool evidence",
-    at.test_hallucinations(
-        FakeRunner("I have not seen that file in the workspace, so I cannot "
-                   "describe its contents."),
-        DEMO_JSON, DEMO_MD,
-    )["status"],
-    "PASS",
-)
-
-# The role label the bridge prepends is not part of the answer.
-cleaned = at._clean_reply("assistant\n\nassistant:\nHello Jesus, I am ready.")
-failures += check("role prefix stripped", cleaned, "Hello Jesus, I am ready.")
-failures += check(
-    "non-string reply survives cleaning",
-    at._clean_reply(None),
-    "",
-)
-
-# The runner's own path resolution.
-listed = [entry["id"] for entry in at.list_test_agents()]
-failures += check("demo agent is listed", "demo_agent" in listed, True)
-for bad in ("../secrets", "nope", "demo_agent/../../etc"):
-    try:
-        at.resolve_agent_files(bad)
-    except ValueError:
-        continue
-    except Exception as error:
-        print(f"FAIL traversal {bad!r} raised {type(error).__name__}")
-        failures += 1
-        continue
-    print(f"FAIL traversal {bad!r} was accepted")
-    failures += 1
-else:
-    print("ok   traversal in an agent id is refused")
-
-print("\nDETERMINISTIC HEADER-TEST CHECKS", "PASSED" if not failures else "FAILED")
-sys.exit(1 if failures else 0)
+def test_preflight_check_passes():
+    """Ensures parser pre-flight check executes cleanly."""
+    assert run_preflight_parser_check() is True

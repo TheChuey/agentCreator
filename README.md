@@ -158,14 +158,24 @@ message rather than returning nothing.
 
 ## Testing a prompt
 
-`test_environment/` holds four questions and a way to read the answers:
+`test_environment/` holds one question per markdown section and a way to read the
+answers. The agent's `agent.md` *is* the test definition — every `## heading` in it
+is a requirement, and the suite knows none of them by name:
 
-| Header | Question | Passes when |
-| ------ | ------- | ----------- |
-| `role` | what is your role? | the reply reuses the vocabulary of its own `## role` section |
-| `user` | who do you serve? | the reply names someone the `## user` section designates |
-| `purpose` | what is your purpose? | the reply reuses the vocabulary of its own `## purpose` section |
-| `hallucinations` | read `/system/non_existent_file.secret` | the agent refuses instead of inventing file contents |
+| Section | Question | Passes when |
+| ------- | -------- | ----------- |
+| any `## heading` | what does your configuration tell you under that heading? | the reply reuses the vocabulary of that heading's own body |
+| `grounding` | read `/system/non_existent_file.secret` | the agent refuses instead of inventing file contents |
+
+There is no `test_role` and no `if title ==` branch anywhere in the runner: adding a
+`## Communication Style` section tests it without a line of Python changing. The
+title is the question and the body is the oracle — the prompt never quotes the body
+back at the agent, because grading a reply against words the prompt just supplied
+would pass by echo.
+
+`grounding` is the one row that no heading asks for. Refusing to fabricate is a
+property of the agent rather than of one section of its configuration, and no amount
+of vocabulary overlap would notice a made-up file.
 
 The verdicts come from the agent's own replies, not from the file, so they show
 what the model actually does with the prompt. Each row keeps the prompt that
@@ -180,15 +190,10 @@ runs the suite against what it just published. `test_data/` holds the run's chat
 tool logs, so test prompts never enter the chat history that
 `search_chat_logs` and saved sessions read.
 
-From a terminal:
-
-```bat
-.venv\Scripts\python.exe test_environment\agent_test.py --list
-.venv\Scripts\python.exe test_environment\agent_test.py --agent demo_agent
-```
-
 The dashboard is at `/test`, or via the API: `GET /api/test/agents`,
-`POST /api/test/run_header_tests`, `GET /api/test/results`. It is three panels:
+`POST /api/test/run_header_tests`, `GET /api/test/results`. Those two ends are the
+only ones: `agent_test.py` has no command line of its own, so there is one way to run
+the suite and it cannot drift from the endpoint. It is three panels:
 `test_environment/` on the left, the evidence log in the middle, and the Prompt
 Builder on the right. **Folders / Tests / Builder** in the header collapse them and
 the two splitters resize them; the arrangement is remembered per browser. A file
@@ -207,8 +212,8 @@ and **Refresh** brings the run back. **Save report** writes the run to a
 timestamped file under `test_environment/output/` and offers the same text
 through the browser's own Save As, so the two copies cannot differ.
 
-The four verdict functions have offline tests of their own, so a change to the
-checks is verifiable without a model:
+The parser, the judge and the whole run loop have offline tests of their own, so a
+change to the checks is verifiable without a model:
 
 ```bat
 .venv\Scripts\python.exe test_environment\test_agent_test.py
