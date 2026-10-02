@@ -2,7 +2,7 @@
 import API from './api.js';
 import Session from './session.js';
 import { assignAgentColors } from './agentColors.js';
-import { initTopbar } from './topbar.js';
+import { initTopbar, openPopup } from './topbar.js';
 
 const log = document.getElementById('chatLog');
 const form = document.getElementById('chatForm');
@@ -72,21 +72,41 @@ function copyText(text, message) {
   }
 }
 
+/* A call that executed but whose operation failed shows as a failure, not
+   as its transport status: the engine records status "success" for every
+   call it managed to run, and op_ok for whether the operation worked. */
+function toolVerdict(t) {
+  if (t.op_ok === false) return 'FAILED';
+  if (t.status === 'error') return 'ERROR';
+  if (t.status === 'missing') return 'MISSING';
+  return 'ok';
+}
+
+function toolDetail(t) {
+  const verdict = toolVerdict(t);
+  const parts = [`› ${t.tool} [${verdict}]`];
+  const args = t.args ? JSON.stringify(t.args) : '';
+  if (args) parts.push(args.slice(0, 400));
+  const why = t.op_error || t.error;
+  if (why) parts.push(`\n   ${why}`);
+  return parts.join(' ');
+}
+
 function appendTools(tools) {
   if (!tools || !tools.length) return;
   const detail = document.createElement('details');
   detail.className = 'msg event';
   const summary = document.createElement('summary');
   summary.className = 'msg-label';
-  summary.textContent = 'Tools used: ' + tools.map(t => t.tool || '').filter(Boolean).join(', ');
+  const failed = tools.filter(t => toolVerdict(t) !== 'ok').length;
+  const names = tools.map(t => t.tool || '').filter(Boolean).join(', ');
+  summary.textContent = failed
+    ? `Tools used: ${names} (${failed} failed)`
+    : `Tools used: ${names}`;
   detail.appendChild(summary);
   const body = document.createElement('div');
   body.className = 'msg-body';
-  body.textContent = tools.map(t => {
-    const args = t.args ? JSON.stringify(t.args).slice(0, 400) : '';
-    const ok = t.op_ok ? 'ok' : (t.status || '?');
-    return `› ${t.tool} (${ok}) ${args}`;
-  }).join('\n');
+  body.textContent = tools.map(toolDetail).join('\n');
   detail.appendChild(body);
   log.appendChild(detail);
   log.scrollTop = log.scrollHeight;
@@ -252,6 +272,16 @@ Session.onEvent = (msg) => {
     const path = ev.path || '';
     appendLine('event', what + (path ? ': ' + path : ''));
   }
+};
+
+/* Open the per-agent diagnostics window for the tool log. A named target
+   means a second click reuses the window instead of stacking copies. The
+   active agent rides in the query string so the page can filter the engine
+   tool log to that agent alone. */
+window.openDiagnostic = () => {
+  const id = activeAgentId();
+  const url = '/diagnostic' + (id ? `?agent=${encodeURIComponent(id)}` : '');
+  openPopup(url, { name: 'PMDiagnostic', width: 1100, height: 820 });
 };
 
 /* The agent must be resolved before history loads, otherwise the

@@ -1,1 +1,0 @@
-The Agent will help me define my problem. Questions to answer: Is this problematic? Can deterministic resources like computer programs solve the problem? How many other problems can come out of this one problem?.

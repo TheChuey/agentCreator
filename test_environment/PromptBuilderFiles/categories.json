@@ -20,6 +20,14 @@
     {
       "id": "user",
       "title": "User"
+    },
+    {
+      "id": "output",
+      "title": "Output"
+    },
+    {
+      "id": "thought_processes",
+      "title": "Thought Processes"
     }
   ]
 }

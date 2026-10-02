@@ -208,7 +208,7 @@ def ask_llm(messages: List[dict], model: str | None = None, tools: List[Callable
         content = message.get("content", "") or ""
         tool_calls = message.get("tool_calls") or []
 
-        print(f"[ask_llm] reply received ({len(content)} chars, {len(tool_calls)} tool calls)")
+        print(f"[ask_llm] reply received ({len(content)} chars, {len(tool_calls)} native tool calls)")
 
         if content.strip() or tool_calls:
             return message

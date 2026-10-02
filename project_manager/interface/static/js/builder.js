@@ -3,10 +3,9 @@
    Agent Prompt Builder
    ============================================================
 
-   Moved out of Agentpromptbuilder.html so two hosts can run it: the
-   standalone /prompt-builder page, and the right-hand panel on /test.
-   The behaviour is the one the page always had - nothing below was
-   rewritten for the move. What changed is the seam:
+   Moved out of Agentpromptbuilder.html into a module so the page is a
+   shell around it. The behaviour is the one the page always had -
+   nothing below was rewritten for the move. What changed is the seam:
 
      - the four cards live here as MARKUP rather than in the page, so
        they are defined once instead of twice;
@@ -22,6 +21,7 @@
    supported. */
 
 import API from '/static/js/api.js';
+import { openPopup } from '/static/js/topbar.js';
 
 // ============================================================
 // MARKUP
@@ -94,7 +94,8 @@ const MARKUP = `
     <div class="row">
       <button id="save_agent_btn" type="button" disabled>Save draft</button>
       <button id="publish_btn" type="button" disabled>Publish for testing</button>
-      <button id="show_evidence_btn" class="secondary" type="button" disabled title="Select this agent on the dashboard and show its last run.">Show evidence</button>
+      <button id="test_btn" class="secondary" type="button" disabled title="Publish for testing first.">Test</button>
+      <button id="clear_master_btn" class="secondary" type="button" disabled title="Empty the Agent ID and Master Prompt fields above.">Clear Fields</button>
     </div>
 
     <div id="master_status" class="status">Ready.</div>
@@ -157,19 +158,19 @@ let workspaceRoot = "";        // absolute, from /api/health
 let projectRoot = "";          // the parent of workspaceRoot
 let ready = false;             // the parts folder answered at least once
 let assembled = null;          // selection signature of the last build
+let knownToolIds = [];         // tool IDs the engine can attach (GET /api/tools)
 
 /* Every button the panel and the form can reach, so their disabled
    state is always derived from one place. */
 const BUTTONS = ["save_part_btn","clear_form_btn","create_master_btn",
                   "save_agent_btn","publish_btn","refresh_parts_btn",
                   "new_part_btn","new_category_btn","create_category_btn",
-                  "delete_category_btn","show_evidence_btn"];
+                  "delete_category_btn","test_btn","clear_master_btn"];
 
 /* Buttons that additionally need something published in this session,
-   not just a live parts folder. "Show evidence" is the one that took
-   the old test_btn's gate: it only has a verdict to point at once
-   there is an agent for the dashboard to have tested. */
-const PUBLISH_GATED = new Set(["show_evidence_btn"]);
+   not just a live parts folder. "Test" opens the dashboard on the agent
+   that was just published, so it only means anything once there is one. */
+const PUBLISH_GATED = new Set(["test_btn"]);
 
 let busy = false;
 
@@ -246,6 +247,110 @@ function titleFor(id){
    adding a field the builder would then have to keep in sync. */
 function displayName(id){
   return id.replace(/[_-]+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// ============================================================
+// AGENT METADATA - agent.md is written, agent.json is derived from it
+// ============================================================
+
+/* Both save paths write both files, so agent.json can no longer sit as a
+   stub that only knows the id and name. Its structured fields come from
+   the markdown the user actually edited, instead of being typed twice:
+
+     tools       <- registry IDs written in backticks in the markdown
+     mode        <- "agent" when the markdown names a tool, else "chat"
+     description <- the first line of '## Role' (falling back to '## Purpose')
+     model       <- blank; ask_llm resolves it from config/models.json
+
+   The write is a full overwrite on purpose: the markdown is the single
+   source, so a stale key - or a hand-edit - cannot survive to disagree
+   with it. */
+
+function parseToolIds(markdown){
+  const found = [];
+  const seen = new Set();
+  const pattern = /`([A-Za-z_][A-Za-z0-9_]*)`/g;
+  let match;
+  while ((match = pattern.exec(markdown))){
+    const id = match[1];
+    if (knownToolIds.includes(id) && !seen.has(id)){
+      seen.add(id);
+      found.push(id);
+    }
+  }
+  return found;
+}
+
+/* Split '## heading' sections the same way the engine does
+   (engine/agents/loader.py::_parse_sections), so the builder and the
+   engine agree on what a section is. */
+function markdownSections(markdown){
+  const sections = {};
+  let current = null;
+  let buffer = [];
+  for (const line of markdown.split("\n")){
+    const heading = /^\s*##\s+(.+?)\s*$/.exec(line);
+    if (heading){
+      if (current !== null) sections[current] = buffer.join("\n");
+      current = heading[1].trim().toLowerCase();
+      buffer = [];
+    } else if (current !== null){
+      buffer.push(line);
+    }
+  }
+  if (current !== null) sections[current] = buffer.join("\n");
+  return sections;
+}
+
+function deriveDescription(markdown){
+  const sections = markdownSections(markdown);
+  for (const name of ["role", "purpose"]){
+    const body = sections[name];
+    if (!body) continue;
+    const line = body.split("\n").map(text => text.trim())
+      .find(text => text.length);
+    if (line) return line.replace(/[`*_>#]+/g, "").replace(/\s+/g, " ").trim();
+  }
+  return "";
+}
+
+function buildAgentMeta(id, markdown){
+  const tools = parseToolIds(markdown);
+  return {
+    id,
+    name: displayName(id),
+    description: deriveDescription(markdown),
+    mode: tools.length ? "agent" : "chat",
+    model: "",
+    tools
+  };
+}
+
+/* One line for the status box: what the derived agent.json actually says,
+   so a user sees the tools being picked up (or not) without opening it. */
+function describeMeta(meta){
+  const tools = meta.tools.length ? meta.tools.join(", ") : "none";
+  return "mode: " + meta.mode + " · tools: " + tools;
+}
+
+/* The tool IDs an agent.json may name. Learned once, like the workspace
+   root, so parseToolIds can tell a real tool from ordinary backticked text
+   elsewhere in the markdown. */
+function learnToolIds(){
+  if (typeof API.tools !== "function") return Promise.resolve();
+  return API.tools().then((data) => {
+    knownToolIds = (data && data.tools) || [];
+  });
+}
+
+/* One writer for both buttons: the markdown and the metadata derived from
+   it land together, so they cannot drift apart. PUT creates missing
+   parents and overwrites, so a re-save always takes effect. */
+async function writeAgentFiles(dir, id, markdown){
+  const meta = buildAgentMeta(id, markdown);
+  await API.fileWrite(dir + "/agent.md", markdown + "\n");
+  await API.fileWrite(dir + "/agent.json", JSON.stringify(meta, null, 2) + "\n");
+  return meta;
 }
 
 // ============================================================
@@ -694,6 +799,16 @@ function resetForm(){
   setStatus("part_status", "Ready.");
 }
 
+/* Empties the two Master Prompt inputs only. Clearing the Agent ID drops
+   the just-published identity, so the Test button re-gates until the next
+   publish - which is the honest state: an empty id has no agent to run. */
+function clearMasterFields(){
+  $("agent_id").value = "";
+  $("master_prompt").value = "";
+  setPublished(false);
+  setStatus("master_status", "Ready.");
+}
+
 function editPart(category, entry){
   setBusy(true);
   readPart(entry.path)
@@ -997,9 +1112,11 @@ async function saveToDocumentation(){
   try {
     const id = safeSlug($("agent_id").value);
     const markdown = requireMarkdown();
-    const path = DOC_OUTPUT_DIR + "/" + id + "/agent.md";
-    await API.fileWrite(path, markdown + "\n");
-    setStatus("master_status", "Saved: " + relativePath(path), "ok");
+    const dir = DOC_OUTPUT_DIR + "/" + id;
+    const meta = await writeAgentFiles(dir, id, markdown);
+    setStatus("master_status",
+      "Saved: " + relativePath(dir) + "/agent.md + agent.json"
+      + ".\n" + describeMeta(meta), "ok");
   } catch (error) {
     setStatus("master_status", prettyError(error), "error");
   } finally {
@@ -1009,9 +1126,9 @@ async function saveToDocumentation(){
 
 /* "Publish for testing" makes the prompt a real agent inside the isolated
    test environment: the engine only lists folders that hold BOTH agent.json
-   and agent.md (engine/agents/registry.py), so the metadata file is created
-   here. An existing agent.json is left alone so hand-edited settings - and
-   any tests stored in it - are never overwritten.
+   and agent.md (engine/agents/registry.py), so both are written here.
+   agent.json is rebuilt from the markdown on every publish, so editing the
+   master prompt and publishing again is what keeps the two in step.
 
    Nothing is written to workspace/agents/. A published agent is a test
    fixture: it is not registered as an agent root, so it never appears in
@@ -1026,29 +1143,12 @@ async function publishForTesting(){
     const markdown = requireMarkdown();
     const dir = AGENTS_DIR + "/" + id;
 
-    await API.fileWrite(dir + "/agent.md", markdown + "\n");
-
-    let metaCreated = false;
-    try {
-      await API.fileRead(dir + "/agent.json");
-    } catch {
-      const meta = {
-        id,
-        name: displayName(id),
-        description: "",
-        mode: "chat",
-        model: "",
-        tools: []
-      };
-      await API.fileCreate(dir + "/agent.json", JSON.stringify(meta, null, 2) + "\n");
-      metaCreated = true;
-    }
+    const meta = await writeAgentFiles(dir, id, markdown);
 
     setPublished(true);
     setStatus("master_status",
-      "Published to the test environment: " + dir + "/agent.md"
-      + (metaCreated ? " + agent.json (new)" : " (agent.json kept)")
-      + ".\nRun it from the dashboard.", "ok");
+      "Published to the test environment: " + dir + "/agent.md + agent.json"
+      + ".\n" + describeMeta(meta) + "\nRun it from the dashboard.", "ok");
 
     /* The host decides what publishing means for it: on /test this
        re-reads the agent list so the new agent is pickable. Hosts
@@ -1062,21 +1162,31 @@ async function publishForTesting(){
   }
 }
 
-/* "Show evidence" is only live for something that has actually been
-   published in this session. Reloading the page forgets it, which is
-   the honest state: a hand-edited agent.json may no longer match the
-   markdown above, and the dashboard is where you find out.
+/* "Test" is only live for something that has actually been published in
+   this session. Reloading the page forgets it, which is the honest state:
+   a hand-edited agent.json may no longer match the markdown above, and the
+   dashboard is where you find out.
 
-   It hands the host the agent id rather than opening anything itself.
-   The builder used to open the dashboard in a window from here; it now
-   lives beside it, so one place runs the tests and one place shows the
-   verdict, and the two cannot disagree. */
+   Clicking it opens /test on this agent and starts the run. A host that
+   wants a different meaning can set Builder.onTest; the standalone page
+   does not, so it gets the default open-and-run. */
 function setPublished(isPublished){
-  publishedAgentId = isPublished ? publishedAgentId : safeSlug($("agent_id").value) || null;
-  $("show_evidence_btn").title = publishedAgentId
-    ? "Show the last run for " + publishedAgentId + " on the dashboard."
+  publishedAgentId = isPublished ? safeSlug($("agent_id").value) || null : null;
+  $("test_btn").title = publishedAgentId
+    ? "Open the dashboard and run the header tests on " + publishedAgentId + "."
     : "Publish for testing first.";
   syncButtons();
+}
+
+/* The dashboard is a page of its own, so "Test" opens it in a named
+   window with the agent and the run flag in the query. The name means a
+   second click reuses the window instead of stacking duplicates. */
+const TEST_WINDOW = "PMTest";
+
+function openTestDashboard(agentId){
+  if (!agentId) return;
+  const url = "/test?agent=" + encodeURIComponent(agentId) + "&run=1";
+  openPopup(url, { name: TEST_WINDOW, width: 1200, height: 850 });
 }
 
 
@@ -1117,15 +1227,14 @@ async function reloadParts(){
 // ============================================================
 
 /* Was init(), which ran at parse because there was one host. The host
-   now decides when the builder starts, which is what lets the same
-   module back the standalone page and a panel. */
+   now decides when the builder starts, which keeps importing the module
+   free of side effects. */
 function mount(host){
   host.innerHTML = MARKUP;
 
-  /* "Show evidence" starts live rather than gated: after a reload the
-     publish is forgotten but the agent id is still in the box, and
-     pointing the dashboard at it is harmless when there is nothing
-     published - the dashboard's picker will simply not offer it. */
+  /* "Test" is gated on a publish in this session: it opens the dashboard
+     on a named agent and starts a run, so until "Publish for testing"
+     there is no agent to point it at. */
   setPublished(false);
   $("save_part_btn").addEventListener("click", savePart);
   $("clear_form_btn").addEventListener("click", resetForm);
@@ -1139,8 +1248,10 @@ function mount(host){
   $("create_master_btn").addEventListener("click", buildMasterPrompt);
   $("save_agent_btn").addEventListener("click", saveToDocumentation);
   $("publish_btn").addEventListener("click", publishForTesting);
-  $("show_evidence_btn").addEventListener("click", () => {
-    if (Builder.onShowEvidence) Builder.onShowEvidence(publishedAgentId);
+  $("clear_master_btn").addEventListener("click", clearMasterFields);
+  $("test_btn").addEventListener("click", () => {
+    if (Builder.onTest) { Builder.onTest(publishedAgentId); return; }
+    openTestDashboard(publishedAgentId);
   });
   $("refresh_parts_btn").addEventListener("click", reloadParts);
 
@@ -1148,6 +1259,7 @@ function mount(host){
      manifest is read by the first reload. Every button is disabled until
      then, so the empty dropdown is never something a user can act on. */
   learnWorkspaceRoot()
+    .then(() => learnToolIds())
     .then(() => ensureStructure())
     .then(() => reloadParts())
     .catch(error => {
@@ -1162,13 +1274,14 @@ const Builder = {
 
   /* Both are host hooks rather than arguments because they are assigned
      before mount() runs in practice, and a host should not have to
-     rebuild the panel to change what publishing does.
+     rebuild the panel to change what publishing or testing does.
 
-     onPublished(agentId)   - called after a successful publish.
-     onShowEvidence(agentId) - the "Show evidence" button. Undefined on
-     the standalone page, which has no dashboard to show. */
+     onPublished(agentId) - called after a successful publish.
+     onTest(agentId)      - replaces the "Test" button, whose default is to
+     open /test on the agent and start the run. Undefined everywhere today,
+     so the standalone page gets the default. */
   onPublished: null,
-  onShowEvidence: null,
+  onTest: null,
 };
 
 export default Builder;

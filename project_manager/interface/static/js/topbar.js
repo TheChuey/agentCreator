@@ -129,6 +129,10 @@ function initTopbar(options = {}) {
   nav.setAttribute('aria-label', 'Main');
 
   for (const item of NAV_ITEMS) {
+    /* The current item is decided before the popup branch: /prompt-builder
+       is opened in its own window, but it is still a page the nav can be
+       sitting on, so its button has to be able to carry the highlight. */
+    const isCurrent = item.page === page;
 
     if (item.popup) {
       const trigger = document.createElement('button');
@@ -136,6 +140,10 @@ function initTopbar(options = {}) {
       trigger.className = 'pmnav-link pmnav-button';
       trigger.textContent = item.label;
       trigger.title = 'Opens in a new window';
+      if (isCurrent) {
+        trigger.classList.add('pmnav-current');
+        trigger.setAttribute('aria-current', 'page');
+      }
       trigger.addEventListener('click', () => openPopup(item.href, item.popup));
       nav.appendChild(trigger);
       continue;
@@ -145,7 +153,7 @@ function initTopbar(options = {}) {
     link.className = 'pmnav-link';
     link.href = item.href;
     link.textContent = item.label;
-    if (item.page === page) {
+    if (isCurrent) {
       link.classList.add('pmnav-current');
       link.setAttribute('aria-current', 'page');
     }

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Diagnostics</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    :root {
+        --bg-darkest: #0b0f17;
+        --bg-app: #10141e;
+        --bg-panel: #131822;
+        --bg-card: #1b2130;
+        --bg-card-hover: #232a3d;
+        --border-color: #252e3e;
+        --border-subtle: #1e2634;
+        --text-primary: #e6e8ee;
+        --text-secondary: #9aa2b1;
+        --text-muted: #626c7d;
+        --ok: #7dd3a0;
+        --bad: #f87171;
+        --accent-blue: #3b82f6;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+        min-height: 100%;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-darkest);
+        color: var(--text-primary);
+    }
+
+    body { display: flex; flex-direction: column; }
+
+    header {
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 22px;
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .title-row i { color: var(--accent-blue); }
+
+    h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+
+    .subtitle { margin-top: 4px; color: var(--text-muted); font-size: 12px; }
+
+    .agent-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+    }
+
+    .chip strong { color: var(--text-primary); font-weight: 600; }
+
+    .stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: var(--radius-sm);
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+    }
+
+    .stat.ok { color: var(--ok); }
+    .stat.bad { color: var(--bad); }
+    .stat.total { color: var(--text-secondary); }
+
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 22px;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-app);
+    }
+
+    button.refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button.refresh:hover { background: var(--bg-card-hover); border-color: #565a61; }
+
+    button.clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: 1px solid #5b2b2b;
+        border-radius: var(--radius-sm);
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--bad);
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button.clear:hover { background: rgba(248, 113, 113, 0.12); border-color: var(--bad); }
+
+    .auto {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .updated { margin-left: auto; font-size: 11px; color: var(--text-muted); }
+
+    main { padding: 16px 22px 40px; }
+
+    .diag-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .diag-row {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-left: 3px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .diag-row.bad { border-left-color: var(--bad); }
+
+    .diag-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .diag-tool {
+        font-size: 13px;
+        font-weight: 600;
+        font-family: var(--font-mono);
+        color: var(--text-primary);
+    }
+
+    .diag-verdict { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--ok); }
+    .diag-row.bad .diag-verdict { color: var(--bad); }
+
+    .diag-time, .diag-ms, .diag-model {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+    }
+
+    .diag-summary {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+    }
+
+    .diag-args, .diag-preview {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+        word-break: break-all;
+        white-space: pre-wrap;
+    }
+
+    .diag-error { font-size: 11px; color: var(--bad); word-break: break-word; }
+
+    details.raw { margin-top: 2px; }
+    details.raw summary { font-size: 11px; color: var(--text-muted); cursor: pointer; }
+
+    .diag-empty {
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 24px 2px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="title-row">
+        <i data-lucide="activity" style="width:20px;height:20px;"></i>
+        <h1>Tool Diagnostics</h1>
+    </div>
+    <div class="subtitle">
+        Tool executions from the engine's tool log (data/toollog/tool_usage.jsonl),
+        one row per call. Success means the operation worked, not merely that the
+        function ran.
+    </div>
+    <div class="agent-line">
+        <span class="chip" id="agentChip"><strong>Agent</strong>: <span id="agentName">…</span></span>
+        <span class="stat total" id="statTotal">0 calls</span>
+        <span class="stat ok" id="statOk">0 OK</span>
+        <span class="stat bad" id="statBad">0 failed</span>
+    </div>
+</header>
+
+<div class="toolbar">
+    <button class="refresh" id="refreshBtn" type="button">
+        <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Refresh
+    </button>
+    <button class="clear" id="clearBtn" type="button">
+        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Clear
+    </button>
+    <label class="auto" for="autoRefresh">
+        <input type="checkbox" id="autoRefresh"> Auto-refresh (3s)
+    </label>
+    <span class="updated" id="updatedAt"></span>
+</div>
+
+<main>
+    <div class="diag-list" id="diagList">
+        <div class="diag-empty">Loading…</div>
+    </div>
+</main>
+
+<script type="module" src="/static/js/diagnostic.js"></script>
+<script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

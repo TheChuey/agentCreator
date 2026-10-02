@@ -38,6 +38,11 @@ workspace behaves exactly like a bundled library agent.
     GET /api/models
         -> models listed in config/models.json, for the frontend picker.
 
+    GET /api/tools
+        -> the tool IDs the registry can resolve, so a frontend that writes
+           an agent.json (the Prompt Builder) names tools the engine will
+           actually attach, instead of keeping a second copy of the list.
+
 All file tool calls run in-process through DirectProjectIO, so
 parameters.filesystem remains the single filesystem authority.
 """
@@ -552,6 +557,36 @@ def list_models(
                 for m in models
             ],
         }
+
+    except Exception as error:
+
+        raise project_manager_error(error)
+
+
+# ============================================================
+# TOOLS
+# ============================================================
+
+@router.get("/api/tools")
+def list_tool_ids(
+    request: Request,
+):
+    """
+    Return the tool IDs the registry can resolve.
+
+    The registry is the single source of truth for what ``agent.json``'s
+    ``tools`` may name (tools/registry.py), so the Prompt Builder asks for
+    this list instead of keeping its own copy that could silently drift.
+
+    ``mode: "chat"`` attaches none of these; ``mode: "agent"`` attaches the
+    ones an ``agent.json`` lists (engine/agents/factory.py).
+    """
+
+    from tools.registry import list_tools
+
+    try:
+
+        return {"tools": list_tools()}
 
     except Exception as error:
 

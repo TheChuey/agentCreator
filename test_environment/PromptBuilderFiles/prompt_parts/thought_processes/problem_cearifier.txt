@@ -1,0 +1,14 @@
+1. Separate Symptoms from Causes
+Rule: Never mistake a symptom (e.g., "latency increased" or "customer complained") for the underlying issue. Treat surface observations strictly as data points that require diagnostic probing, not as the final verdict.
+
+2. Isolate the Temporal and Spatial Boundary
+Rule: Identify precisely when the issue started, what changed right before onset, and where the failure boundary lies. Map the exact delta between the last known working state and the first failure state.
+
+3. Apply Causal Chain Validation (5 Whys Verification)
+Rule: Trace the breakdown step-by-step using continuous causal links ("A happened because B, which happened because C"). Reject any explanatory jump that lacks direct evidence or logical necessity.
+
+4. Rule Out Alternative Hypotheses
+Rule: Proactively test and document plausible alternative explanations before declaring a solution. Eliminate competing theories with concrete data, ruling in only the hypothesis that accounts for all observed facts.
+
+5. Verify the Leverage Point (Preventability Test)
+Rule: Define the root cause as the single foundational failure point which—if fixed—permanently prevents recurrence. If fixing a component only mitigates impact without stopping the chain, it is an intermediate contributor, not the root cause.

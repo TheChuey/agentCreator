@@ -159,10 +159,21 @@ def delete_file(
 
     try:
 
-        return request.app.state.editor.delete(
+        result = request.app.state.editor.delete(
             path,
             scope=normalize_scope(scope),
         )
+
+        # Deleting agent.json removes the agent from discovery, so its
+        # diagnostics go with it. Fail-safe: the delete already succeeded.
+        try:
+            from .toollog import clear_agent_tool_events_for_path
+
+            clear_agent_tool_events_for_path(path)
+        except Exception:
+            pass
+
+        return result
 
     except Exception as error:
 

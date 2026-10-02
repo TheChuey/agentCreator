@@ -496,7 +496,14 @@ def run_tests(
             for section in parse_markdown(md_path)
         ]
 
-    return results + [test_grounding(runner, json_path, md_path)]
+        # The grounding probe runs inside the redirect too. It is a real
+        # prompt that can really call a file tool, so leaving it outside
+        # the block put the test run's chat turns and tool events into the
+        # live chat history and the live tool log - evidence mixed in with
+        # real conversation.
+        results.append(test_grounding(runner, json_path, md_path))
+
+    return results
 
 
 # ============================================================

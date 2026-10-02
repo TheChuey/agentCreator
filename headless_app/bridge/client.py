@@ -16,9 +16,17 @@ Two transports:
 
 Both implement the provider surface the file tools expect:
 
-    workspace_root (str)    .relpath(path) -> posix relative (or raises)
+    workspace_root (str)    .relpath(path) -> root-qualified rel (or raises)
     .list_tree() -> nested  .read(rel) -> str    .write(rel, content)
     .create(rel, content)   .delete(rel)         .exists(rel) -> bool
+    .abspath(rel) -> str    .roots() -> root info
+
+Relative paths crossing this boundary are *root-qualified*:
+``workspace/...``, ``test_environment/...`` or ``source_files/...``, which is
+the vocabulary the Project Manager browser tree already speaks. Legacy
+workspace-relative paths are still accepted and qualified as ``workspace/...``.
+The clients therefore send no ``scope`` parameter, so the server answers with
+the browser view (all browse roots) rather than the legacy single-root view.
 
 Plus Project Manager conveniences: health(), project(), sessions(),
 rename(), create_directory(), delete_directory(), open(), subscribe().
@@ -169,7 +177,8 @@ def _relpath(root: Path, path: str) -> str:
                 f"Path '{raw}' is outside the Project Manager workspace root "
                 f"({root})."
             )
-        return rel.as_posix()
+        as_posix = rel.as_posix()
+        return "" if as_posix == "." else as_posix
 
     joined = (root / _normalize(raw)).resolve()
     try:
@@ -181,6 +190,85 @@ def _relpath(root: Path, path: str) -> str:
         )
     as_posix = rel.as_posix()
     return "" if as_posix == "." else as_posix
+
+
+def _relpath_roots(roots: dict[str, str], path: str) -> str:
+    """Translate a path into a *root-qualified* posix path.
+
+    ``roots`` maps each Project Manager browser-root name to its absolute
+    path, which is the vocabulary the browser tree already speaks. The
+    longest matching root wins, so a root nested inside another one would
+    still resolve to the more specific name.
+
+    Accepts an absolute path under any root, a path that is already
+    root-qualified, or a legacy workspace-relative path (which is
+    qualified as ``workspace/...``). The result is what
+    ``map_files`` hands back and what ``read_file`` accepts.
+    """
+
+    raw = str(path).strip()
+    if not raw or raw in (".", "/", "\\"):
+        return ""
+
+    candidate = Path(raw)
+    if candidate.is_absolute():
+        resolved = candidate.resolve()
+        ordered = sorted(
+            roots.items(),
+            key=lambda item: len(item[1]),
+            reverse=True,
+        )
+        for name, root in ordered:
+            root_path = Path(root).resolve()
+            if resolved == root_path:
+                return name
+            try:
+                remainder = resolved.relative_to(root_path).as_posix()
+            except ValueError:
+                continue
+            if remainder == ".":
+                return name
+            return f"{name}/{remainder}"
+        raise ValueError(
+            f"Path '{raw}' is outside every Project Manager browse root "
+            f"({', '.join(sorted(roots))})."
+        )
+
+    normalized = _normalize(raw)
+    if not normalized:
+        return ""
+
+    head = normalized.split("/", 1)[0]
+    if head in roots:
+        return head if normalized == head else normalized
+
+    return f"workspace/{normalized}"
+
+
+def _abspath_roots(roots: dict[str, str], rel: str) -> str:
+    """Absolute path for a root-qualified relative path."""
+
+    normalized = _normalize(rel)
+    head = normalized.split("/", 1)[0] if normalized else ""
+    if head in roots:
+        remainder = normalized[len(head):].lstrip("/")
+        return str(Path(roots[head]) / remainder) if remainder else str(Path(roots[head]))
+    workspace = roots.get("workspace", "")
+    return str(Path(workspace) / normalized) if workspace else normalized
+
+
+def _clean_params(params: dict[str, Any] | None) -> dict[str, Any]:
+    """Drop query parameters the caller left unset.
+
+    ``httpx`` renders a ``None`` value as an empty string, so sending
+    ``scope=None`` arrives as ``scope=``, which the Project Manager reads as
+    an unknown scope rather than as "not supplied". It selects its browser
+    (multi-root) view by *omitting* the parameter, so an unset value has to
+    be omitted here rather than transmitted.
+    """
+    if not params:
+        return {}
+    return {key: value for key, value in params.items() if value is not None}
 
 
 # ============================================================
@@ -208,7 +296,7 @@ class ProjectManagerBridge:
             else _default_base_url()
         )
         self.timeout = timeout
-        self.scope = "workspace"
+        self.scope = None
 
         self._http = httpx.Client(
             base_url=self.base_url,
@@ -216,6 +304,7 @@ class ProjectManagerBridge:
         )
 
         self._root: str | None = None
+        self._roots: dict[str, str] | None = None
         self._tree_cache: tuple[float, list] = (0.0, [])
 
     # ========================================================
@@ -234,8 +323,35 @@ class ProjectManagerBridge:
             )
         return self._root
 
+    def _root_map(self) -> dict[str, str]:
+        """Browse-root name -> absolute path, from /api/health."""
+        if self._roots is None:
+            health = self.health()
+            roots: dict[str, str] = {}
+            for entry in (health or {}).get("roots") or []:
+                name = entry.get("name", "")
+                path = entry.get("path", "")
+                if name and path:
+                    roots[name] = path
+            if not roots:
+                # An older server that reports no roots: the workspace is
+                # still reachable, it just carries the legacy vocabulary.
+                root = str((health or {}).get("root", ""))
+                if root:
+                    roots["workspace"] = root
+            self._roots = roots
+        return self._roots
+
+    def roots(self) -> list[dict[str, Any]]:
+        """The Project Manager browse roots, as the server reports them."""
+        health = self.health()
+        return list((health or {}).get("roots") or [])
+
     def relpath(self, path: str) -> str:
-        return _relpath(Path(self.workspace_root), path)
+        return _relpath_roots(self._root_map(), path)
+
+    def abspath(self, rel: str) -> str:
+        return _abspath_roots(self._root_map(), rel)
 
     def _fresh_tree(self) -> list:
         now = time.monotonic()
@@ -254,13 +370,27 @@ class ProjectManagerBridge:
         return self.open(rel)["content"]
 
     def write(self, rel: str, content: str) -> dict[str, Any]:
-        return self.save(rel, content)
+        return self._mutate(lambda: self.save(rel, content))
 
     def create(self, rel: str, content: str) -> dict[str, Any]:
-        return self.create_file(rel, content)
+        return self._mutate(lambda: self.create_file(rel, content))
 
     def delete(self, rel: str) -> dict[str, Any]:
-        return self.delete_file(rel)
+        return self._mutate(lambda: self.delete_file(rel))
+
+    def _mutate(self, call) -> dict[str, Any]:
+        """Run a mutating call and drop the cached tree.
+
+        ``exists`` answers from that tree, so a cached snapshot taken before
+        a write makes this provider report a file it has just created as
+        missing. That is not a cosmetic staleness issue: delete_files asks
+        exists() before deleting, so a stale cache silently turns a delete
+        into "file_not_found".
+        """
+        try:
+            return call()
+        finally:
+            self._tree_cache = (0.0, [])
 
     def exists(self, rel: str) -> bool:
         rel = rel.replace("\\", "/").strip("/")
@@ -293,7 +423,7 @@ class ProjectManagerBridge:
     ) -> dict[str, Any]:
         response = self._http.get(
             endpoint,
-            params=params,
+            params=_clean_params(params),
         )
 
         _raise_for_error(response)
@@ -311,7 +441,7 @@ class ProjectManagerBridge:
     ) -> dict[str, Any]:
         response = self._http.put(
             endpoint,
-            params=params,
+            params=_clean_params(params),
             json=payload,
         )
 
@@ -330,7 +460,7 @@ class ProjectManagerBridge:
     ) -> dict[str, Any]:
         response = self._http.post(
             endpoint,
-            params=params,
+            params=_clean_params(params),
             json=payload,
         )
 
@@ -348,7 +478,7 @@ class ProjectManagerBridge:
     ) -> dict[str, Any]:
         response = self._http.delete(
             endpoint,
-            params=params,
+            params=_clean_params(params),
         )
 
         _raise_for_error(response)
@@ -585,7 +715,7 @@ class AsyncProjectManagerBridge:
             else _default_base_url()
         )
         self.timeout = timeout
-        self.scope = "workspace"
+        self.scope = None
 
         self._http = httpx.AsyncClient(
             base_url=self.base_url,
@@ -593,6 +723,7 @@ class AsyncProjectManagerBridge:
         )
 
         self._root: str | None = None
+        self._roots: dict[str, str] | None = None
         self._tree_cache: tuple[float, list] = (0.0, [])
 
     # ========================================================
@@ -610,9 +741,32 @@ class AsyncProjectManagerBridge:
             )
         return self._root
 
-    def relpath(self, path: str) -> str:
-        root = self._root or "."
-        return _relpath(Path(root), path)
+    async def _root_map(self) -> dict[str, str]:
+        """Browse-root name -> absolute path, from /api/health."""
+        if self._roots is None:
+            health = await self.health()
+            roots: dict[str, str] = {}
+            for entry in (health or {}).get("roots") or []:
+                name = entry.get("name", "")
+                path = entry.get("path", "")
+                if name and path:
+                    roots[name] = path
+            if not roots:
+                root = str((health or {}).get("root", ""))
+                if root:
+                    roots["workspace"] = root
+            self._roots = roots
+        return self._roots
+
+    async def roots(self) -> list[dict[str, Any]]:
+        health = await self.health()
+        return list((health or {}).get("roots") or [])
+
+    async def relpath(self, path: str) -> str:
+        return _relpath_roots(await self._root_map(), path)
+
+    async def abspath(self, rel: str) -> str:
+        return _abspath_roots(await self._root_map(), rel)
 
     async def _fresh_tree(self) -> list:
         now = time.monotonic()
@@ -630,13 +784,20 @@ class AsyncProjectManagerBridge:
         return (await self.open(rel))["content"]
 
     async def write(self, rel: str, content: str) -> dict[str, Any]:
-        return await self.save(rel, content)
+        return await self._mutate(lambda: self.save(rel, content))
 
     async def create(self, rel: str, content: str) -> dict[str, Any]:
-        return await self.create_file(rel, content)
+        return await self._mutate(lambda: self.create_file(rel, content))
 
     async def delete(self, rel: str) -> dict[str, Any]:
-        return await self.delete_file(rel)
+        return await self._mutate(lambda: self.delete_file(rel))
+
+    async def _mutate(self, call) -> dict[str, Any]:
+        """Run a mutating call and drop the cached tree (see the sync class)."""
+        try:
+            return await call()
+        finally:
+            self._tree_cache = (0.0, [])
 
     async def exists(self, rel: str) -> bool:
         rel = rel.replace("\\", "/").strip("/")
@@ -669,7 +830,7 @@ class AsyncProjectManagerBridge:
     ) -> dict[str, Any]:
         response = await self._http.get(
             endpoint,
-            params=params,
+            params=_clean_params(params),
         )
 
         _raise_for_error(response)
@@ -687,7 +848,7 @@ class AsyncProjectManagerBridge:
     ) -> dict[str, Any]:
         response = await self._http.put(
             endpoint,
-            params=params,
+            params=_clean_params(params),
             json=payload,
         )
 
@@ -706,7 +867,7 @@ class AsyncProjectManagerBridge:
     ) -> dict[str, Any]:
         response = await self._http.post(
             endpoint,
-            params=params,
+            params=_clean_params(params),
             json=payload,
         )
 
@@ -724,7 +885,7 @@ class AsyncProjectManagerBridge:
     ) -> dict[str, Any]:
         response = await self._http.delete(
             endpoint,
-            params=params,
+            params=_clean_params(params),
         )
 
         _raise_for_error(response)

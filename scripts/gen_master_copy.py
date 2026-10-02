@@ -1037,6 +1037,44 @@ def render_file_index(
 # REFERENCE MODE — MODULE EXTRACTION
 # ============================================================
 
+def render(
+    value: object,
+) -> str:
+    """
+    The printed form of a literal value, with every set in a fixed order.
+
+    ``repr`` of a set follows hash order, and string hashing is randomised per
+    process, so ``repr`` alone would make the same tree produce different bytes
+    on every run. Sets are therefore rebuilt from sorted members, and
+    containers are rebuilt so that nested sets are fixed too.
+    """
+
+    if isinstance(value, (set, frozenset)):
+        body = ", ".join(sorted(render(item) for item in value))
+
+        if isinstance(value, frozenset):
+            return f"frozenset({{{body}}})"
+
+        return f"{{{body}}}"
+
+    if isinstance(value, dict):
+        body = ", ".join(
+            f"{render(key)}: {render(item)}" for key, item in value.items()
+        )
+
+        return f"{{{body}}}"
+
+    if isinstance(value, list):
+        return f"[{', '.join(render(item) for item in value)}]"
+
+    if isinstance(value, tuple):
+        body = ", ".join(render(item) for item in value)
+
+        return f"({body},)" if len(value) == 1 else f"({body})"
+
+    return repr(value)
+
+
 def literal(
     node: ast.AST | None,
 ) -> str:
@@ -1048,7 +1086,7 @@ def literal(
         return ""
 
     try:
-        return truncate(repr(ast.literal_eval(node)), VALUE_LIMIT)
+        return truncate(render(ast.literal_eval(node)), VALUE_LIMIT)
     except (ValueError, SyntaxError, TypeError, MemoryError, RecursionError):
         return ""
 

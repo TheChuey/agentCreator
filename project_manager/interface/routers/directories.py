@@ -73,10 +73,22 @@ def delete_directory(
 
     try:
 
-        return request.app.state.editor.delete(
+        result = request.app.state.editor.delete(
             path,
             scope=normalize_scope(scope),
         )
+
+        # Removing an agent folder also removes its diagnostics. Fail-safe:
+        # the delete already succeeded, so a log problem must not turn it
+        # into an error response.
+        try:
+            from .toollog import clear_agent_tool_events_for_path
+
+            clear_agent_tool_events_for_path(path)
+        except Exception:
+            pass
+
+        return result
 
     except Exception as error:
 

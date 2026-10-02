@@ -402,7 +402,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `import uuid`
 - `from typing import Any, Callable`
 **Constants**
-- `EVENT_TYPES` = `{'created', 'tree_changed', 'deleted', 'saved', 'renamed'}`
+- `EVENT_TYPES` = `{'created', 'deleted', 'renamed', 'saved', 'tree_changed'}`
 **Classes**
 - **`EventBus`** *(class)* — Simple in-memory publish/subscribe event bus.
   - **`__init__(self)`** *method*
@@ -524,6 +524,8 @@ One entry per file, in the same order as the file structure above. Each entry li
   - *decorator:* `@router.post('/api/pipeline')`
 - **`list_models(request: Request)`** *function* — Return the models in config/models.json for the frontend picker. Run refresh_models to re-scan installed Ollama models.
   - *decorator:* `@router.get('/api/models')`
+- **`list_tool_ids(request: Request)`** *function* — Return the tool IDs the registry can resolve.
+  - *decorator:* `@router.get('/api/tools')`
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/routers/agents.py`*
 
@@ -826,7 +828,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 
 **Purpose.** Project Manager API client module
 **Declarations**
-- **`API`** *object literal, 27 methods*
+- **`API`** *object literal, 28 methods*
 **Methods**
 - **`API.request(method, url, body = null)`** *method*
 - **`API.health()`** *method*
@@ -855,6 +857,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`API.pipelineOptions()`** *method*
 - **`API.pipelineRun(body)`** *method*
 - **`API.models()`** *method*
+- **`API.tools()`** *method*
 
 *Source: [`APP_CODE_SNAPSHOT.md`](APP_CODE_SNAPSHOT.md) § `interface/static/js/api.js`*
 
@@ -879,6 +882,7 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`projectRoot`** *constant* = `""; // the parent of workspaceRoot`
 - **`ready`** *constant* = `false; // the parts folder answered at least once`
 - **`assembled`** *constant* = `null; // selection signature of the last build`
+- **`knownToolIds`** *array* = `[]; // tool IDs the engine can attach (GET /api/tools)`
 - **`BUTTONS`** *array* = `["save_part_btn","clear_form_btn","create_master_btn",`
 - **`PUBLISH_GATED`** *constant* = `new Set(["show_evidence_btn"])`
 - **`busy`** *constant* = `false`
@@ -894,6 +898,13 @@ One entry per file, in the same order as the file structure above. Each entry li
 - **`safeSlug(value)`** *function*
 - **`titleFor(id)`** *function*
 - **`displayName(id)`** *function*
+- **`parseToolIds(markdown)`** *function*
+- **`markdownSections(markdown)`** *function*
+- **`deriveDescription(markdown)`** *function*
+- **`buildAgentMeta(id, markdown)`** *function*
+- **`describeMeta(meta)`** *function*
+- **`learnToolIds()`** *function*
+- **`writeAgentFiles(dir, id, markdown)`** *function*
 - **`learnWorkspaceRoot()`** *function*
 - **`isPermissionError(error)`** *function*
 - **`extractFailedPath(message)`** *function*
@@ -1170,8 +1181,8 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `PROJECT_FOLDERS` = `['documentation', 'project_scope', 'To Do', 'updates', 'config', 'data', 'Tests']`
 - `BROWSE_ROOTS`
 - `MAX_EDITABLE_BYTES`
-- `TEXT_EXTENSIONS` = `{'.yaml', '.tsx', '.py', '.xml', '.css', '.html', '.env', '.htm', '.yml', '.csv', '.js',…`
-- `IGNORED_DIRECTORIES` = `{'.idea', '.pytest_cache', 'venv', '.git', '.venv', '.mypy_cache', '__pycache__', '.vscod…`
+- `TEXT_EXTENSIONS` = `{'.cfg', '.css', '.csv', '.env', '.htm', '.html', '.ini', '.js', '.json', '.jsx', '.md',…`
+- `IGNORED_DIRECTORIES` = `{'.git', '.idea', '.mypy_cache', '.pytest_cache', '.venv', '.vscode', '__pycache__', 'ven…`
 - `DEFAULT_PROJECT`
 - `TRANSIENT_DELETE_WIN_ERRORS`
 - `TRANSIENT_DELETE_ERRNOS`

@@ -122,6 +122,28 @@ class EditorInterface:
     # HEALTH / STATE
     # ========================================================
 
+    def _browse_roots(self) -> list[dict[str, Any]]:
+        """Every configured browser root, with its absolute path.
+
+        Read-only, in declaration order. Clients that speak the
+        root-qualified path vocabulary (``workspace/...``) need the
+        absolute path behind each root name to turn one back into a
+        filesystem path, and the writable flag to decide whether a
+        write may be attempted at all.
+        """
+
+        return [
+            {
+                "name": name,
+                "path": str(config["path"]),
+                "writable": bool(
+                    config.get("writable", False)
+                ),
+            }
+            for name, config
+            in self.filesystem.BROWSE_ROOTS.items()
+        ]
+
     def health(self) -> dict[str, Any]:
         """
         Project Manager health and project information.
@@ -131,6 +153,7 @@ class EditorInterface:
             "status": "healthy",
             "project": self.filesystem.read_project_info(),
             "root": str(self.filesystem.PROJECT_ROOT),
+            "roots": self._browse_roots(),
         }
 
     def tree(
@@ -179,6 +202,7 @@ class EditorInterface:
                     "roots": [
                         {
                             "name": name,
+                            "path": str(config["path"]),
                             "writable": bool(
                                 config.get(
                                     "writable",

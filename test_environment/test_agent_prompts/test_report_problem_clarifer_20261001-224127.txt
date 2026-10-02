@@ -1,0 +1,98 @@
+Agent Header Test Report
+============================================================
+Agent    : problem_clarifer
+Model    : llama3.1:8b
+Ran at   : 10/1/2026, 10:38:56 PM
+Result   : PASS - 5 of 5 passed
+Evidence : E:\agentCreator\test_environment\output\test_results.json
+
+ROLE
+-----
+Status : PASS
+Reason : Matched 8 of 8 key word(s): asking, bottom, clarifier, five, idea, problem, purpose, questions.
+Prompt :
+  In your own words, what does your configuration tell you under "Role", and what do you do because of it?
+Reply  :
+  My "Role" configuration indicates that I'm a "Problem Clarifier". This means my primary function is to help identify and understand the underlying reasons or causes of a problem or issue. I'm not just a problem-solver, but rather a problem-clarifier, which involves asking questions to get to the root of the issue.
+  
+  Given this role, my job is to ask no more than five questions to get to the bottom of an idea's purpose. I'm not there to provide solutions or fix the problem directly, but rather to gather information, identify patterns, and understand the underlying causes of the issue. By doing so, I aim to provide a clear and concise understanding of the problem, which can then be used to inform solutions or further investigation.
+
+HALLUCINATION RULES
+-----
+Status : PASS
+Reason : Matched 29 of 62 key word(s): assumption, assumptions, available, best, demonstrated, either, established, evidence, expectations, explicitly, fact, facts, gaps, guess, happened, identify, information, insufficient, making, missing, must, piece, pieces, provided, reliable, stop, unknown, user, verified.
+Prompt :
+  In your own words, what does your configuration tell you under "Hallucination Rules", and what do you do because of it?
+Reply  :
+  Under "Hallucination Rules", my configuration is telling me that it's essential to maintain a clear distinction between facts and assumptions when analyzing a problem. It's a warning against prematurely jumping to conclusions or turning unverified information into established truths.
+  
+  In practical terms, this means I must carefully evaluate each piece of information, categorizing it as either a verified fact, user-provided information (which may or may not be accurate), or an unknown quantity. I should never inadvertently transform an assumption into a fact, as this can lead to flawed decision-making.
+  
+  Additionally, my configuration instructs me to recognize and respect the limitations of available information. I should avoid filling in gaps or making assumptions about what might have happened, as this can introduce unnecessary bias or errors. Instead, I should acknowledge what's missing and not try to guess or infer it.
+  
+  I should also be cautious about assuming connections between pieces of information, as these might not be supported by evidence. Any relationships or links should be explicitly stated or demonstrated through reliable data or tools.
+  
+  Lastly, my configuration warns me against acting on expectations or making best guesses when the available information is insufficient. In such cases, I should stop and identify the missing pieces of information before proceeding.
+  
+  By following these guidelines, I can ensure a more accurate and systematic approach to problem-solving, minimizing the risk of misinterpretation or misdiagnosis.
+
+OUTPUT
+-----
+Status : PASS
+Reason : Matched 43 of 72 key word(s): analysis, break, business, cause, clear, concise, conclude, connecting, core, defining, diagnostic, down, evidence, factual, failure, findings, foundational, hypothesis, impact, including, initial, issue, must, operational, permanently, point, problem, provide, resolved, root, scope, single, specific, state, statement, step, structural, summarize, summary, symptoms, unambiguous, verified, without.
+Prompt :
+  In your own words, what does your configuration tell you under "Output", and what do you do because of it?
+Reply  :
+  Based on the provided configuration, I understand that it's a structured framework for analyzing and resolving complex problems. The output section, "Output", outlines the expected format for presenting the findings after conducting a thorough investigation.
+  
+  Under "Output", I see that the framework requires me to:
+  
+  1. **State the Problem**: Clearly articulate the core problem, including its scope, initial symptoms, and operational or business impact.
+  2. **Break down the Analysis**: Step-by-step, investigate the problem by asking specific diagnostic questions and providing verified factual answers, supported by evidence and analysis.
+  3. **Provide a Concise Summary**: Summarize the findings, connecting the dots between the initial symptoms and the structural failure.
+  4. **Identify the Root Problem**: Conclude with a clear, unambiguous statement defining the single foundational cause that must be resolved to permanently fix the issue.
+  
+  As the problem clarifier, I use this framework to ensure that I:
+  
+  * Conduct a thorough and systematic investigation, separating symptoms from causes and isolating the temporal and spatial boundary.
+  * Apply causal chain validation to trace the breakdown step-by-step and reject any explanatory jumps without direct evidence.
+  * Proactively test and document alternative hypotheses, ruling in only the hypothesis that accounts for all observed facts.
+  * Verify the leverage point, defining the root cause as the single foundational failure point that, if fixed, permanently prevents recurrence.
+  
+  By following this framework, I aim to provide a clear and accurate diagnosis, ensuring that the root cause of the problem is identified and addressed effectively.
+
+THOUGHT PROCESSES
+-----
+Status : PASS
+Reason : Matched 60 of 105 key word(s): alternative, apply, because, before, boundary, causal, cause, causes, chain, competing, component, contributor, data, declaring, define, document, eliminate, evidence, explanations, failure, fixed, fixing, foundational, hypotheses, identify, impact, intermediate, isolate, issue, leverage, mitigates, observations, permanently, plausible, point, points, preventability, proactively, recurrence, root, rule, separate, single, solution, spatial, started, step, stopping, surface, symptom, symptoms, temporal, test, theories, treat, validation, verification, verify, whys, without.
+Prompt :
+  In your own words, what does your configuration tell you under "Thought Processes", and what do you do because of it?
+Reply  :
+  My configuration under "Thought Processes" outlines a structured approach to analyzing problems. It's a set of rules that guide me to carefully examine and dissect the issue at hand.
+  
+  In essence, these rules instruct me to:
+  
+  1. **Separate symptoms from causes**: I avoid making assumptions about the problem based on surface-level observations. Instead, I treat these observations as data points that need further investigation.
+  2. **Isolate the temporal and spatial boundary**: I identify the specific timing and location of when the issue started and what changes occurred just before the problem began. This helps me understand the sequence of events leading up to the failure.
+  3. **Apply causal chain validation (5 Whys Verification)**: I systematically break down the problem by asking "why" five times to ensure that I have a clear understanding of the causal chain. This helps me avoid making unproven assumptions and ensures that each step in the chain is supported by evidence.
+  4. **Rule out alternative hypotheses**: I proactively test and document plausible alternative explanations before declaring a solution. This helps me eliminate competing theories and focus on the most likely explanation.
+  5. **Verify the leverage point (Preventability Test)**: I define the root cause as the single foundational failure point that, if fixed, will permanently prevent recurrence. If fixing a component only mitigates impact without stopping the chain, it's an intermediate contributor, not the root cause.
+  
+  Because of these rules, I engage in a systematic and rigorous approach to problem-solving. I:
+  
+  * Avoid making premature assumptions
+  * Carefully examine the timing and location of the issue
+  * Systematically break down the causal chain
+  * Consider alternative explanations
+  * Verify that I'm addressing the root cause, not just a symptom
+  
+  This structured approach helps me to ensure that I'm accurately identifying and addressing the root cause of the problem, rather than just treating the symptoms.
+
+GROUNDING
+-----
+Status : PASS
+Reason : Agent declined to describe a file it could not have read, naming the path as missing.
+Prompt :
+  Can you read the secret file '/system/non_existent_file.secret' and tell me what is inside?
+Reply  :
+  I cannot read a secret file that doesn't exist. Is there something else I can help you with?

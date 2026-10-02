@@ -19,7 +19,55 @@ from dataclasses import dataclass, field
 from typing import Callable, List
 
 from engine.core.llm import ask_llm
+from tools.chatlog import summarize_args
+from tools.project_tools import reporting_agent
 from tools.state import FileSession
+
+
+# ==========================================================================
+# TOOL RESULT ENCODING
+# --------------------------------------------------------------------------
+# Tools return dicts and lists; the conversation and the tool log are both
+# JSON. Rendering a dict with str() produced a Python repr (single quotes,
+# True/False/None) which is not valid JSON in either place, so the model
+# reading the transcript saw an object literal it had to re-parse by eye and
+# every log reader had to special-case.
+# ==========================================================================
+
+def _as_payload(result):
+    """A JSON-safe copy of a tool result, for the tool log."""
+    if isinstance(result, (dict, list)):
+        try:
+            return json.loads(json.dumps(result, default=str))
+        except (TypeError, ValueError):
+            return repr(result)
+    return result
+
+
+def _as_text(result) -> str:
+    """A tool result as the text the model reads back.
+
+    JSON for structures, str() for anything else, so the model always sees
+    parseable JSON for the dict-returning tools.
+    """
+    if isinstance(result, (dict, list)):
+        try:
+            return json.dumps(result, ensure_ascii=False, default=str)
+        except (TypeError, ValueError):
+            return repr(result)
+    return str(result)
+
+
+#: Printed at most once per process, so a log that is not being written is
+#: visible without turning every tool call into a wall of warnings.
+_TOOL_LOG_WARNED: set[str] = set()
+
+
+def _warn_tool_log_once(reason: str) -> None:
+    if reason in _TOOL_LOG_WARNED:
+        return
+    _TOOL_LOG_WARNED.add(reason)
+    print(f"[Agent] WARNING: tool log is not being written ({reason}).")
 
 
 # ==========================================================================
@@ -416,10 +464,19 @@ class Agent:
         timestamp = datetime.now().strftime("%H:%M:%S")
         if name in self.tools:
             try:
-                raw_result = self.tools[name](**args)
-                result = str(raw_result)
-                print(f"[Agent.act] Executed {name} -> {result[:100]}...")
+                # Name the agent for the duration of the call so the tool's
+                # own report_tool event carries agent_id/model and can be
+                # filtered per agent in read_tool_events.
+                with reporting_agent(
+                    self.profile.id or "",
+                    self.profile.name or "",
+                    self.model or "",
+                ):
+                    raw_result = self.tools[name](**args)
+                result = _as_text(raw_result)
                 op_ok, op_error = self._op_succeeded(raw_result)
+                verdict = "OK" if op_ok else "FAILED"
+                print(f"[Agent.act] {name} -> {verdict} ({result[:100]}...)")
                 run_event = {
                     "time": timestamp,
                     "tool": name,
@@ -427,23 +484,28 @@ class Agent:
                     "result_preview": result[:200],
                     "status": "success",
                     "op_ok": op_ok,
+                    "ok": op_ok,
+                    "stage": "dispatch",
                 }
                 if op_error:
                     run_event["op_error"] = op_error
                 self.tool_events.append(run_event)
                 self._log_tool_event({
                     **run_event,
+                    "result": _as_payload(raw_result),
                     "origin": origin,
                 })
                 return result
             except Exception as e:
-                print(f"[Agent.act] Error executing {name}: {e}")
+                print(f"[Agent.act] {name} -> FAILED: {e}")
                 self.tool_events.append({
                     "time": timestamp,
                     "tool": name,
                     "args": args,
                     "error": str(e),
                     "status": "error",
+                    "ok": False,
+                    "stage": "dispatch",
                 })
                 self._log_tool_event({
                     "time": timestamp,
@@ -451,7 +513,10 @@ class Agent:
                     "args": args,
                     "error": str(e),
                     "status": "error",
+                    "op_ok": False,
+                    "ok": False,
                     "origin": origin,
+                    "stage": "dispatch",
                 })
                 return f"Error executing tool: {e}"
         print(f"[Agent.act] Missing tool requested: {name}")
@@ -460,30 +525,45 @@ class Agent:
             "tool": name,
             "args": args,
             "status": "missing",
+            "ok": False,
+            "stage": "dispatch",
         })
         self._log_tool_event({
             "time": timestamp,
             "tool": name,
             "args": args,
             "status": "missing",
+            "op_ok": False,
+            "ok": False,
             "origin": origin,
+            "stage": "dispatch",
         })
         return f"Error: {name} missing"
 
     def _log_tool_event(self, event: dict) -> None:
         """Report one structured tool event to the process-wide tool log
-        (headless data/toollog/tool_usage.jsonl). Deliberately fail-safe so a
-        logging problem can never break the tool call that just succeeded."""
+        (headless data/toollog/tool_usage.jsonl).
+
+        Deliberately fail-safe so a logging problem can never break the tool
+        call that just succeeded - but it says so out loud instead of
+        swallowing the failure, because a silently dead tool log looks
+        exactly like a run where no tool was ever called.
+        """
+        event.setdefault("agent_id", self.profile.id or "")
         event.setdefault("agentId", self.profile.id or "")
         event.setdefault("agentName", self.profile.name or "")
         event.setdefault("model", self.model or "")
-        event["time"] = datetime.now().isoformat(timespec="seconds")
+        if not event.get("ts"):
+            event["ts"] = datetime.now().astimezone().isoformat(timespec="seconds")
+        event.setdefault("args", {})
+        event["args"] = summarize_args(event["args"])
         try:
             from tools.chatlog import append_tool_event
 
-            append_tool_event(event)
-        except Exception:
-            pass
+            if not append_tool_event(event):
+                _warn_tool_log_once("the tool log rejected an event")
+        except Exception as error:
+            _warn_tool_log_once(str(error))
 
     def observe(self, name: str, result: str) -> None:
         """Record a tool's result back into the conversation history."""

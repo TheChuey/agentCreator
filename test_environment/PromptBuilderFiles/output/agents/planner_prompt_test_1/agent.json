@@ -1,0 +1,11 @@
+{
+  "id": "planner_prompt_test_1",
+  "name": "Planner Prompt Test 1",
+  "description": "You are a planner agent. Help the user create a plan. The plan outlines what needs to be done.",
+  "mode": "agent",
+  "model": "",
+  "tools": [
+    "read_file",
+    "map_files"
+  ]
+}

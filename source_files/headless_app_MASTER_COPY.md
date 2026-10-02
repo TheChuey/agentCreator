@@ -942,9 +942,9 @@ One entry per file, in the same order as the file structure above. Each entry li
 - `from typing import Any`
 - `from tools.chatlog import search_text as _search_chatlog`
 **Constants**
-- `_PLAIN_TEXT_EXTENSIONS` = `{'.yaml', '.tsx', '.sass', '.py', '.xml', '.css', '.tsv', '.pyw', '.yml', '.rst', '.scss'…`
+- `_PLAIN_TEXT_EXTENSIONS` = `{'.cfg', '.cjs', '.conf', '.css', '.csv', '.ini', '.js', '.json', '.jsx', '.log', '.markd…`
 - `_DOCLING_CONVERTERS` = `{}`
-- `DEFAULT_IGNORE_DIRS` = `{'.idea', 'venv', '.git', '.venv', 'node_modules', '__pycache__', '.vscode'}`
+- `DEFAULT_IGNORE_DIRS` = `{'.git', '.idea', '.venv', '.vscode', '__pycache__', 'node_modules', 'venv'}`
 - `ROOT_DIR`
 **Functions**
 - **`configure(provider: Any)`** *function* — Set the process-wide default provider (None for local disk).

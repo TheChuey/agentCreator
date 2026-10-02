@@ -22,6 +22,10 @@ so rebinding them with :func:`use_data_dir` redirects every caller at once -
 the chat log this module writes, the ``search_chat_logs`` tool that reads
 it, and the tool log - with no thread or agent to keep in step.
 
+Both stores are readable as well as writable: :func:`read_history` and
+:func:`read_tool_events` are how a UI (or a person) inspects what a run
+actually did without opening the files by hand.
+
 Nothing in this module requires a server. Writes are fail-safe: a broken
 data path or disk error never breaks the agent call that produced the event.
 """
@@ -209,13 +213,123 @@ def search_text(query: str, limit: int = 15) -> str:
 # TOOL LOG
 # ==========================================================================
 
-def append_tool_event(event: dict) -> None:
-    """Append one JSONL tool-event line. Fail-safe (never raise)."""
+#: Tool arguments whose values are the whole file body. Logging them verbatim
+#: turns the tool log into a second copy of every file the agent writes, so
+#: they are replaced by a length record instead.
+VOLUMINOUS_ARG_KEYS = ("content", "text", "body")
+
+
+def summarize_args(args: dict) -> dict:
+    """Copy ``args`` with bulky text payloads replaced by length counts.
+
+    ``write_text_file`` is called with the entire file content, so an
+    unredacted log grows by a full copy of every write and buries the
+    metadata that makes the log useful. The recorded size and shape of the
+    payload are what a reader actually needs; the bytes are in the file.
+
+    Idempotent: an argument that already carries its ``<key>_chars`` record
+    is left alone, so applying this twice cannot count the placeholder.
+    """
+    if not isinstance(args, dict):
+        return args
+    summary = {}
+    for key, value in args.items():
+        already = key in VOLUMINOUS_ARG_KEYS and f"{key}_chars" in args
+        if key in VOLUMINOUS_ARG_KEYS and isinstance(value, str) and not already:
+            summary[key] = f"<{len(value)} chars elided>"
+            summary[f"{key}_chars"] = len(value)
+            summary[f"{key}_bytes"] = len(value.encode("utf-8", errors="replace"))
+        else:
+            summary[key] = value
+    return summary
+
+
+def append_tool_event(event: dict) -> bool:
+    """Append one JSONL tool-event line.
+
+    Bulky text in ``args`` is elided here rather than in the caller, so the
+    redaction is a property of the log file itself: no writer can add a
+    second copy of a written file by forgetting to call
+    :func:`summarize_args` first.
+
+    Returns True when the line reached disk. The call never raises - a
+    broken data path must not break the tool call that produced the event -
+    but it reports failure instead of swallowing it, so a caller can warn
+    about a log that is not being written rather than discovering it later.
+    """
     try:
+        if isinstance(event.get("args"), dict):
+            event = {**event, "args": summarize_args(event["args"])}
         TOOLLOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        line = json.dumps(event, ensure_ascii=False, default=str)
         with TOOLLOG_FILE.open("a", encoding="utf-8") as handle:
-            handle.write(
-                json.dumps(event, ensure_ascii=False, default=str) + "\n"
-            )
+            handle.write(line + "\n")
+        return True
     except Exception:
-        pass
+        return False
+
+
+def read_tool_events(
+    limit: int = DEFAULT_HISTORY_LIMIT,
+    agent: str | None = None,
+    tool: str | None = None,
+) -> list[dict]:
+    """Most recent tool events in chronological order.
+
+    The counterpart to :func:`append_tool_event`: without it the tool log is
+    write-only and the only way to see a run is to open the JSONL by hand.
+
+    ``agent`` and ``tool`` filter; events are matched on the ``agent_id``/
+    ``agentId`` and ``tool`` keys, so events written before those keys
+    existed are still returned for unfiltered reads.
+    """
+    limit = max(1, min(limit, MAX_HISTORY_LIMIT))
+    events: list[dict] = []
+    if not TOOLLOG_FILE.exists():
+        return events
+    with TOOLLOG_FILE.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if agent and str(event.get("agent_id") or event.get("agentId") or "") != agent:
+                continue
+            if tool and str(event.get("tool") or "") != tool:
+                continue
+            events.append(event)
+    return events[-limit:]
+
+
+def clear_tool_events(agent: str | None = None) -> int:
+    """Wipe the tool log, or one agent's events. Returns the count removed."""
+    if not TOOLLOG_FILE.exists():
+        return 0
+    if not agent:
+        removed = 0
+        with TOOLLOG_FILE.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    removed += 1
+        TOOLLOG_FILE.write_text("", encoding="utf-8")
+        return removed
+
+    kept: list[str] = []
+    removed = 0
+    with TOOLLOG_FILE.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if str(event.get("agent_id") or event.get("agentId") or "") == agent:
+                removed += 1
+                continue
+            kept.append(line if line.endswith("\n") else line + "\n")
+    TOOLLOG_FILE.write_text("".join(kept), encoding="utf-8")
+    return removed

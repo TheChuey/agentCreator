@@ -5,12 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agent Header Test Dashboard</title>
 
-<!-- The Prompt Builder's own styles. The standalone /prompt-builder page
-     links the same file, which is what keeps the panel and the page
-     looking like the same builder. Everything else stays inline: the
-     styles, the fetch calls and the nav. -->
-<link rel="stylesheet" href="/static/builder.css">
-
 <!-- The evidence log is read by a person looking at a verdict, and a
      page that has to be reassembled from a stylesheet and a module to
      show four PASS/FAIL rows is a page that breaks in the one moment it
@@ -22,10 +16,14 @@
      folder switcher and the editor hand-off, and the dashboard would
      drift from the editor the first time any of them changed.
 
-     Four modules are imported now, and all four earn it: js/tree.js
-     (the tree), js/builder.js (the right-hand Prompt Builder panel),
-     js/panels.js (resize and collapse) and js/report.js (the saved
-     report's text). The evidence log's own fetches stay inline. -->
+     Three modules are imported now, and all three earn it: js/tree.js
+     (the tree), js/panels.js (resize and collapse) and js/report.js
+     (the saved report's text). The right-hand panel is this page's own
+     action grid. The evidence log's own fetches stay inline. -->
+
+<!-- Lucide, for the action cards in the right panel. Same CDN the chat
+     page uses, so the card icons come out identical. -->
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -38,18 +36,26 @@ nav a{display:inline-flex;align-items:center;padding:6px 12px;border-radius:6px;
 nav a:hover{background:#3a3d44;border-color:#565a61;color:#fff}
 nav a[aria-current=page]{background:#0e639c;border-color:#1177bb;color:#fff}
 
-/* The panel toggles live in the page header rather than in each
-   panel's own header bar. That is not a style choice: a panel's header
-   goes away with the panel, so a collapse button inside it would take
-   its own way out of reach. One strip survives every collapse. */
-.panel-toggles{display:flex;gap:6px;align-self:center;flex-wrap:wrap}
-.panel-toggles button{padding:6px 12px;font-size:13px;font-weight:500;background:#2f3136;border:1px solid #45474d;color:#c9d1d9}
-.panel-toggles button:hover:not(:disabled){background:#3a3d44;border-color:#565a61;color:#fff}
-.panel-toggles button[aria-pressed=true]{background:#123a24;border-color:#2a6b45;color:#8fe3a6}
-.panel-toggles button[aria-pressed=false]{background:#151a20;border-color:#39424d;color:#6b7280;text-decoration:line-through}
-.panel-toggles .group-label{align-self:center;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6f7d8c;margin-right:2px}
+.workspace{display:flex;flex:1;min-height:0;position:relative}
 
-.workspace{display:flex;flex:1;min-height:0}
+/* The panel headers carry their own collapse chevron. A panel's header
+   goes away with the panel, so the reopen control lives outside it, on
+   the workspace edge (see .edge-tab). */
+.panel-collapse{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:0;color:#8fa0b3;cursor:pointer;padding:2px;border-radius:4px;line-height:0}
+.panel-collapse:hover{background:#20262e;color:#e8edf2}
+.panel-collapse i{width:14px;height:14px}
+
+/* Reopen tabs: shown only while the panel they belong to is collapsed. */
+.edge-tab{position:absolute;top:50%;transform:translateY(-50%);z-index:6;width:16px;height:54px;display:flex;align-items:center;justify-content:center;background:#20262e;border:1px solid #303741;color:#8fa0b3;cursor:pointer;padding:0;border-radius:4px}
+.edge-tab:hover{background:#2f3136;color:#e8edf2}
+.edge-tab.left{left:0;border-left:0;border-radius:0 4px 4px 0}
+.edge-tab.right{right:0;border-right:0;border-radius:4px 0 0 4px}
+.edge-tab[hidden]{display:none}
+.edge-tab i{width:14px;height:14px}
+
+/* The sides set display:flex, which outranks the UA [hidden] rule, so
+   hiding them needs its own declaration. */
+.sidebar[hidden],.action-panel[hidden]{display:none}
 
 /* Handles: 4px so they are findable but not a wall. Double-click
    resets the panel to its default width; arrows work when focused. */
@@ -58,13 +64,23 @@ nav a[aria-current=page]{background:#0e639c;border-color:#1177bb;color:#fff}
 .resize-handle[hidden]{display:none}
 
 .sidebar{width:260px;min-width:180px;flex-shrink:0;background:#181d24;border-right:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
-.sidebar-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.sidebar-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
 
-/* The right panel is the Prompt Builder. Its header matches the
+/* The right panel is this page's action grid. Its header matches the
    sidebar's so the two edges of the row read as one instrument. */
-.builder-panel{width:420px;min-width:300px;flex-shrink:0;background:#181d24;border-left:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
-.builder-panel-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
-.builder-host{flex:1;overflow-y:auto;padding:12px}
+.action-panel{width:340px;min-width:240px;flex-shrink:0;background:#181d24;border-left:1px solid #303741;display:flex;flex-direction:column;overflow:hidden}
+.action-panel-header{padding:10px;border-bottom:1px solid #303741;font-weight:bold;color:#8fa0b3;font-size:12px;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.action-content{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:16px}
+
+/* The action grid is the same card style as the chat page's Test panel,
+   in this page's palette. */
+.test-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.test-func-card{background:#151a20;border:1px solid #262d36;border-radius:8px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;transition:all .15s ease;color:#e8edf2}
+.test-func-card:hover{background:#20262e;border-color:#4c8bf5;transform:translateY(-2px)}
+.test-func-card i{color:#4c8bf5;width:20px;height:20px}
+.test-func-card span{font-size:11px;font-weight:600;color:#dfe6ee}
+.test-func-card.disabled{opacity:.45;filter:grayscale(1);cursor:not-allowed}
+.test-func-card.disabled:hover{background:#151a20;border-color:#262d36;transform:none}
 
 .tree{flex:1;overflow-y:auto;padding:8px}
 .tree-item{user-select:none;cursor:pointer;padding:4px 6px;border-radius:3px}
@@ -148,20 +164,22 @@ summary:hover{color:#cbd5e1}
     <a href="/prompt-builder" target="_blank" rel="noopener">Prompt Builder</a>
     <a href="/test" aria-current="page">Test</a>
   </nav>
-  <!-- The Prompt Builder link above still opens the standalone page, which
-       is the same module as the panel on the right. Two entry points, one
-       builder. -->
-  <div class="panel-toggles" role="group" aria-label="Panels">
-    <span class="group-label">Panels</span>
-    <button id="toggle_left"   type="button" aria-pressed="true" title="Show or hide the file tree">Folders</button>
-    <button id="toggle_centre" type="button" aria-pressed="true" title="Show or hide the test results">Tests</button>
-    <button id="toggle_right"  type="button" aria-pressed="true" title="Show or hide the Prompt Builder">Builder</button>
-  </div>
+  <!-- The Prompt Builder link above opens the standalone builder page.
+       This dashboard no longer embeds it. -->
 </header>
 
 <div class="workspace" id="workspace">
+  <button class="edge-tab left" id="tab_left" type="button" title="Show the file tree" hidden>
+    <i data-lucide="chevron-right"></i>
+  </button>
+
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">Folders</div>
+    <div class="sidebar-header">
+      <span>Folders</span>
+      <button class="panel-collapse" id="collapse_left" type="button" title="Hide the file tree">
+        <i data-lucide="chevron-left"></i>
+      </button>
+    </div>
     <div id="tree" class="tree">Loading...</div>
   </div>
 
@@ -222,15 +240,61 @@ summary:hover{color:#cbd5e1}
   <div class="resize-handle" id="handleRight" role="separator" aria-orientation="vertical" tabindex="0"
        title="Drag to resize. Double-click to reset. Arrow keys move 16px, shift 40px."></div>
 
-  <aside class="builder-panel" id="builderPanel" aria-label="Prompt Builder">
-    <div class="builder-panel-header">Prompt Builder</div>
-    <div class="builder-host pb" id="builderHost"></div>
+  <aside class="action-panel" id="actionPanel" aria-label="Test actions">
+    <div class="action-panel-header">
+      <span>Test</span>
+      <button class="panel-collapse" id="collapse_right" type="button" title="Hide the test actions">
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </div>
+    <div class="action-content">
+      <div class="test-grid">
+
+        <!-- Real actions, wired to the module's own functions below. -->
+        <div class="test-func-card" data-action="run" title="Run the header tests for the selected agent">
+          <i data-lucide="play-circle"></i><span>Run Tests</span>
+        </div>
+        <div class="test-func-card" data-action="refresh" title="Reload agents, evidence and the file tree">
+          <i data-lucide="refresh-cw"></i><span>Refresh</span>
+        </div>
+        <div class="test-func-card" data-action="clear" title="Empty this page. The saved results file is kept - Refresh brings it back.">
+          <i data-lucide="eraser"></i><span>Clear</span>
+        </div>
+        <div class="test-func-card" data-action="save" title="Write a timestamped report into test_environment/output">
+          <i data-lucide="save"></i><span>Save Report</span>
+        </div>
+        <div class="test-func-card" data-action="evidence" title="Jump to the last run's evidence">
+          <i data-lucide="file-search"></i><span>Show Evidence</span>
+        </div>
+
+        <!-- Placeholders: no function yet, so they are greyed out. -->
+        <div class="test-func-card disabled" title="Not implemented yet">
+          <i data-lucide="terminal"></i><span>Prompt Inspector</span>
+        </div>
+        <div class="test-func-card disabled" title="Not implemented yet">
+          <i data-lucide="check-square"></i><span>Output Evaluator</span>
+        </div>
+        <div class="test-func-card disabled" title="Not implemented yet">
+          <i data-lucide="gauge"></i><span>Benchmark</span>
+        </div>
+        <div class="test-func-card disabled" title="Not implemented yet">
+          <i data-lucide="bug"></i><span>Debug Agent</span>
+        </div>
+        <div class="test-func-card disabled" title="Not implemented yet">
+          <i data-lucide="file-code"></i><span>API Logs</span>
+        </div>
+
+      </div>
+    </div>
   </aside>
+
+  <button class="edge-tab right" id="tab_right" type="button" title="Show the test actions" hidden>
+    <i data-lucide="chevron-left"></i>
+  </button>
 </div>
 
 <script type="module">
 import Tree from "/static/js/tree.js";
-import Builder from "/static/js/builder.js";
 import Panels from "/static/js/panels.js";
 import { buildReportText, reportFileName } from "/static/js/report.js";
 
@@ -240,8 +304,8 @@ import { buildReportText, reportFileName } from "/static/js/report.js";
 
 /* The API client module is deliberately not imported for the dashboard's
    own calls: this page has to keep working if api.js changes shape, and it
-   makes four. Tree and Builder pull it in as dependencies, but nothing
-   below uses it. The status code rides along on the error so "nothing
+   makes four. The tree pulls it in as a dependency, but nothing below
+   uses it. The status code rides along on the error so "nothing
    published yet" (404) can be told from "the server is down" (0) without
    matching on message text. */
 async function api(path, options = {}) {
@@ -685,7 +749,18 @@ async function saveReport() {
 // PANELS
 // ============================================================
 
-const panels = Panels.init({
+let panels = null;
+
+/* Keep the edge reopen tabs in step with the panels. The initial pass
+   runs inside Panels.init, before `panels` is assigned, so it returns
+   early and the explicit syncEdgeTabs() below does the first paint. */
+function syncEdgeTabs() {
+  if (!panels) return;
+  $("tab_left").hidden = panels.isVisible("left");
+  $("tab_right").hidden = panels.isVisible("right");
+}
+
+panels = Panels.init({
   container: $("workspace"),
   left: {
     element: $("sidebar"),
@@ -693,22 +768,31 @@ const panels = Panels.init({
   },
   centre: { element: $("centrePanel") },
   right: {
-    element: $("builderPanel"),
-    panel: { min: 300, max: 720, default: 420 },
+    element: $("actionPanel"),
+    panel: { min: 240, max: 560, default: 340 },
   },
   handleLeft: $("handleLeft"),
   handleRight: $("handleRight"),
-  toggles: {
-    left: $("toggle_left"),
-    centre: $("toggle_centre"),
-    right: $("toggle_right"),
-  },
   storageKey: "testDashboard",
+  onLayout: syncEdgeTabs,
 });
 
-/* Bring the verdict into view from wherever the user is. Used by the
-   builder panel's "Show evidence", which may well be pressed while the
-   centre is collapsed - restoring it is part of showing it. */
+/* The header toggles that could hide the centre are gone, so a centre
+   left hidden by an old session must not be stranded without a control. */
+if (!panels.isVisible("centre")) panels.show("centre");
+
+/* Collapse from the panel's own header; reopen from the edge tab, which
+   is not part of the panel and so is not hidden with it. */
+$("collapse_left").addEventListener("click", () => panels.hide("left"));
+$("collapse_right").addEventListener("click", () => panels.hide("right"));
+$("tab_left").addEventListener("click", () => panels.show("left"));
+$("tab_right").addEventListener("click", () => panels.show("right"));
+
+syncEdgeTabs();
+
+/* Bring the verdict into view from wherever the user is. The action
+   grid's "Show Evidence" may well be pressed while the centre is
+   collapsed - restoring it is part of showing it. */
 async function showEvidence(agentId) {
   const restored = panels.show("centre");
   const picked = selectAgent(agentId);
@@ -734,18 +818,25 @@ $("refresh_btn").addEventListener("click", refresh);
 $("clear_btn").addEventListener("click", clearReport);
 $("save_btn").addEventListener("click", saveReport);
 
-/* Two-way with the builder panel. Both are assigned before the panel is
-   mounted below, so a publish that lands during mount already has a
-   listener. */
-Builder.onPublished = async (agentId) => {
-  if (selectAgent(agentId)) {
-    setStatus("Published '" + agentId + "'. Press Run tests.", "ok");
-  }
-  await loadTree();
+/* The action grid. Each real card carries a data-action naming the
+   module function it runs; the placeholders carry none and are styled
+   disabled, so they stay inert. */
+const ACTIONS = {
+  run: runTests,
+  refresh: refresh,
+  clear: clearReport,
+  save: saveReport,
+  evidence: () => showEvidence($("agent_select").value),
 };
-Builder.onShowEvidence = showEvidence;
 
-Builder.mount($("builderHost"));
+for (const card of document.querySelectorAll(".test-func-card[data-action]")) {
+  const action = ACTIONS[card.dataset.action];
+  if (action) card.addEventListener("click", action);
+}
+
+/* The cards' icons come from the Lucide CDN. A blocked CDN must not take
+   the whole dashboard down with it, so this is only a garnish. */
+if (window.lucide) lucide.createIcons();
 
 /* The agents and the models are independent of the evidence, so a
    failure in one does not blank the other two. */
@@ -759,6 +850,17 @@ Builder.mount($("builderHost"));
   /* refresh() loads the tree too, and the first call is how the tree
      gets loaded at all -- no separate tree load here. */
   await refresh();
+
+  /* The Prompt Builder's "Test" button opens /test?agent=<id>&run=1, so
+     the run starts on arrival without a second click. It only fires for
+     the agent that was asked for, so a missing or unpublished id opens
+     the dashboard in its normal state instead of running the wrong one. */
+  const params = new URLSearchParams(location.search);
+  if (params.get("run") === "1"
+      && params.get("agent")
+      && $("agent_select").value === params.get("agent")) {
+    await runTests();
+  }
 })();
 </script>
 </body>

@@ -166,6 +166,30 @@ const API = {
 
   models() {
     return this.request('GET', '/api/models');
+  },
+
+  /* The headless engine's tool log (data/toollog/tool_usage.jsonl),
+     read back through the server. This is the agent's own record of what
+     it executed, so it is separate from the chat history above: clearing
+     or reading one never touches the other. */
+
+  toolLog(limit = 100, agent = null, tool = null) {
+    const params = new URLSearchParams({ limit });
+    if (agent) params.set('agent', agent);
+    if (tool) params.set('tool', tool);
+    return this.request('GET', `/api/tool-log?${params.toString()}`);
+  },
+
+  /* Wipe the tool log, or one agent's events. Never touches chat history. */
+  toolLogClear(agent = null) {
+    const query = agent ? `?agent=${encodeURIComponent(agent)}` : '';
+    return this.request('DELETE', `/api/tool-log${query}`);
+  },
+
+  /* The tool IDs agent.json's "tools" may name. Served from the engine
+     registry so a frontend never keeps its own copy of the list. */
+  tools() {
+    return this.request('GET', '/api/tools');
   }
 };
 

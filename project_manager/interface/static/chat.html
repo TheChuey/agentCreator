@@ -26,6 +26,7 @@
             --radius-lg: 16px;
             --radius-md: 10px;
             --radius-sm: 6px;
+            --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
         }
 
         * {
@@ -158,6 +159,81 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-secondary);
+        }
+
+        /* Collapse chevron in a panel's header. The panel it hides goes
+           away, so the reopen control (below) is a separate edge tab. */
+        .panel-collapse {
+            background: transparent;
+            border: 0;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            line-height: 0;
+        }
+
+        .panel-collapse:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .panel-collapse i {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* A collapsed side panel is removed from the flex row; the chat
+           column stretches into its place. */
+        .panel.collapsed {
+            display: none;
+        }
+
+        /* Reopen tabs: shown only while the panel they belong to is
+           collapsed. Positioned inside .app-container, which is relative. */
+        .panel-tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 16;
+            width: 16px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .panel-tab:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .panel-tab.left {
+            left: 0;
+            border-left: 0;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .panel-tab.right {
+            right: 0;
+            border-right: 0;
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .panel-tab[hidden] {
+            display: none;
+        }
+
+        .panel-tab i {
+            width: 14px;
+            height: 14px;
         }
 
         .panel-sources {
@@ -577,6 +653,20 @@
             color: var(--text-primary);
         }
 
+        /* Cards for features that are not wired up yet: greyed and inert,
+           so a click is not offered where nothing happens. */
+        .test-func-card.disabled {
+            opacity: 0.45;
+            filter: grayscale(1);
+            cursor: not-allowed;
+        }
+
+        .test-func-card.disabled:hover {
+            background: var(--bg-card);
+            border-color: var(--border-subtle);
+            transform: none;
+        }
+
         .saved-chats-section {
             display: flex;
             flex-direction: column;
@@ -730,6 +820,11 @@
             .panel-test.open {
                 transform: translateX(0);
             }
+            /* Off-canvas: the edge tab is the only way in, so force it
+               visible even though syncPanelTabs() marks it hidden. */
+            #tabTest {
+                display: flex !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -745,6 +840,9 @@
             .panel-sources.open {
                 transform: translateX(0);
             }
+            #tabSources {
+                display: flex !important;
+            }
         }
     </style>
 </head>
@@ -752,9 +850,6 @@
 
     <header class="app-header" data-pm-header>
         <div class="header-left">
-            <button class="btn-header btn-icon-only" id="toggleSources" title="Toggle Sources & Notes">
-                <i data-lucide="panel-left"></i>
-            </button>
             <div class="agent-logo">
                 <i data-lucide="bot" style="width:18px; height:18px;"></i>
             </div>
@@ -766,19 +861,22 @@
                 <i data-lucide="plus" style="width:14px; height:14px;"></i>
                 New Agent
             </button>
-            <button class="btn-header btn-icon-only" id="toggleTest" title="Toggle Test Panel">
-                <i data-lucide="panel-right"></i>
-            </button>
         </div>
     </header>
 
     <div class="app-container">
 
+        <button class="panel-tab left" id="tabSources" type="button" title="Show Sources & Notes" hidden>
+            <i data-lucide="chevron-right"></i>
+        </button>
+
         <!-- LEFT PANEL: SOURCES & NOTES -->
         <aside class="panel panel-sources" id="panelSources">
             <div class="panel-header">
                 <span class="panel-title">Sources & Notes</span>
-                <i data-lucide="notebook" style="width:16px; height:16px; color: var(--text-muted);"></i>
+                <button class="panel-collapse" id="collapseSources" type="button" title="Hide Sources & Notes">
+                    <i data-lucide="chevron-left"></i>
+                </button>
             </div>
             <div class="sources-content">
                 
@@ -865,35 +963,41 @@
         <aside class="panel panel-test" id="panelTest">
             <div class="panel-header">
                 <span class="panel-title">Test</span>
-                <i data-lucide="x" style="width:16px; height:16px; color: var(--text-muted); cursor:pointer;" id="closeTest"></i>
+                <button class="panel-collapse" id="collapseTest" type="button" title="Hide the Test panel">
+                    <i data-lucide="chevron-right"></i>
+                </button>
             </div>
             <div class="test-content">
 
                 <!-- Interactive Function Buttons Grid -->
                 <div class="test-grid">
-                    <div class="test-func-card" onclick="runTestFunc('Run Test Suite')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="play-circle"></i>
                         <span>Run Test Suite</span>
                     </div>
-                    <div class="test-func-card" onclick="runTestFunc('Debug Agent')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="bug"></i>
                         <span>Debug Agent</span>
                     </div>
-                    <div class="test-func-card" onclick="runTestFunc('Prompt Inspector')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="terminal"></i>
                         <span>Prompt Inspector</span>
                     </div>
-                    <div class="test-func-card" onclick="runTestFunc('Output Evaluator')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="check-square"></i>
                         <span>Output Evaluator</span>
                     </div>
-                    <div class="test-func-card" onclick="runTestFunc('Benchmark Performance')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="gauge"></i>
                         <span>Benchmark</span>
                     </div>
-                    <div class="test-func-card" onclick="runTestFunc('View API Logs')">
+                    <div class="test-func-card disabled" title="Not implemented yet">
                         <i data-lucide="file-code"></i>
                         <span>API Logs</span>
+                    </div>
+                    <div class="test-func-card" onclick="openDiagnostic()" title="Open tool diagnostics for the active agent in its own window">
+                        <i data-lucide="activity"></i>
+                        <span>Diagnostics</span>
                     </div>
                     <div class="test-func-card" onclick="wipeChat()" title="Clear the chat history">
                         <i data-lucide="trash-2"></i>
@@ -915,6 +1019,10 @@
 
             </div>
         </aside>
+
+        <button class="panel-tab right" id="tabTest" type="button" title="Show the Test panel" hidden>
+            <i data-lucide="chevron-left"></i>
+        </button>
 
     </div>
 
@@ -983,11 +1091,6 @@
         // Copying lives in chat.js (copyText), which owns the transcript
         // and the saved-session rows.
 
-        // Placeholder Action Handlers
-        function runTestFunc(funcName) {
-            showToast(`Triggered: ${funcName}`);
-        }
-
         function createNewAgent() {
             if (typeof scaffoldNewAgent === 'function') {
                 scaffoldNewAgent();
@@ -1027,18 +1130,52 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Sidebar Toggles
-        document.getElementById("toggleSources")?.addEventListener("click", () => {
-            document.getElementById("panelSources").classList.toggle("open");
+        // Sidebar collapse / reopen. Collapsing a side panel removes it
+        // from the flex row on desktop; the edge tab brings it back. On
+        // narrow screens the panels are off-canvas, so the tabs stay
+        // visible (see the media queries) and toggle the .open slide.
+        var PANEL_TABS = {
+            panelSources: "tabSources",
+            panelTest: "tabTest"
+        };
+
+        function syncPanelTabs() {
+            Object.keys(PANEL_TABS).forEach((id) => {
+                var panel = document.getElementById(id);
+                document.getElementById(PANEL_TABS[id]).hidden =
+                    !panel.classList.contains("collapsed");
+            });
+        }
+
+        function collapsePanel(id) {
+            var panel = document.getElementById(id);
+            panel.classList.add("collapsed");
+            panel.classList.remove("open");
+            syncPanelTabs();
+        }
+
+        function expandPanel(id) {
+            var panel = document.getElementById(id);
+            panel.classList.remove("collapsed");
+            panel.classList.add("open");
+            syncPanelTabs();
+        }
+
+        document.getElementById("collapseSources")?.addEventListener("click", () => collapsePanel("panelSources"));
+        document.getElementById("collapseTest")?.addEventListener("click", () => collapsePanel("panelTest"));
+
+        document.getElementById("tabSources")?.addEventListener("click", () => {
+            var panel = document.getElementById("panelSources");
+            if (panel.classList.contains("open")) panel.classList.remove("open");
+            else expandPanel("panelSources");
+        });
+        document.getElementById("tabTest")?.addEventListener("click", () => {
+            var panel = document.getElementById("panelTest");
+            if (panel.classList.contains("open")) panel.classList.remove("open");
+            else expandPanel("panelTest");
         });
 
-        document.getElementById("toggleTest")?.addEventListener("click", () => {
-            document.getElementById("panelTest").classList.toggle("open");
-        });
-
-        document.getElementById("closeTest")?.addEventListener("click", () => {
-            document.getElementById("panelTest").classList.remove("open");
-        });
+        syncPanelTabs();
     </script>
 </body>
 </html>

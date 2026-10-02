@@ -41,6 +41,7 @@ from interface.routers.ws import router as ws_router
 from interface.routers.chat import router as chat_router
 from interface.routers.agents import router as agents_router
 from interface.routers.testing import router as testing_router
+from interface.routers.toollog import router as toollog_router
 
 from interface.core.defaults import get_interface, get_events, get_sessions
 
@@ -79,6 +80,11 @@ PROMPT_BUILDER_HTML = STATIC_DIR / "Agentpromptbuilder.html"
 #: panel, the resizable panels and the saved report are the shared
 #: modules beside it.
 TEST_HTML = STATIC_DIR / "test.html"
+
+#: Per-agent tool diagnostics, opened in its own window from /chat. Reads the
+#: engine's tool log filtered to one agent; see routers/toollog.py for the
+#: endpoint it consumes.
+DIAGNOSTIC_HTML = STATIC_DIR / "diagnostic.html"
 
 #: Name the engine knows this agent root by. Re-registering the same
 #: name replaces it and promotes it, so restarting the server is safe.
@@ -187,6 +193,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router)
     app.include_router(agents_router)
     app.include_router(testing_router)
+    app.include_router(toollog_router)
 
     # --------------------------------------------------------
     # Static workspace
@@ -219,6 +226,10 @@ def create_app() -> FastAPI:
     @app.get("/test")
     def test_dashboard():
         return FileResponse(TEST_HTML)
+
+    @app.get("/diagnostic")
+    def diagnostic():
+        return FileResponse(DIAGNOSTIC_HTML)
 
     return app
 

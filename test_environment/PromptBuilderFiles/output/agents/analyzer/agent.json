@@ -1,0 +1,11 @@
+{
+  "id": "analyzer",
+  "name": "Analyzer",
+  "description": "you are an analyzer that looks for specific information",
+  "mode": "agent",
+  "model": "",
+  "tools": [
+    "read_file",
+    "map_files"
+  ]
+}

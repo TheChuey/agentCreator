@@ -349,6 +349,21 @@ export function init(spec) {
       persist();
       return true;
     },
+    /* Counterpart to show(): the in-panel chevron collapses a side. The
+       reopen control lives outside the panel, so it is not lost with it. */
+    hide(slot) {
+      if (hidden[slot]) return false;
+      hidden[slot] = true;
+      layout();
+      persist();
+      return true;
+    },
+    toggle(slot) {
+      hidden[slot] = !hidden[slot];
+      layout();
+      persist();
+      return !hidden[slot];
+    },
     isVisible: (slot) => !hidden[slot],
   };
 }

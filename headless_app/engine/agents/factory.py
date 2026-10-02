@@ -146,12 +146,15 @@ def _append_grounding(agent_id: str, profile, bridge=None) -> None:
 
     Small local models routinely call path tools with invented paths, bare
     filenames, or literally '/path/to/...' placeholders copied from a prompt.
-    Pinning a real WORKSPACE ROOT plus the agent's own folder and skills dir
+    Pinning the real browse roots plus the agent's own folder and skills dir
     gives the model deterministic places to start with map_files, and an
     explicit instruction to stop guessing once a lookup fails.
 
     When a Project Manager bridge is present it is the filesystem authority,
-    so its workspace root becomes the grounding root instead of the local app.
+    so its browse roots become the grounding roots instead of the local app.
+    Every path the file tools exchange is root-qualified (``workspace/...``),
+    so the block names the roots the way the tools spell them rather than
+    describing a single root the model would then prefix by guesswork.
     """
     from pathlib import Path
 
@@ -160,8 +163,10 @@ def _append_grounding(agent_id: str, profile, bridge=None) -> None:
         if not workspace_root:
             bridge_health = getattr(bridge, "health", lambda: {})()
             workspace_root = str((bridge_health or {}).get("root", ""))
+        roots = _provider_roots(bridge)
     else:
         workspace_root = str(Path(__file__).resolve().parents[2].resolve())
+        roots = []
 
     root = Path(workspace_root)
     skill_dir = Path(__file__).resolve().parents[2] / "skills"
@@ -169,19 +174,52 @@ def _append_grounding(agent_id: str, profile, bridge=None) -> None:
 
     block = [
         "GROUNDING (read this before you call any file tool)",
-        f"- WORKSPACE ROOT: {workspace_root}",
-        f"- THIS AGENT FOLDER: {str(agent_dir(agent_id).resolve())}",
     ]
+    if roots:
+        block.append("- BROWSE ROOTS (every path you pass is prefixed with one of these):")
+        for name, path, writable in roots:
+            block.append(
+                f"    {name}/  ->  {path}  ({'read/write' if writable else 'READ ONLY'})"
+            )
+        block.append(f"- WORKSPACE ROOT (absolute): {workspace_root}")
+    else:
+        block.append(f"- WORKSPACE ROOT: {workspace_root}")
+    block.append(f"- THIS AGENT FOLDER: {str(agent_dir(agent_id).resolve())}")
     if skills:
         block.append(f"- SKILLS DIRECTORY: {str(skill_dir.resolve())} (files: {skills})")
     block += [
-        "- Use file paths relative to WORKSPACE ROOT. Start by calling map_files on the",
-        "  root, then read_file only on a path map_files returned.",
+        "- Paths are root-qualified: write 'workspace/agents/agent.json', never",
+        "  'workspace/source_files/...' (source_files is its own root, not a folder",
+        "  inside workspace). Start by calling map_files on the root you need, then",
+        "  read_file only on a path map_files returned.",
         "- Never call readonly tools on a bare filename, a '/path/to/...' placeholder, or any",
         "  path you invented. If a tool reports 'not found', DO NOT guess another filename:",
-        "  run map_files on WORKSPACE ROOT / THIS AGENT FOLDER first and read what exists.",
+        "  run map_files on the root first and read what exists.",
     ]
     profile.system_prompt = profile.system_prompt + "\n\n" + "\n".join(block)
+
+
+def _provider_roots(bridge) -> list[tuple[str, str, bool]]:
+    """(name, absolute path, writable) for each Project Manager browse root.
+
+    Best-effort: a bridge that cannot report its roots (an older server, a
+    provider mounted differently) simply yields nothing, and the grounding
+    block falls back to describing the workspace root alone.
+    """
+    try:
+        raw = getattr(bridge, "roots", None)
+        if callable(raw):
+            raw = raw()
+        roots = []
+        for entry in raw or []:
+            name = str(entry.get("name", "")).strip()
+            path = str(entry.get("path", "")).strip()
+            if not name or not path:
+                continue
+            roots.append((name, path, bool(entry.get("writable", False))))
+        return roots
+    except Exception:
+        return []
 
 
 def _assemble(

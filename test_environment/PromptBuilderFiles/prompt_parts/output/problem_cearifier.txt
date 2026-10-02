@@ -1,0 +1,17 @@
+### [Problem Identifier / Short Title]
+
+**1. Original Problem**
+State the core problem exactly as presented, including its scope, initial symptoms, and operational or business impact.
+
+**2. Analysis & Steps**
+Break down the problem step-by-step. For each diagnostic step, you must explicitly include:
+* **Step [X]: [Diagnostic Focus / Area Investigated]**
+  * **Question:** [The specific diagnostic or analytical question asked]
+  * **Answer:** [The verified factual answer, evidence, or data point retrieved]
+  * **Support & Analysis:** [How this answer supports or refutes the hypothesis, and what it rules in or out]
+
+**3. Concise Summary**
+Provide a 2–3 sentence high-level summary connecting the findings across all steps. Summarize how the initial symptoms relate to the structural failure without getting bogged down in raw data.
+
+**4. The Root Problem Is:**
+[Conclude with a single, clear, unambiguous statement defining the single foundational cause that must be resolved to permanently fix the issue.]
