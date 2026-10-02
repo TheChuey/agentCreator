@@ -11,8 +11,8 @@ has a single file to read. Two stores live here:
     data/chatlog/chat.log            - every user turn + agent reply (JSON lines)
     data/toollog/tool_usage.jsonl    - every tool execution event (JSON lines)
 
-The data root is ``headless_app/data`` unless ``AGENT_DATA_DIR`` names
-another one, and :func:`use_data_dir` points it somewhere else for the
+The data root is the repository's ``data`` folder unless ``AGENT_DATA_DIR``
+names another one, and :func:`use_data_dir` points it somewhere else for the
 duration of a block. That is how the test environment keeps its runs out
 of the real chat history: a header test prompts an agent four times, and
 those four turns are evidence, not conversation with a user.
@@ -44,12 +44,13 @@ def default_data_dir() -> Path:
     """The data root this process writes to.
 
     ``AGENT_DATA_DIR`` when it is set to an existing path, otherwise the
-    engine's own ``data`` folder beside this package.
+    repository's own ``data`` folder, so every writer lands in one place
+    (``<repo>/data``) instead of beside this package.
     """
     override = os.environ.get(DATA_DIR_ENV, "").strip()
     if override:
         return Path(override).expanduser().resolve()
-    return Path(__file__).resolve().parent.parent / "data"
+    return Path(__file__).resolve().parents[2] / "data"
 
 
 DATA_DIR = default_data_dir()

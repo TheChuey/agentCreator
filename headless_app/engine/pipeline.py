@@ -25,6 +25,7 @@ from datetime import datetime
 from pathlib import Path
 
 from engine.agents.factory import build_agent, build_agent_from_definition
+from tools import chatlog
 
 CONFIG_FILE = Path(__file__).resolve().parent.parent / "config" / "pipeline.json"
 
@@ -42,8 +43,13 @@ def _iso_now() -> str:
 
 
 def _records_file() -> Path:
-    """pipeline_runs.jsonl inside the headless data directory."""
-    return Path(__file__).resolve().parent.parent / "data" / "pipeline_runs.jsonl"
+    """pipeline_runs.jsonl inside the active data directory.
+
+    Read from ``tools.chatlog`` at call time rather than recomputed here,
+    so pipeline runs follow the same root as the chat and tool logs -
+    including the redirect a test run applies with ``use_data_dir``.
+    """
+    return chatlog.DATA_DIR / "pipeline_runs.jsonl"
 
 
 def _record_run(snapshot: dict) -> None:

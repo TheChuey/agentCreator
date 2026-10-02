@@ -22,7 +22,8 @@ const NAV_ITEMS = [
     href: '/prompt-builder',
     popup: { name: 'PMPromptBuilder', width: 1100, height: 760 }
   },
-  { page: 'test', label: 'Test', href: '/test' }
+  { page: 'test', label: 'Test', href: '/test' },
+  { page: 'logs', label: 'Logs', href: '/logs' }
 ];
 
 const STYLE_ID = 'pmnav-style';

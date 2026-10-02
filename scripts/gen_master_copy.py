@@ -183,8 +183,9 @@ TARGETS: dict[str, dict[str, Any]] = {
             ("project_manager_MASTER_COPY.md", "`project_manager/`"),
         ],
         "exclude": {
-            "headless_app/data": (
-                "runtime output: chat log, tool log, pipeline run records"
+            "data": (
+                "runtime output: chat log, tool log, pipeline run records, "
+                "and the log-pin file"
             ),
             "project_manager/workspace/data": (
                 "runtime output: chat log and saved chat sessions"
@@ -565,7 +566,7 @@ engine can be swapped without touching the UI.
 | `/api/chat` | DELETE | Clear the thread and truncate the log.                                                    |
 
 The engine lives in `interface/routers/chat.py` and persists history to
-`headless_app/data/chatlog/chat.log`, mirrored into
+`data/chatlog/chat.log`, mirrored into
 `workspace/data/chat.log` so the managed workspace keeps its own copy.
 
 Everything runs **in one process**. Each router calls
@@ -600,7 +601,7 @@ All file tool calls run through `DirectProjectIO`
 (`headless_app/bridge/providers.py`), so `parameters/filesystem.py` remains the
 single filesystem authority even when an agent is writing files. Each pipeline
 step reports `Agent N (<id>) completed. Tools used: ...`, and the run is
-appended to `headless_app/data/pipeline_runs.jsonl`.
+appended to `data/pipeline_runs.jsonl`.
 
 ---
 

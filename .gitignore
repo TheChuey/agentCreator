@@ -26,6 +26,7 @@ htmlcov/
 # Logs and runtime data
 *.log
 *.jsonl
+/data/
 project_manager/workspace/ws_evt_probe.txt
 project_manager/workspace/data/
 

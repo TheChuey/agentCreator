@@ -190,6 +190,32 @@ const API = {
      registry so a frontend never keeps its own copy of the list. */
   tools() {
     return this.request('GET', '/api/tools');
+  },
+
+  /* ---- Unified logs ----
+     One list covering chat turns, tool events, pipeline runs and the
+     header-test report. Each row is {id, ts, source, agent, level,
+     message, detail, pinned}; the id is stable enough to pin. */
+
+  logRows(limit = 200, source = null, agent = null, level = null) {
+    const params = new URLSearchParams({ limit });
+    if (source) params.set('source', source);
+    if (agent) params.set('agent', agent);
+    if (level) params.set('level', level);
+    return this.request('GET', `/api/logs?${params.toString()}`);
+  },
+
+  /* Save (pinned=true) or unsave (pinned=false) one row. Persisted in
+     data/log_pins.json, so it survives a reload. */
+  logPin(id, pinned = true) {
+    return this.request('POST', '/api/logs/pin', { id, pinned });
+  },
+
+  /* Wipe one source (chat|tool|pipeline|test), or every source when
+     omitted. Clearing chat also clears the workspace mirror. */
+  logClear(source = null) {
+    const query = source ? `?source=${encodeURIComponent(source)}` : '';
+    return this.request('DELETE', `/api/logs${query}`);
   }
 };
 

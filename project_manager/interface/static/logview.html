@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Logs</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    :root {
+        --bg-darkest: #0b0f17;
+        --bg-app: #10141e;
+        --bg-panel: #131822;
+        --bg-card: #1b2130;
+        --bg-card-hover: #232a3d;
+        --border-color: #252e3e;
+        --border-subtle: #1e2634;
+        --text-primary: #e6e8ee;
+        --text-secondary: #9aa2b1;
+        --text-muted: #626c7d;
+        --ok: #7dd3a0;
+        --bad: #f87171;
+        --warn: #fbbf24;
+        --info: #60a5fa;
+        --accent-blue: #3b82f6;
+        --radius-md: 10px;
+        --radius-sm: 6px;
+        --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+        /* One size for every log-row element; the toolbar control drives it. */
+        --log-font-size: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+        min-height: 100%;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-darkest);
+        color: var(--text-primary);
+    }
+
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    header {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 22px;
+    }
+
+    .title-block { display: flex; flex-direction: column; }
+
+    .title-row { display: flex; align-items: center; gap: 10px; }
+    .title-row i { color: var(--accent-blue); }
+    h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+    .subtitle { margin-top: 4px; color: var(--text-muted); font-size: 12px; }
+
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding: 12px 22px;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-app);
+    }
+
+    .filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    select {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
+        font-size: 12px;
+        padding: 5px 8px;
+        cursor: pointer;
+    }
+
+    select:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 1px; }
+
+    button.refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button.refresh:hover { background: var(--bg-card-hover); border-color: #565a61; }
+
+    button.clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: 1px solid #5b2b2b;
+        border-radius: var(--radius-sm);
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--bad);
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button.clear:hover { background: rgba(248, 113, 113, 0.12); border-color: var(--bad); }
+
+    .auto {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .updated { margin-left: auto; font-size: 11px; color: var(--text-muted); }
+
+    main { flex: 1; padding: 14px 22px 24px; overflow-x: auto; }
+
+    .log-list { display: flex; flex-direction: column; gap: 0.25em; min-width: 62em; font-size: var(--log-font-size); }
+
+    .log-entry { display: flex; flex-direction: column; }
+
+    .log-row {
+        display: grid;
+        grid-template-columns: 2em 7em 6em 8em 5.5em 1fr 2.2em;
+        align-items: center;
+        gap: 0.5em;
+        min-height: 3em;
+        padding: 0.4em 0.7em;
+        border-radius: var(--radius-sm);
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-left: 3px solid var(--border-color);
+        transition: background 0.15s ease;
+    }
+
+    .log-row:hover { background: var(--bg-card-hover); }
+
+    .log-row.saved {
+        background: rgba(125, 211, 160, 0.08);
+        border-left-color: var(--ok);
+    }
+
+    .log-row.bad { border-left-color: var(--bad); }
+
+    .save-check { width: 1.1em; height: 1.1em; font-size: inherit; cursor: pointer; accent-color: var(--ok); }
+
+    .log-time { color: var(--text-muted); font-family: var(--font-mono); white-space: nowrap; }
+
+    .log-source {
+        display: inline-block;
+        width: fit-content;
+        padding: 0.2em 0.55em;
+        border-radius: 0.35em;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: #232a3d;
+        color: var(--text-secondary);
+    }
+
+    .log-source[data-source="tool"] { background: #14263f; color: #7fb4ff; }
+    .log-source[data-source="pipeline"] { background: #2a2038; color: #c4a6ff; }
+    .log-source[data-source="test"] { background: #23301f; color: #a3d977; }
+
+    .log-agent {
+        font-weight: 600;
+        color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .log-level {
+        display: inline-block;
+        width: fit-content;
+        padding: 0.2em 0.55em;
+        border-radius: 0.35em;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+    .log-level.info { background: rgba(96, 165, 250, 0.16); color: var(--info); }
+    .log-level.debug { background: #f1f3f4; color: #5f6368; }
+    .log-level.error { background: rgba(248, 113, 113, 0.16); color: var(--bad); }
+    .log-level.warning { background: rgba(251, 191, 36, 0.16); color: var(--warn); }
+
+    .log-message {
+        font-family: var(--font-mono);
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    .log-message:hover { color: var(--text-primary); }
+
+    .delete-btn {
+        width: 2em;
+        height: 2em;
+        border: none;
+        border-radius: 0.4em;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 1em;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .delete-btn:hover { background: rgba(248, 113, 113, 0.14); color: var(--bad); }
+
+    .log-detail {
+        margin: 0.25em 0 0.4em 2.9em;
+        padding: 0.6em 0.75em;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        background: var(--bg-app);
+        color: var(--text-secondary);
+        font-family: var(--font-mono);
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 22em;
+        overflow: auto;
+    }
+
+    .log-empty {
+        color: var(--text-muted);
+        padding: 2em 0.15em;
+        text-align: center;
+    }
+
+    .log-footer {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 22px;
+        border-top: 1px solid var(--border-color);
+        background: var(--bg-panel);
+    }
+
+    .footer-info { font-size: 12px; color: var(--text-muted); }
+    .log-footer .clear { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<header data-pm-header>
+    <div class="title-block">
+        <div class="title-row">
+            <i data-lucide="scroll-text" style="width:20px;height:20px;"></i>
+            <h1>Agent Logs</h1>
+        </div>
+        <div class="subtitle">
+            Chat turns, tool calls, pipeline runs and header-test results in one list.
+            Save a row to pin it; the × hides it from this view only.
+        </div>
+    </div>
+</header>
+
+<div class="toolbar">
+    <label class="filter" for="sourceFilter">Source
+        <select id="sourceFilter">
+            <option value="">All</option>
+            <option value="chat">Chat</option>
+            <option value="tool">Tool</option>
+            <option value="pipeline">Pipeline</option>
+            <option value="test">Test</option>
+        </select>
+    </label>
+    <label class="filter" for="levelFilter">Level
+        <select id="levelFilter">
+            <option value="">All</option>
+            <option value="INFO">INFO</option>
+            <option value="WARNING">WARNING</option>
+            <option value="ERROR">ERROR</option>
+            <option value="DEBUG">DEBUG</option>
+        </select>
+    </label>
+    <label class="filter" for="agentFilter">Agent
+        <select id="agentFilter">
+            <option value="">All</option>
+        </select>
+    </label>
+    <label class="filter" for="fontSize">Text size
+        <select id="fontSize"></select>
+    </label>
+    <button class="refresh" id="refreshBtn" type="button">
+        <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Refresh
+    </button>
+    <label class="auto" for="autoRefresh">
+        <input type="checkbox" id="autoRefresh"> Auto-refresh (5s)
+    </label>
+    <span class="updated" id="updatedAt"></span>
+</div>
+
+<main>
+    <div class="log-list" id="logList">
+        <div class="log-empty">Loading…</div>
+    </div>
+</main>
+
+<footer class="log-footer">
+    <span class="footer-info" id="savedCount">0 saved logs</span>
+    <span class="footer-info" id="logCount">0 logs</span>
+    <button class="clear" id="clearBtn" type="button">
+        <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Clear logs
+    </button>
+</footer>
+
+<script type="module" src="/static/js/logview.js"></script>
+<script>if (window.lucide) window.lucide.createIcons();</script>
+</body>
+</html>

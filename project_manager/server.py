@@ -42,6 +42,7 @@ from interface.routers.chat import router as chat_router
 from interface.routers.agents import router as agents_router
 from interface.routers.testing import router as testing_router
 from interface.routers.toollog import router as toollog_router
+from interface.routers.logs import router as logs_router
 
 from interface.core.defaults import get_interface, get_events, get_sessions
 
@@ -85,6 +86,10 @@ TEST_HTML = STATIC_DIR / "test.html"
 #: engine's tool log filtered to one agent; see routers/toollog.py for the
 #: endpoint it consumes.
 DIAGNOSTIC_HTML = STATIC_DIR / "diagnostic.html"
+
+#: Unified log viewer: chat, tool, pipeline and test logs in one list.
+#: Reads routers/logs.py, which normalises every source into one row shape.
+LOGS_HTML = STATIC_DIR / "logview.html"
 
 #: Name the engine knows this agent root by. Re-registering the same
 #: name replaces it and promotes it, so restarting the server is safe.
@@ -194,6 +199,7 @@ def create_app() -> FastAPI:
     app.include_router(agents_router)
     app.include_router(testing_router)
     app.include_router(toollog_router)
+    app.include_router(logs_router)
 
     # --------------------------------------------------------
     # Static workspace
@@ -230,6 +236,10 @@ def create_app() -> FastAPI:
     @app.get("/diagnostic")
     def diagnostic():
         return FileResponse(DIAGNOSTIC_HTML)
+
+    @app.get("/logs")
+    def logs_page():
+        return FileResponse(LOGS_HTML)
 
     return app
 
