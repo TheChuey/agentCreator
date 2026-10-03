@@ -12,6 +12,7 @@ No API keys, no cloud, no build step.
 agentCreator/
 ├── headless_app/      the agent engine: think/act/observe, tools, bridge
 ├── project_manager/   the server: editor UI, chat, agent + pipeline routes
+├── workspace/         the managed project: agents, docs, notes, runtime data
 ├── test_environment/  the agent header test suite + published test agents
 ├── source_files/      generated documentation (see Documentation)
 └── scripts/           venv setup + the documentation generator
@@ -107,9 +108,9 @@ places. Home lists the workspace and this app's own source; `/test` lists
 opens it in an editor window. Scoping is a view: `test_environment/` files
 still open and save from the editor.
 
-**Two scopes.** *Workspace* is the managed project in
-`project_manager/workspace/` and is writable. *Dev* is agentCreator's own
-source, so you can read and edit the app that is running you.
+**Two scopes.** *Workspace* is the managed project in `workspace/` at the
+repository root and is writable. *Dev* is agentCreator's own source, so you can
+read and edit the app that is running you.
 
 **Agents come from two places.** The engine ships a library
 (`headless_app/engine/agent_library/`) and the server registers
@@ -232,8 +233,8 @@ rebuilds it from the local Ollama install. Agent models come from each
 `agent.json`, and `MAX_NUM_CTX = 32768` in `engine/core/llm.py` bounds context.
 
 Runtime output goes to `headless_app/data/` (chat log, tool log, pipeline
-records) and `project_manager/workspace/data/` (the workspace's own chat log
-and saved sessions). Both are gitignored and recreated on demand. The empty
+records) and `workspace/data/` (the workspace's own chat log and saved
+sessions). Both are gitignored and recreated on demand. The empty
 `workspace/` content folders are untracked for the same reason.
 
 ## Layout requirement

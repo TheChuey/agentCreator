@@ -31,9 +31,27 @@ import json
 import sys
 from pathlib import Path
 
-from interface_runner import AgentInterface
-from engine.core.llm import refresh_models
-from engine.agents.registry import list_agents
+
+def _ensure_repo_root_on_path() -> None:
+    """Make the repository root importable before the engine loads.
+
+    ``run.py`` is executed as a script from inside ``headless_app``, so only
+    that directory is on ``sys.path``. The permission panel
+    (``ws_controlPanel``) is a sibling of ``headless_app``, one level up, and
+    is imported by the agent factory. Putting the repository root on the path
+    here means the gate is found by the same bootstrap that is already
+    responsible for the other half of the import layout.
+    """
+    repo_root = Path(__file__).resolve().parents[1]
+    if repo_root.is_dir() and str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+
+
+_ensure_repo_root_on_path()
+
+from interface_runner import AgentInterface  # noqa: E402
+from engine.core.llm import refresh_models  # noqa: E402
+from engine.agents.registry import list_agents  # noqa: E402
 
 
 def _build_bridge(args) -> object | None:

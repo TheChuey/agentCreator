@@ -27,8 +27,8 @@ htmlcov/
 *.log
 *.jsonl
 /data/
-project_manager/workspace/ws_evt_probe.txt
-project_manager/workspace/data/
+workspace/ws_evt_probe.txt
+workspace/data/
 
 # Test environment runtime output
 test_environment/output/
@@ -36,4 +36,4 @@ test_environment/test_data/
 
 # Local working notes
 planSave.txt
-project_manager/workspace/To Do/
+workspace/To Do/

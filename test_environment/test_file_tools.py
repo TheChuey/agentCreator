@@ -138,8 +138,26 @@ class TestRelpath:
         )
 
     def test_path_outside_every_root_is_refused(self, provider):
+        # Above the repository, not merely outside the workspace. The ``repo``
+        # root now covers the whole repository, so ``REPO_ROOT / "docs"`` is
+        # addressable as ``repo/docs`` and is no longer a valid example of a
+        # path that cannot be reached.
         with pytest.raises(ValueError, match="outside every Project Manager"):
-            provider.relpath(str(REPO_ROOT / "docs"))
+            provider.relpath(str(REPO_ROOT.parent / "docs"))
+
+    def test_repository_paths_resolve_to_the_repo_root(self, provider):
+        # The ``repo`` root is what makes an agent able to read the code it is
+        # running. Resolution is not permission: the policy still refuses
+        # ``repo/**`` to every agent until it is granted by name.
+        assert provider.relpath(str(REPO_ROOT / "scripts")) == "repo/scripts"
+        assert provider.relpath(
+            str(REPO_ROOT / "headless_app" / "tools")
+        ) == "repo/headless_app/tools"
+
+    def test_repo_qualified_paths_are_preserved(self, provider):
+        assert provider.relpath(
+            "repo/headless_app/tools/project_tools.py"
+        ) == "repo/headless_app/tools/project_tools.py"
 
     def test_shared_helper_normalises_root(self, tmp_path):
         """The absolute branch used to return '.', which map_files then
@@ -161,6 +179,267 @@ class TestRelpath:
 # ============================================================
 # map_files
 # ============================================================
+
+class TestTextFallback:
+    """
+    A file the extension list does not know about.
+
+    The failure this replaces was a ``.pyi`` being told "Docling is not
+    installed" -- which points the reader at installing a PDF converter in
+    order to read a Python stub. If the bytes decode as text then they are
+    text, whatever the name says.
+    """
+
+    @pytest.mark.parametrize(
+        "filename",
+        [
+            "stub.pyi",
+            "notebook.ipynb",
+            "run.sh",
+            "fix.patch",
+            "change.diff",
+            "kernel.pyx",
+            "notes.rst",
+            "Dockerfile",
+        ],
+    )
+    def test_decodable_text_is_read(self, filename):
+        probe = REPO_ROOT / "workspace" / f"_textprobe.{filename}"
+        probe.write_text("content that is plainly text\n", encoding="utf-8")
+        try:
+            result = project_tools.read_file(
+                f"workspace/{probe.name}"
+            )
+            data = result["data"]
+            assert result["success"] is True
+            assert "plainly text" in data["extracted_content"]
+        finally:
+            probe.unlink()
+
+    def test_real_binary_still_reports_the_real_problem(self):
+        # The fallback must not turn every unreadable file into text.
+        probe = REPO_ROOT / "workspace" / "_binprobe.bin"
+        probe.write_bytes(bytes(range(256)) * 8)
+        try:
+            result = project_tools.read_file(
+                "workspace/_binprobe.bin"
+            )
+            assert result["success"] is False
+            assert "docling" in str(
+                result["error"]
+            ).lower()
+        finally:
+            probe.unlink()
+
+
+class TestBundleFiles:
+    """
+    Several files as one document.
+
+    The point of the tool is that the model gets one string it can hand
+    straight to an AI, so the tests are about the shape of that string: does it
+    keep the files distinguishable, does it survive content that looks like
+    its own syntax, and does it stay inside the budget it was given.
+    """
+
+    @staticmethod
+    def _write(name, body):
+        probe = REPO_ROOT / "workspace" / name
+        probe.parent.mkdir(parents=True, exist_ok=True)
+        probe.write_text(body, encoding="utf-8")
+        return f"workspace/{name}"
+
+    @pytest.fixture(autouse=True)
+    def _clean(self):
+        yield
+        import shutil
+        shutil.rmtree(
+            REPO_ROOT / "workspace" / "_bundle",
+            ignore_errors=True,
+        )
+
+    def test_files_come_back_in_the_order_asked_for(self):
+        first = self._write(
+            "_bundle/a.py", "A = 1\n"
+        )
+        second = self._write(
+            "_bundle/b.py", "B = 2\n"
+        )
+        third = self._write(
+            "_bundle/c.py", "C = 3\n"
+        )
+
+        content = project_tools.bundle_files([
+            first, second, third,
+        ])["data"]["extracted_content"]
+
+        assert (
+            content.index("A = 1")
+            < content.index("B = 2")
+            < content.index("C = 3")
+        )
+
+    def test_each_file_keeps_its_own_heading(self):
+        one = self._write("_bundle/a.py", "A = 1\n")
+        two = self._write("_bundle/b.py", "B = 2\n")
+
+        data = project_tools.bundle_files([one, two])["data"]
+
+        assert [entry["path"] for entry in data["files"]] == [
+            one,
+            two,
+        ]
+        assert data["included"] == 2
+        assert "### " in data["extracted_content"]
+
+    def test_python_is_fenced_as_python(self):
+        # The language hint is what makes the bundle readable by a model that
+        # is about to be asked about the code.
+        one = self._write("_bundle/a.py", "x = 1\n")
+
+        content = project_tools.bundle_files([one])["data"]["extracted_content"]
+
+        assert "```python" in content
+
+    def test_content_containing_a_fence_does_not_break_the_structure(self):
+        # A Markdown file with its own fenced block, or a Python file whose
+        # docstring quotes one. With a fixed three-backtick fence the inner
+        # block closes the outer one and the rest of the file leaks out as
+        # structure.
+        tricky = self._write(
+            "_bundle/tricky.md",
+            "# doc\n\n```python\ninner = 1\n```\n\nafter the block\n",
+        )
+
+        data = project_tools.bundle_files([tricky])["data"]
+
+        content = data["extracted_content"]
+
+        # The body survives byte for byte...
+        assert "```python\ninner = 1\n```" in content
+        assert "after the block" in content
+
+        # ...and the outer fence is longer than the longest run inside it.
+        # The opening fence carries the language hint, the closing one does not.
+        # Both are four backticks. Had the fence stayed at three -- the
+        # obvious implementation -- the file's own ``` block would be
+        # indistinguishable from the bundle's boundary, and everything after
+        # it would arrive as structure instead of content.
+        assert any(
+            line.startswith("````markdown")
+            for line in content.splitlines()
+        )
+
+        backtick_only = sorted(
+            len(line)
+            for line in content.splitlines()
+            if line and set(line) == {"`"}
+        )
+
+        # One 3 from the file's block, one 4 from the bundle's closing fence.
+        assert backtick_only == [3, 4]
+
+    def test_the_fence_grows_for_a_longer_inner_run(self):
+        tricky = self._write(
+            "_bundle/tricky2.md",
+            "````\nstill inside\n````\n",
+        )
+
+        content = project_tools.bundle_files([tricky])["data"]["extracted_content"]
+
+        assert "`````" in content
+
+    def test_a_missing_file_is_reported_rather_than_swallowed(self):
+        good = self._write("_bundle/a.py", "A = 1\n")
+
+        data = project_tools.bundle_files([
+            good, "workspace/_bundle/absent.py",
+        ])["data"]
+
+        assert data["included"] == 1
+        assert data["skipped"] == [
+            {
+                "path": "workspace/_bundle/absent.py",
+                "reason": "File not found.",
+            },
+        ]
+
+    def test_an_all_missing_bundle_fails_instead_of_returning_nothing(self):
+        # An empty success would be read as "these files were empty".
+        result = project_tools.bundle_files([
+            "workspace/_bundle/absent.py",
+            "workspace/_bundle/also_absent.py",
+        ])
+
+        assert result["success"] is False
+        assert "absent.py" in str(result["error"])
+
+    def test_the_output_stays_inside_the_budget(self):
+        one = self._write("_bundle/big1.py", "# pad\n" * 400)
+        two = self._write("_bundle/big2.py", "# pad\n" * 400)
+        three = self._write("_bundle/big3.py", "# pad\n" * 400)
+
+        data = project_tools.bundle_files(
+            [one, two, three],
+            max_chars=4000,
+        )["data"]
+
+        assert data["truncated"] is True
+        assert data["total_chars"] <= 4000
+        assert data["included"] < 3
+
+    def test_truncation_says_how_much_was_dropped(self):
+        one = self._write("_bundle/p1.py", "# pad\n" * 300)
+        two = self._write("_bundle/p2.py", "# pad\n" * 300)
+        three = self._write("_bundle/p3.py", "# pad\n" * 300)
+
+        data = project_tools.bundle_files(
+            [one, two, three],
+            max_chars=3000,
+        )["data"]
+
+        reasons = " ".join(
+            entry["reason"] for entry in data["skipped"]
+        )
+
+        assert "max_chars" in reasons
+        assert "omitted" in reasons
+
+    def test_a_first_file_bigger_than_the_budget_is_an_explicit_error(self):
+        # Silently returning it would be several times the requested size;
+        # silently dropping it would leave the caller with nothing.
+        one = self._write("_bundle/huge.py", "# pad\n" * 800)
+
+        result = project_tools.bundle_files(
+            [one],
+            max_chars=1000,
+        )
+
+        assert result["success"] is False
+        assert "huge.py" in str(result["error"])
+
+    def test_nothing_at_all_is_rejected(self):
+        assert project_tools.bundle_files([])["success"] is False
+        assert project_tools.bundle_files(["  "])["success"] is False
+
+    def test_a_bare_string_is_treated_as_one_path(self):
+        # Models get this wrong constantly, and it is unambiguous.
+        one = self._write("_bundle/solo.py", "solo = True\n")
+
+        data = project_tools.bundle_files(one)["data"]
+
+        assert data["included"] == 1
+
+    def test_an_empty_file_does_not_produce_a_broken_section(self):
+        empty = self._write("_bundle/empty.py", "")
+
+        result = project_tools.bundle_files([empty])
+
+        # An empty file must not yield a section with no body at all, which
+        # reads as a truncated document rather than an empty file.
+        assert result["success"] is True
+        assert "empty file" in result["data"]["extracted_content"]
+
 
 class TestMapFiles:
 
@@ -211,10 +490,67 @@ class TestMapFiles:
 
     def test_outside_root_is_reported_as_an_error(self, provider):
         result = project_tools.map_files(
-            str(REPO_ROOT / "scripts")
+            str(REPO_ROOT.parent / "scripts")
         )
         assert result["success"] is False
         assert result["error"]
+
+    def test_repository_directory_maps(self, provider):
+        # ``repo`` is a real browse root, so the application's own source is
+        # listable. ``repo/data`` is excluded from it deliberately -- it holds
+        # the running application's chat and tool logs, which the new root
+        # would otherwise have made reachable.
+        result = project_tools.map_files(
+            str(REPO_ROOT / "scripts")
+        )
+        assert result["success"], result.get("error")
+
+        names = {
+            entry["name"]
+            for entry in result["data"]["files"]
+        }
+
+        assert "gen_master_copy.py" in names
+
+    def test_repository_data_directory_is_excluded(self, provider):
+        # Asserted on the full recursive walk rather than the top level,
+        # because the exclusion has to hold at every depth.
+        result = project_tools.map_files(str(REPO_ROOT))
+        relatives = {
+            entry["path_relative"]
+            for entry in result["data"]["files"]
+        }
+
+        assert not any(
+            relative.startswith("repo/data/")
+            or relative == "repo/data"
+            for relative in relatives
+        ), "repo/data holds runtime chat logs and must stay out of the tree"
+
+        assert not any(
+            "chat_sessions" in relative
+            for relative in relatives
+            if relative.startswith("repo/data")
+        )
+
+        assert "repo/headless_app/tools/project_tools.py" in relatives
+
+    def test_workspace_data_directory_is_not_collateral_damage(
+        self,
+        provider,
+    ):
+        # ``data`` is an ordinary directory name. The exclusion is keyed to
+        # the ``repo`` root precisely so that a user's own ``workspace/data``
+        # is not hidden along with the application's.
+        result = project_tools.map_files(
+            str(REPO_ROOT / "workspace")
+        )
+        names = {
+            entry["name"]
+            for entry in result["data"]["files"]
+        }
+
+        assert "data" in names
 
 
 # ============================================================

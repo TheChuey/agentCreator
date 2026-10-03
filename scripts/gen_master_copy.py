@@ -187,7 +187,7 @@ TARGETS: dict[str, dict[str, Any]] = {
                 "runtime output: chat log, tool log, pipeline run records, "
                 "and the log-pin file"
             ),
-            "project_manager/workspace/data": (
+            "workspace/data": (
                 "runtime output: chat log and saved chat sessions"
             ),
             "test_environment/output": (
@@ -196,7 +196,7 @@ TARGETS: dict[str, dict[str, Any]] = {
             "test_environment/test_data": (
                 "runtime output: chat log and tool log of test runs"
             ),
-            "project_manager/workspace/To Do": (
+            "workspace/To Do": (
                 "personal working notes, gitignored and not part of the "
                 "project"
             ),
@@ -228,23 +228,14 @@ TARGETS: dict[str, dict[str, Any]] = {
         "title": f"{APP_NAME} — Project Manager Master Copy",
         "subtitle": (
             "The `project_manager/` half of agentCreator: the FastAPI "
-            "workspace server, its editor interface, and the managed "
-            "workspace. File structure plus a description of every module, "
-            "class and function."
+            "workspace server, its editor interface, and the permission "
+            "rules that bound what it may reach. File structure plus a "
+            "description of every module, class and function."
         ),
         "companions": [
             (SNAPSHOT_NAME, "the whole repository, verbatim"),
             ("headless_app_MASTER_COPY.md", "`headless_app/`"),
         ],
-        "exclude": {
-            "workspace/data": (
-                "runtime output: chat log and saved chat sessions"
-            ),
-            "workspace/To Do": (
-                "personal working notes, gitignored and not part of the "
-                "project"
-            ),
-        },
     },
 }
 

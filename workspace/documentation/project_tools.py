@@ -362,29 +362,6 @@ def _convert_with_docling(path: Path, ocr: bool) -> str | None:
     return result.document.export_to_markdown()
 
 
-def _read_as_text(path: Path) -> str | None:
-    """Decode a file as UTF-8 text, or return None if it is not text.
-
-    Used as the fallback when document conversion is unavailable. Its purpose
-    is to stop the misleading answer: a ``.pyi`` or ``.ipynb`` or ``.sh`` that
-    is plainly text was being told "Docling is not installed", which sends the
-    reader off to install a PDF converter to read a Python stub. A binary file
-    still returns None, so genuinely binary content keeps its real error.
-    """
-
-    try:
-
-        return path.read_text(
-            encoding="utf-8"
-        )
-
-    except (
-        UnicodeDecodeError,
-        OSError,
-    ):
-        return None
-
-
 def _read_local_file(p: Path, ocr: bool) -> dict:
     """Read a file from the local disk (text direct, binary via Docling)."""
     if _is_plain_text(p):
@@ -402,36 +379,12 @@ def _read_local_file(p: Path, ocr: bool) -> dict:
         }
     markdown = _convert_with_docling(p, ocr)
     if markdown is None:
-        # Not a known text extension and no converter. If the bytes decode as
-        # text then it is text, whatever its name, and saying so is more use
-        # than an install prompt.
-        decoded = _read_as_text(p)
-        if decoded is not None:
-            return {
-                "success": True,
-                "tool": "read_file",
-                "data": {
-                    "path": str(p),
-                    "filename": p.name,
-                    "file_type": p.suffix.lower(),
-                    "extracted_content": decoded,
-                    "status": "success",
-                    "note": (
-                        f"'{p.suffix}' is not in the plain-text extension "
-                        "list; read as text because it decodes as UTF-8."
-                    ),
-                },
-                "error": None,
-            }
         return {
             "success": False,
             "tool": "read_file",
             "data": {},
-            "error": (
-                f"Cannot read '{p.name}': it is not a recognised text format "
-                f"and is not decodable as UTF-8. Install Docling with "
-                "`pip install docling` to read PDF/DOCX/PPTX/XLSX/images."
-            ),
+            "error": "Docling is not installed. Install it with `pip install docling` "
+                     "to read PDF/DOCX/PPTX/XLSX/HTML/image files.",
         }
     return {
         "success": True,
@@ -545,279 +498,6 @@ def read_file(path: str, ocr: bool = True) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# BUNDLE - several files as one document
-# ---------------------------------------------------------------------------
-
-#: Suffix -> fence info string, mirroring ``scripts/gen_master_copy.py`` so a
-#: bundle and the generated snapshot read the same way.
-_BUNDLE_LANGUAGES = {
-    ".py": "python", ".pyw": "python", ".pyi": "python", ".pyx": "python",
-    ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript",
-    ".ts": "typescript", ".tsx": "typescript", ".jsx": "javascript",
-    ".css": "css", ".scss": "scss", ".html": "html", ".htm": "html",
-    ".json": "json", ".yaml": "yaml", ".yml": "yaml", ".toml": "toml",
-    ".ini": "ini", ".cfg": "ini", ".xml": "xml", ".sql": "sql",
-    ".md": "markdown", ".markdown": "markdown", ".rst": "rst",
-    ".sh": "bash", ".bat": "batch", ".ps1": "powershell",
-    ".txt": "text", ".text": "text", ".csv": "csv", ".log": "text",
-}
-
-
-def _fence_for(text: str) -> str:
-    """A fence long enough to contain ``text``, whatever it contains.
-
-    At least three backticks, and always one longer than the longest run of
-    backticks inside the content. Without that second rule a Python file with
-    a docstring or a Markdown file containing a fenced block would close the
-    fence early and spill its own text into the bundle as structure. Taken
-    from ``scripts/gen_master_copy.py``, which has the same requirement for
-    the same reason.
-    """
-
-    longest = 0
-    run = 0
-
-    for character in text:
-
-        if character == "`":
-
-            run += 1
-            longest = max(longest, run)
-
-        else:
-
-            run = 0
-
-    return "`" * max(3, longest + 1)
-
-
-def _render_bundle_file(
-    relative_path: str,
-    text: str,
-    index: int,
-    total: int,
-) -> str:
-    """Render one file into the bundle: marker, heading, fenced content."""
-
-    fence = _fence_for(text)
-    language = _BUNDLE_LANGUAGES.get(
-        Path(relative_path).suffix.lower(),
-        "",
-    )
-    body = text or "(empty file - 0 bytes)"
-
-    return "\n".join([
-        f"<!-- ==== {index}/{total} : {relative_path} ==== -->",
-        "",
-        f"### {relative_path}",
-        "",
-        f"{fence}{language}",
-        body,
-        fence,
-    ])
-
-
-@report_tool
-def bundle_files(paths: list[str], max_chars: int = 400000) -> dict:
-    """Reads several files and returns them as ONE document you can hand to an AI.
-
-    Use this when you need the content of more than one file at once --
-    several modules to compare, a package to summarise, a set of files to
-    read end to end. Calling read_file once per file costs a round trip each
-    and leaves you reassembling the pieces yourself.
-
-    Output is one concatenated document: each file keeps its own heading and
-    a fenced block, in the order you listed them. A file whose content itself
-    contains a code fence cannot break the structure; the fence is sized to
-    fit.
-
-    Every path goes through the same permission gate as read_file, and a path
-    you are not allowed to read refuses the whole call rather than being
-    quietly dropped -- a bundle that silently omits a file reads as complete,
-    which is how you end up reasoning about half a package.
-
-    Args:
-        paths (list[str]): The files to bundle, in order. Absolute,
-            root-qualified (workspace/documentation/registry.py,
-            repo/headless_app/tools/project_tools.py), or relative to the
-            Project Manager workspace when one is connected.
-        max_chars (int): Cap on the combined output (default 400000, roughly
-            100k tokens). Files are included in order until the cap is hit,
-            and the result says where it stopped.
-
-    Returns:
-        dict: {"success": bool, "tool": "bundle_files", "data": {...}, "error": str|None}
-            data keys: extracted_content (the combined document), files
-                        ([{path, chars}]), skipped ([{path, reason}]),
-                        truncated (bool), total_chars (int), included (int)
-    """
-
-    if isinstance(paths, str):
-
-        paths = [paths]
-
-    try:
-        requested = [str(item) for item in paths if str(item).strip()]
-    except TypeError:
-        return {
-            "success": False,
-            "tool": "bundle_files",
-            "data": {},
-            "error": "bundle_files expects a list of file paths.",
-        }
-
-    if not requested:
-
-        return {
-            "success": False,
-            "tool": "bundle_files",
-            "data": {},
-            "error": "bundle_files needs at least one path.",
-        }
-
-    # Read everything first, then render. Rendering as it went would mean a
-    # file that turned out to be unreadable had already been accounted for in
-    # the running total, and the truncation point would be wrong.
-    resolved: list[tuple[str, str]] = []
-    skipped: list[dict[str, str]] = []
-
-    for candidate in requested:
-
-        result = read_file(candidate)
-
-        if not result.get("success"):
-
-            skipped.append({
-                "path": candidate,
-                "reason": str(
-                    result.get("error")
-                    or "unknown error"
-                ),
-            })
-            continue
-
-        data = result.get("data") or {}
-        resolved.append((
-            data.get("path_relative")
-            or candidate,
-            str(data.get("extracted_content") or ""),
-        ))
-
-    if not resolved:
-
-        return {
-            "success": False,
-            "tool": "bundle_files",
-            "data": {"skipped": skipped},
-            "error": (
-                "None of the requested files could be read. "
-                + "; ".join(
-                    f"{entry['path']}: {entry['reason']}"
-                    for entry in skipped
-                )
-            ),
-        }
-
-    limit = max(
-        1000,
-        int(max_chars),
-    )
-
-    total = len(resolved)
-
-    # Check the first file before assembling anything. It cannot be dropped --
-    # dropping the first file and keeping later ones would return a bundle
-    # that looks whole but is missing its opening -- so if it alone overruns
-    # the budget the call fails and says so, rather than quietly returning
-    # something several times the size the caller asked for.
-    opening = _render_bundle_file(
-        resolved[0][0],
-        resolved[0][1],
-        1,
-        total,
-    )
-
-    if len(opening) > limit:
-
-        return {
-            "success": False,
-            "tool": "bundle_files",
-            "data": {
-                "skipped": skipped,
-                "files": [
-                    {"path": path, "chars": len(text)}
-                    for path, text in resolved
-                ],
-            },
-            "error": (
-                f"'{resolved[0][0]}' alone is {len(opening)} characters, over "
-                f"the max_chars budget of {limit}. Read it on its own with "
-                "read_file, or raise max_chars."
-            ),
-        }
-
-    sections: list[str] = [opening]
-    included: list[dict[str, Any]] = [{
-        "path": resolved[0][0],
-        "chars": len(resolved[0][1]),
-    }]
-    used = len(opening)
-    truncated = False
-
-    for index, (relative_path, text) in enumerate(
-        resolved[1:],
-        start=2,
-    ):
-
-        rendered = _render_bundle_file(
-            relative_path,
-            text,
-            index,
-            total,
-        )
-
-        # +2 for the blank line the join will add.
-        if used + len(rendered) + 2 > limit:
-
-            truncated = True
-
-            break
-
-        sections.append(rendered)
-        used += len(rendered) + 2
-        included.append({
-            "path": relative_path,
-            "chars": len(text),
-        })
-
-    if truncated:
-
-        skipped.append({
-            "path": "(not reached)",
-            "reason": (
-                f"max_chars ({limit}) reached; "
-                f"{total - len(included)} of {total} files omitted"
-            ),
-        })
-
-    content = "\n\n".join(sections)
-
-    return {
-        "success": True,
-        "tool": "bundle_files",
-        "data": {
-            "extracted_content": content,
-            "files": included,
-            "skipped": skipped,
-            "truncated": truncated,
-            "total_chars": len(content),
-            "included": len(included),
-        },
-        "error": None,
-    }
-
-
-# ---------------------------------------------------------------------------
 # MAP - directory inspection
 # ---------------------------------------------------------------------------
 
@@ -842,67 +522,12 @@ def _flatten_tree(entries: list, prefix: str = "") -> list[dict]:
     return flat
 
 
-#: Fallback ignore set, used only when ``ws_controlPanel`` cannot be imported
-#: (a bare ``headless_app`` copy with no sibling panel). It is a subset of the
-#: panel's ``IGNORED_DIRECTORIES``: the panel's copy is root-aware and also
-#: excludes ``repo/data``, which this list cannot express.
-_IGNORE_SET: set[str] | None = None
-_SHOULD_IGNORE = None
-
-
-def _ignore_set() -> set[str]:
-    """The panel's ignore list, resolved once.
-
-    ``ws_controlPanel.paths.should_ignore`` is the authority. It is consulted
-    with absolute paths so its root-aware rule applies: ``repo/data`` is
-    excluded while ``workspace/data`` is kept, which a flat set of names
-    cannot express. Falling back to ``DEFAULT_IGNORE_DIRS`` keeps a
-    standalone ``headless_app`` working, at the cost of the ``data`` exclusion.
-    """
-
-    global _IGNORE_SET
-
-    if _IGNORE_SET is not None:
-
-        return _IGNORE_SET
-
-    try:
-
-        from ws_controlPanel import paths as panel_paths
-
-        _IGNORE_SET = set(
-            panel_paths.IGNORED_DIRECTORIES
-        ) | {"node_modules"}
-        globals()["_SHOULD_IGNORE"] = panel_paths.should_ignore
-
-    except Exception:
-
-        _IGNORE_SET = set(
-            DEFAULT_IGNORE_DIRS
-        )
-        globals()["_SHOULD_IGNORE"] = None
-
-    return _IGNORE_SET
-
-
 def _map_entries_local(root: Path) -> list[dict]:
     """os.walk the local disk; returns flat {name, path, type, level} entries."""
-    _ignore_set()
     files_data = []
     for current_dir, dirs, files in os.walk(root, topdown=True):
         depth = len(Path(current_dir).relative_to(root).parts)
-        if _SHOULD_IGNORE is not None:
-            # Absolute paths, so the panel can tell which root this is and
-            # apply the per-root exclusions rather than a flat name match.
-            dirs[:] = [
-                d
-                for d in dirs
-                if not _SHOULD_IGNORE(
-                    Path(current_dir) / d
-                )
-            ]
-        else:
-            dirs[:] = [d for d in dirs if d not in _IGNORE_SET]
+        dirs[:] = [d for d in dirs if d not in DEFAULT_IGNORE_DIRS]
         for d in dirs:
             full = Path(current_dir) / d
             files_data.append({"name": d, "path": str(full), "type": "directory", "level": depth + 1})
@@ -968,12 +593,7 @@ def map_files(path: str, max_depth: int = 8, max_entries: int = 5000) -> dict:
             # Ignore noise at every level. Skipping this when base_parts was
             # empty used to let .git and .venv through whenever the whole
             # root was mapped, which is exactly when they are most present.
-            if _SHOULD_IGNORE is not None:
-                # Root-qualified, so the panel applies its per-root
-                # exclusions: repo/data goes, workspace/data stays.
-                if _SHOULD_IGNORE(Path(*rel_parts)):
-                    continue
-            elif any(p in DEFAULT_IGNORE_DIRS for p in rel_parts):
+            if any(p in DEFAULT_IGNORE_DIRS for p in rel_parts):
                 continue
             level = len(rel_parts) - len(base_parts)
             if level > max_depth:
@@ -1012,18 +632,7 @@ def map_files(path: str, max_depth: int = 8, max_entries: int = 5000) -> dict:
         if depth >= max_depth:
             dirs[:] = []
         else:
-            if _SHOULD_IGNORE is not None:
-                dirs[:] = [
-                    d
-                    for d in dirs
-                    if not _SHOULD_IGNORE(Path(current_dir) / d)
-                ]
-            else:
-                dirs[:] = [
-                    d
-                    for d in dirs
-                    if d not in DEFAULT_IGNORE_DIRS
-                ]
+            dirs[:] = [d for d in dirs if d not in DEFAULT_IGNORE_DIRS]
 
         for d in dirs:
             if len(files_data) >= max_entries:

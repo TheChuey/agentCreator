@@ -6,7 +6,6 @@ This module is responsible for managing the physical
 project filesystem.
 
 Responsibilities:
-    - Discover the project root.
     - Create the basic project structure.
     - Create/read project.json.
     - Read the project filesystem.
@@ -16,10 +15,35 @@ Responsibilities:
     - Create directories.
     - Rename files/directories.
     - Delete files/directories.
-    - Prevent access outside the project root.
 
 The web server does NOT contain filesystem logic.
 server.py calls this module.
+
+Where the rules live
+--------------------
+
+**This module no longer decides what is reachable.** The browse-root table,
+the containment check and the writability floor moved to
+``ws_controlPanel.paths``, so that the permission engine and the filesystem
+agree by construction rather than by two copies staying in sync. Everything
+that used to be defined here is imported from there and re-exported under its
+original name, so ``BROWSE_ROOTS``, ``resolve_project_path``,
+``require_writable`` and the rest keep working for every existing caller --
+``operations.py``, ``paths.py``, ``chat.py``, ``toollog.py`` and
+``bridge/providers.py`` all continue to call the names they always called.
+
+Two of those re-exports are load-bearing for the rest of the repository:
+
+* ``BROWSE_ROOTS`` is an alias of the panel's ``ROOTS``, not a copy. Adding a
+  root in one place adds it in both.
+* ``require_writable`` is now the panel's floor check, which
+  ``ws_controlPanel.gate.require_path`` calls *in addition to* the per-agent
+  rules rather than instead of them. No agent grant can make a read-only root
+  writable.
+
+A second, independent containment check used to live in
+``project_manager/interface/routers/agents.py``. It has been deleted; that
+router calls ``ws_controlPanel.paths.resolve_agent_path`` instead.
 """
 
 from __future__ import annotations
@@ -28,9 +52,29 @@ import errno
 import json
 import os
 import shutil
+import sys
 import time
 from pathlib import Path
 from typing import Any
+
+# The control panel is a repository sibling of this package, so reaching it
+# means putting the repository root on the path first. The repository already
+# does this for ``headless_app`` in five places; this is the panel's own
+# copy, and it has to run before the imports below.
+_AGENTCREATOR_ROOT = Path(
+    __file__
+).resolve().parents[2]
+
+if str(
+    _AGENTCREATOR_ROOT
+) not in sys.path:
+
+    sys.path.insert(
+        0,
+        str(_AGENTCREATOR_ROOT),
+    )
+
+from ws_controlPanel import paths as _paths
 
 
 # ============================================================
@@ -39,19 +83,37 @@ from typing import Any
 
 PARAMETERS_DIR = Path(__file__).resolve().parent
 
+#: The application package directory. Note this is *not* the repository
+#: root -- ``AGENTCREATOR_ROOT`` is -- and the two are frequently confused.
 REPO_ROOT = PARAMETERS_DIR.parent
 
-PROJECT_ROOT = REPO_ROOT / "workspace"
+AGENTCREATOR_ROOT = _AGENTCREATOR_ROOT
 
+#: The managed project content, the browse roots, and the single containment
+#: check. All owned by the control panel; re-exported here so the rest of the
+#: server keeps one name for each of them.
+PROJECT_ROOT = _paths.PROJECT_ROOT
 PROJECT_JSON = PROJECT_ROOT / "project.json"
+SOURCE_FILES_ROOT = _paths.SOURCE_FILES_ROOT
+TEST_ENVIRONMENT_ROOT = _paths.TEST_ENVIRONMENT_ROOT
 
-SOURCE_FILES_ROOT = REPO_ROOT.parent / "source_files"
+#: The browse roots. An alias, not a copy: see the module docstring.
+BROWSE_ROOTS = _paths.ROOTS
 
-#: The isolated test environment. It is a repository sibling of the
-#: application, not part of the managed workspace, but the prompt
-#: builder reads its parts from there and publishes agents into it,
-#: so it is browsable and writable in its own right.
-TEST_ENVIRONMENT_ROOT = REPO_ROOT.parent / "test_environment"
+#: The containment check and the writability floor.
+resolve_project_path = _paths.resolve_project_path
+split_root = _paths.split_root
+is_writable_root = _paths.is_writable_root
+resolve_browse_target = _paths.resolve_browse_target
+resolve_browse_path = _paths.resolve_browse_path
+require_writable = _paths.require_writable
+to_root_qualified = _paths.to_root_qualified
+
+#: Editability limits and the file-type gate.
+MAX_EDITABLE_BYTES = _paths.MAX_EDITABLE_BYTES
+TEXT_EXTENSIONS = _paths.TEXT_EXTENSIONS
+IGNORED_DIRECTORIES = _paths.IGNORED_DIRECTORIES
+should_ignore = _paths.should_ignore
 
 
 # ============================================================
@@ -73,89 +135,22 @@ PROJECT_FOLDERS = [
 # BROWSER ROOTS
 # ============================================================
 
-# The folders the file browser shows. Add a folder here to
-# make it appear in the tree; set ``writable`` to False to make it
-# browse-only. Keys are the path prefixes the API understands, so
-# ``source_files/APP_CODE_SNAPSHOT.md``, ``workspace/project.json`` and
-# ``test_environment/test_agents/demo_agent/agent.md`` each resolve inside
-# their own root.
-
-BROWSE_ROOTS: dict[str, dict[str, Any]] = {
-    "workspace": {
-        "path": PROJECT_ROOT,
-        "writable": True,
-    },
-    "test_environment": {
-        "path": TEST_ENVIRONMENT_ROOT,
-        "writable": True,
-    },
-    "source_files": {
-        "path": SOURCE_FILES_ROOT,
-        "writable": False,
-    },
-}
-
-
-# Files above this size open read-only so the browser editor
-# never tries to render a multi-megabyte document.
-
-MAX_EDITABLE_BYTES = 512 * 1024
+# BROWSE_ROOTS, MAX_EDITABLE_BYTES, TEXT_EXTENSIONS, IGNORED_DIRECTORIES and
+# should_ignore are imported from ``ws_controlPanel.paths`` at the top of this
+# module. They used to be defined here. They are not redefined here now,
+# because a second table of what is writable is exactly the kind of copy that
+# drifts out of step with the permission engine and then quietly disagrees
+# with it.
 
 
 # ============================================================
 # FILE TYPES
 # ============================================================
 
-TEXT_EXTENSIONS = {
-    ".py",
-    ".pyw",
-    ".txt",
-    ".text",
-    ".md",
-    ".markdown",
-    ".rst",
-    ".tex",
-    ".json",
-    ".yaml",
-    ".yml",
-    ".toml",
-    ".ini",
-    ".cfg",
-    ".conf",
-    ".log",
-    ".tsv",
-    ".html",
-    ".htm",
-    ".css",
-    ".scss",
-    ".sass",
-    ".js",
-    ".jsx",
-    ".mjs",
-    ".cjs",
-    ".ts",
-    ".tsx",
-    ".sql",
-    ".xml",
-    ".csv",
-    ".env",
-}
-
-
-# ============================================================
-# DIRECTORIES TO HIDE
-# ============================================================
-
-IGNORED_DIRECTORIES = {
-    ".git",
-    ".venv",
-    "venv",
-    "__pycache__",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".idea",
-    ".vscode",
-}
+# TEXT_EXTENSIONS is imported from ``ws_controlPanel.paths``. It is the write
+# type gate: ``write_file`` and ``create_file`` below both refuse anything
+# whose suffix is not in it, so a rename cannot be used to slip a binary past
+# the text-only editor.
 
 
 # ============================================================
@@ -167,254 +162,29 @@ DEFAULT_PROJECT = {
     "version": "1.0.0",
     "workspace_version": "1.0",
 }
-
-
 # ============================================================
-# PATH SECURITY
+# RE-EXPORTED FROM THE CONTROL PANEL
 # ============================================================
 
-def resolve_project_path(
-    relative_path: str,
-    root: Path | None = None,
-) -> Path:
-    """
-    Convert a project-relative path into a safe absolute path.
+# The six functions that used to live between here and the browser tree --
+# resolve_project_path, split_root, is_writable_root, resolve_browse_target,
+# resolve_browse_path and require_writable -- are now imported from
+# ws_controlPanel.paths at the top of this module and re-exported under their
+# original names.
+#
+# The point of moving them is not tidiness. ``ws_controlPanel.gate`` has to
+# enforce the same containment and the same writability floor that these
+# callers enforce, and it cannot import this package without creating a cycle:
+# the panel is imported *by* this module. So the rules live in the panel and
+# flow outward, rather than being copied inward.
+#
+# Every caller below is unchanged, and that is the test of the move:
+#   operations.py            seven require_writable calls, all still named the same
+#   bridge/providers.py      three more, plus resolve_browse_path
+#   routers/chat.py          resolve_project_path for the mirrored log
+#   routers/toollog.py       resolve_project_path to reach an agent.json
+#   routers/paths.py         rename, through operations
 
-    This prevents paths such as:
-
-        ../../some_file.txt
-
-    from escaping the active project root. The default root is the
-    managed workspace; scope-aware callers pass the repository root
-    to reach application files.
-
-    Args:
-        relative_path:
-            Path relative to the active root.
-        root:
-            Filesystem root the path must stay inside. Defaults to
-            the managed workspace.
-
-    Returns:
-        Safe absolute Path.
-
-    Raises:
-        ValueError:
-            If the path is empty or outside the root.
-    """
-
-    if root is None:
-
-        root = PROJECT_ROOT
-
-    if not relative_path:
-
-        raise ValueError(
-            "A project-relative path is required."
-        )
-
-    # Normalize Windows separators.
-    relative_path = relative_path.replace(
-        "\\",
-        "/",
-    )
-
-    candidate = (
-        root / relative_path
-    ).resolve()
-
-    try:
-
-        candidate.relative_to(
-            root
-        )
-
-    except ValueError:
-
-        raise ValueError(
-            "Access outside the project directory "
-            "is not allowed."
-        )
-
-    return candidate
-
-
-# ============================================================
-# BROWSER ROOT RESOLUTION
-# ============================================================
-
-def split_root(
-    relative_path: str,
-) -> tuple[str | None, str]:
-    """
-    Split a path into its browser-root name and the remainder.
-
-    Returns:
-        ``(root_name, remainder)``. ``root_name`` is None when the
-        first segment is not a known root, meaning the caller
-        should treat the path as legacy and root-relative.
-    """
-
-    normalized = relative_path.replace(
-        "\\",
-        "/",
-    ).strip()
-
-    head, separator, tail = normalized.partition(
-        "/"
-    )
-
-    if not separator:
-
-        return None, normalized
-
-    if head in BROWSE_ROOTS:
-
-        return head, tail
-
-    return None, normalized
-
-
-def is_writable_root(
-    root_name: str | None,
-) -> bool:
-    """
-    Whether a browser root accepts writes.
-
-    Legacy (root-less) paths are treated as writable so existing
-    callers keep working.
-    """
-
-    if root_name is None:
-
-        return True
-
-    return bool(
-        BROWSE_ROOTS[root_name].get(
-            "writable",
-            False,
-        )
-    )
-
-
-def resolve_browse_target(
-    relative_path: str,
-    legacy_root: Path | None = None,
-) -> tuple[str, Path, str | None]:
-    """
-    Split a possibly root-qualified path into the arguments the
-    filesystem operations expect.
-
-    ``source_files/APP_CODE_SNAPSHOT.md`` resolves inside the
-    ``source_files`` root. Paths without a known root prefix fall back to
-    ``legacy_root`` (the managed workspace by default) so existing
-    API callers are unaffected.
-
-    Args:
-        relative_path:
-            Root-qualified or legacy relative path.
-        legacy_root:
-            Root used when the path carries no root prefix.
-
-    Returns:
-        ``(stripped_relative, root, root_name)``. ``root_name`` is
-        None for legacy paths.
-
-    Raises:
-        ValueError:
-            If the path is empty or names a root with no remainder.
-    """
-
-    root_name, remainder = split_root(
-        relative_path
-    )
-
-    if root_name is None:
-
-        return (
-            relative_path,
-            legacy_root
-            if legacy_root is not None
-            else PROJECT_ROOT,
-            None,
-        )
-
-    if not remainder:
-
-        raise ValueError(
-            "A path inside "
-            f"{root_name} is required."
-        )
-
-    return (
-        remainder,
-        BROWSE_ROOTS[root_name]["path"],
-        root_name,
-    )
-
-
-def resolve_browse_path(
-    relative_path: str,
-    legacy_root: Path | None = None,
-) -> tuple[Path, str | None]:
-    """
-    Resolve a possibly root-qualified path to a safe absolute path.
-
-    Returns:
-        ``(absolute_path, root_name)``. ``root_name`` is None for
-        legacy paths.
-
-    Raises:
-        ValueError:
-            If the path is empty or escapes its root.
-    """
-
-    stripped, root, root_name = (
-        resolve_browse_target(
-            relative_path,
-            legacy_root,
-        )
-    )
-
-    return resolve_project_path(
-        stripped,
-        root,
-    ), root_name
-
-
-def require_writable(
-    relative_path: str,
-    legacy_root: Path | None = None,
-) -> str | None:
-    """
-    Ensure a path may be written to.
-
-    Args:
-        relative_path:
-            Root-qualified or legacy relative path.
-        legacy_root:
-            Root used when the path carries no root prefix.
-
-    Returns:
-        The resolved root name (None for legacy paths).
-
-    Raises:
-        ValueError:
-            If the path targets a read-only root.
-    """
-
-    _, root_name = resolve_browse_path(
-        relative_path,
-        legacy_root,
-    )
-
-    if not is_writable_root(root_name):
-
-        raise ValueError(
-            f"{root_name} is read-only."
-        )
-
-    return root_name
 
 
 def read_browse_filesystem(
@@ -556,18 +326,6 @@ def read_project_info() -> dict[str, Any]:
 # ============================================================
 # FILE FILTERING
 # ============================================================
-
-def should_ignore(path: Path) -> bool:
-    """
-    Determine whether a path should be hidden
-    from the project browser.
-    """
-
-    return any(
-        part in IGNORED_DIRECTORIES
-        for part in path.parts
-    )
-
 
 def is_text_file(path: Path) -> bool:
     """

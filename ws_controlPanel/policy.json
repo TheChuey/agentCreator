@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "default": "deny",
+  "tools": {},
+  "agents": {
+    "helper": {
+      "map_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "read_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "write_text_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**"
+        ]
+      },
+      "bundle_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      }
+    },
+    "problem_clarifer": {},
+    "module_builder_agent": {
+      "map_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "read_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "write_text_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**"
+        ]
+      },
+      "bundle_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      }
+    },
+    "execute_engineer_agent": {
+      "read_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "bundle_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      }
+    },
+    "feature_planner_agent": {},
+    "rag_assistant": {
+      "map_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "read_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "write_text_file": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**"
+        ]
+      },
+      "delete_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**"
+        ]
+      },
+      "get_current_date": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "search_chat_logs": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      },
+      "bundle_files": {
+        "effect": "allow",
+        "paths": [
+          "workspace/**",
+          "test_environment/**",
+          "source_files/**"
+        ]
+      }
+    }
+  }
+}

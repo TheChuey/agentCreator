@@ -88,6 +88,23 @@ except Exception:
     DirectProjectIO = None  # type: ignore[assignment]
 
 
+def _panel_paths():
+    """The control panel's path module, or None when it is unavailable.
+
+    ``parameters.filesystem`` already puts the repository root on
+    ``sys.path``, so by the time this runs the panel is importable. It is
+    still guarded because a router that cannot load is a server that will
+    not start, and losing the agent endpoints over a missing sibling
+    directory is a worse outcome than falling back to the filesystem's own
+    containment check.
+    """
+    try:
+        from ws_controlPanel import paths as panel_paths
+        return panel_paths
+    except Exception:
+        return None
+
+
 # ============================================================
 # ROUTER
 # ============================================================
@@ -156,6 +173,12 @@ def _resolve(relative_path: str) -> Path:
     input. An absolute path is also accepted, but only when it really is
     inside the workspace, so a queue saved from a previous session cannot
     reach outside the project.
+
+    This used to be a second, independent implementation of the containment
+    rule, alongside the one in ``parameters/filesystem``. Two implementations
+    of a security rule can drift, and these two already differed in detail.
+    It now calls ``ws_controlPanel.paths.resolve_agent_path``, which is the
+    single implementation the filesystem itself uses.
     """
     filesystem = _pm_filesystem()
     if filesystem is None:
@@ -166,15 +189,11 @@ def _resolve(relative_path: str) -> Path:
             "Running outside the Project Manager - a workspace-relative "
             "path cannot be resolved."
         )
-    if Path(relative_path).is_absolute():
-        resolved = Path(relative_path).resolve()
-        try:
-            resolved.relative_to(Path(filesystem.PROJECT_ROOT).resolve())
-        except ValueError:
-            raise ValueError(
-                "Access outside the project directory is not allowed."
-            )
-        return resolved
+    panel = _panel_paths()
+    if panel is not None:
+        return panel.resolve_agent_path(relative_path)
+    # The panel is unavailable: fall back to the filesystem's own check
+    # rather than to no check at all.
     return filesystem.resolve_project_path(relative_path)
 
 

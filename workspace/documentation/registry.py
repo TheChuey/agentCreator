@@ -30,7 +30,6 @@ Adding a new tool:
 from typing import Any, Callable
 
 from tools.project_tools import (
-    bundle_files,
     configure as _configure_provider,
     map_files,
     read_file,
@@ -50,7 +49,6 @@ _TOOL_REGISTRY: dict[str, Callable] = {
     # File management
     "map_files": map_files,
     "read_file": read_file,
-    "bundle_files": bundle_files,
     "write_text_file": write_text_file,
     "delete_files": delete_files,
 
